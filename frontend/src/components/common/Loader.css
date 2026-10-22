@@ -1,0 +1,41 @@
+.loader-container{
+
+height:100vh;
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+justify-content:center;
+
+}
+
+.loader{
+
+width:70px;
+
+height:70px;
+
+border:8px solid #ddd;
+
+border-top:8px solid #2563EB;
+
+border-radius:50%;
+
+animation:spin 1s linear infinite;
+
+margin-bottom:20px;
+
+}
+
+@keyframes spin{
+
+100%{
+
+transform:rotate(360deg);
+
+}
+
+}

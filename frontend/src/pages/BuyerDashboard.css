@@ -1,0 +1,268 @@
+/*
+|--------------------------------------------------------------------------
+| Buyer Dashboard — custom visual styling
+|--------------------------------------------------------------------------
+| Builds on the app's existing CSS variables (styles/variables.css).
+*/
+
+.bd-hero {
+  background: linear-gradient(135deg, var(--primary-color), #7c3aed 60%, var(--secondary-color));
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.bd-hero::after {
+  content: "";
+  position: absolute;
+  right: -60px;
+  top: -60px;
+  width: 220px;
+  height: 220px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+}
+
+.bd-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 1;
+}
+
+.bd-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.bd-hero h2 {
+  margin: 0;
+  font-weight: 700;
+}
+
+.bd-role-badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.bd-hero-actions {
+  display: flex;
+  gap: 10px;
+  z-index: 1;
+}
+
+.bd-hero-actions .btn {
+  border-radius: 999px;
+  font-weight: 600;
+  padding: 8px 18px;
+}
+
+/* Stat cards */
+.bd-stat-card {
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  overflow: hidden;
+  position: relative;
+}
+
+.bd-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.bd-stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.bd-stat-value {
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.bd-stat-label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Tab navigation */
+.bd-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: var(--surface-color);
+  padding: 8px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.bd-tab-btn {
+  border: none;
+  background: transparent;
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition);
+  position: relative;
+}
+
+.bd-tab-btn:hover {
+  background: var(--background-color);
+  color: var(--text-primary);
+}
+
+.bd-tab-btn.active {
+  background: var(--primary-color);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
+}
+
+.bd-tab-badge {
+  background: var(--danger-color);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 1px 6px;
+  line-height: 1.4;
+}
+
+.bd-tab-btn.active .bd-tab-badge {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--primary-color);
+}
+
+/* Content panel */
+.bd-panel {
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Status badges */
+.bd-status {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+.bd-status-pending { background: #FEF3C7; color: #92400E; }
+.bd-status-shipped { background: #DBEAFE; color: #1E40AF; }
+.bd-status-delivered { background: #DCFCE7; color: #166534; }
+.bd-status-cancelled { background: #FEE2E2; color: #991B1B; }
+.bd-status-default { background: var(--background-color); color: var(--text-secondary); }
+
+/* Generic list-item card used in Wishlist/Addresses/Payments */
+.bd-item-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.bd-item-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Notifications */
+.bd-notification {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.bd-notification.unread {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+}
+
+.bd-notification-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+/* Empty state */
+.bd-empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--text-secondary);
+}
+
+.bd-empty svg {
+  font-size: 2.4rem;
+  color: var(--border-color);
+  margin-bottom: 10px;
+}
+
+/* Search / filter bar */
+.bd-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.bd-toolbar .form-control,
+.bd-toolbar .form-select {
+  border-radius: 999px;
+}
+
+/* Star rating input */
+.bd-star-input {
+  display: flex;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 1.4rem;
+}

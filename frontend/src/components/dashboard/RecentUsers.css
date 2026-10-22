@@ -1,0 +1,37 @@
+.recent-users{
+
+background:white;
+
+padding:25px;
+
+border-radius:15px;
+
+box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+}
+
+.recent-users table{
+
+width:100%;
+
+border-collapse:collapse;
+
+}
+
+.recent-users th{
+
+background:#2563EB;
+
+color:white;
+
+padding:14px;
+
+}
+
+.recent-users td{
+
+padding:14px;
+
+border-bottom:1px solid #eee;
+
+}

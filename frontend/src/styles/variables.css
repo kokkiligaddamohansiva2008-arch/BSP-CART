@@ -1,0 +1,56 @@
+:root {
+
+  /* ===========================
+     COLORS
+  =========================== */
+
+  --primary-color: #2563EB;
+  --primary-dark: #1E40AF;
+  --secondary-color: #F97316;
+
+  --success-color: #22C55E;
+  --warning-color: #FACC15;
+  --danger-color: #EF4444;
+
+  --background-color: #F8FAFC;
+  --surface-color: #FFFFFF;
+
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --border-color: #E5E7EB;
+
+  /* ===========================
+     SHADOWS
+  =========================== */
+
+  --shadow-sm: 0 2px 6px rgba(0,0,0,0.08);
+  --shadow-md: 0 8px 20px rgba(0,0,0,0.10);
+  --shadow-lg: 0 12px 30px rgba(0,0,0,0.15);
+
+  /* ===========================
+     BORDER RADIUS
+  =========================== */
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* ===========================
+     TRANSITION
+  =========================== */
+
+  --transition: all .3s ease;
+
+  /* ===========================
+     NAVBAR
+  =========================== */
+
+  --navbar-height: 70px;
+
+  /* ===========================
+     SIDEBAR
+  =========================== */
+
+  --sidebar-width: 260px;
+
+}

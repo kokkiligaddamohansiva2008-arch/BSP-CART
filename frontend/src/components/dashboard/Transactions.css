@@ -1,0 +1,39 @@
+.transactions{
+
+background:white;
+
+padding:25px;
+
+border-radius:15px;
+
+box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+margin-top:25px;
+
+}
+
+.transactions table{
+
+width:100%;
+
+border-collapse:collapse;
+
+}
+
+.transactions th{
+
+background:#2563EB;
+
+color:white;
+
+padding:14px;
+
+}
+
+.transactions td{
+
+padding:14px;
+
+border-bottom:1px solid #eee;
+
+}

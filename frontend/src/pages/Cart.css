@@ -1,0 +1,59 @@
+.cart-page { max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
+.cart-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
+.cart-head h1 { font-size: 1.8rem; font-weight: 700; color: #202a44; margin: 0; }
+.cart-head h1 span { font-size: 1rem; font-weight: 500; color: #68728b; }
+.cart-clear { background: none; border: 0; color: #b5533c; font-weight: 600; cursor: pointer; }
+.cart-clear:hover { text-decoration: underline; }
+
+.cart-layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
+
+.cart-ship { background: #fffdf9; border: 1px solid #e6dfd1; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+.cart-ship p { margin: 0 0 8px; font-size: .9rem; color: #202a44; font-weight: 500; }
+.cart-ship-bar { height: 8px; background: #efe8d9; border-radius: 99px; overflow: hidden; }
+.cart-ship-bar span { display: block; height: 100%; background: linear-gradient(90deg, #d9a441, #b5533c); border-radius: 99px; transition: width .35s ease; }
+
+.cart-line { display: grid; grid-template-columns: 96px 1fr auto auto; gap: 16px; align-items: center; background: #fff; border: 1px solid #ece6d9; border-radius: 14px; padding: 14px; margin-bottom: 12px; transition: box-shadow .2s; }
+.cart-line:hover { box-shadow: 0 6px 18px rgba(32, 42, 68, .08); }
+.cart-line-img { width: 96px; height: 96px; object-fit: cover; border-radius: 10px; background: #f6f1e7; }
+.cart-line-info h3 { font-size: 1rem; font-weight: 600; margin: 0 0 4px; color: #202a44; }
+.cart-line-price { font-weight: 600; color: #202a44; }
+.cart-line-low { display: inline-block; margin-top: 4px; font-size: .75rem; color: #b5533c; font-weight: 600; }
+.cart-line-remove { display: block; margin-top: 6px; background: none; border: 0; padding: 0; color: #b5533c; font-size: .85rem; cursor: pointer; }
+.cart-line-remove:hover { text-decoration: underline; }
+
+.cart-line-qty { display: inline-flex; align-items: center; border: 1px solid #d9d2c3; border-radius: 10px; overflow: hidden; }
+.cart-line-qty button { width: 36px; height: 36px; background: #faf6ef; border: 0; font-size: 1.1rem; cursor: pointer; }
+.cart-line-qty button:hover:not(:disabled) { background: #efe8d9; }
+.cart-line-qty button:disabled { opacity: .4; cursor: not-allowed; }
+.cart-line-qty span { min-width: 38px; text-align: center; font-weight: 600; }
+.cart-line-sub { text-align: right; min-width: 90px; }
+.cart-line-sub small { display: block; color: #68728b; font-size: .72rem; }
+.cart-line-sub strong { font-size: 1.05rem; color: #202a44; }
+
+.cart-summary { position: sticky; top: 96px; background: #fff; border: 1px solid #ece6d9; border-radius: 16px; padding: 22px; box-shadow: 0 8px 24px rgba(32, 42, 68, .06); }
+.cart-summary h2 { font-size: 1.15rem; font-weight: 700; margin: 0 0 14px; color: #202a44; }
+.cart-row { display: flex; justify-content: space-between; padding: 7px 0; color: #4a5470; font-size: .95rem; }
+.cart-save { color: #1f8a4c; font-weight: 600; }
+.cart-total { border-top: 1px dashed #d9d2c3; margin-top: 8px; padding-top: 14px; font-size: 1.15rem; font-weight: 700; color: #202a44; }
+
+.cart-btn { display: block; text-align: center; border-radius: 10px; padding: 13px 16px; font-weight: 700; margin-top: 12px; text-decoration: none; transition: transform .15s, box-shadow .15s, background .15s; }
+.cart-btn-primary { background: #202a44; color: #fff; }
+.cart-btn-primary:hover { background: #2d3a5e; transform: translateY(-1px); box-shadow: 0 6px 14px rgba(32, 42, 68, .25); color: #fff; }
+.cart-btn-ghost { border: 1px solid #d9d2c3; color: #202a44; background: #fff; }
+.cart-btn-ghost:hover { background: #faf6ef; }
+
+.cart-empty { text-align: center; padding-top: 60px; }
+.cart-empty img { width: 220px; max-width: 70%; margin: 0 auto 18px; }
+.cart-empty h1 { font-size: 1.6rem; font-weight: 700; color: #202a44; }
+.cart-empty p { color: #68728b; margin-bottom: 8px; }
+.cart-empty .cart-btn { display: inline-block; padding: 13px 32px; }
+
+@media (max-width: 900px) {
+  .cart-layout { grid-template-columns: 1fr; }
+  .cart-summary { position: static; }
+}
+@media (max-width: 560px) {
+  .cart-line { grid-template-columns: 72px 1fr; }
+  .cart-line-img { width: 72px; height: 72px; }
+  .cart-line-qty, .cart-line-sub { grid-column: 2; justify-self: start; text-align: left; }
+}
