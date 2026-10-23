@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap');
+
+.pd-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 32px 40px;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #202A44;
+}
+
+.pd-not-found {
+  max-width: 500px;
+  margin: 80px auto;
+  text-align: center;
+}
+
+.pd-breadcrumb {
+  font-size: 13px;
+  color: #6B7280;
+  margin-bottom: 18px;
+}
+.pd-breadcrumb a { color: #6B7280; text-decoration: none; }
+.pd-breadcrumb a:hover { color: #B5533C; }
+.pd-breadcrumb span { color: #202A44; font-weight: 500; }
+
+.pd-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) 260px;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .pd-main { grid-template-columns: 1fr; }
+}
+
+/* Gallery */
+.pd-gallery-main {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #F2EEE3;
+  border: 1px solid #EDE7D9;
+}
+.pd-gallery-main img { width: 100%; height: 340px; object-fit: cover; display: block; }
+.pd-deal-ribbon {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #B5533C;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.pd-gallery-thumbs { display: flex; gap: 8px; margin-top: 10px; }
+.pd-thumb {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+  width: 64px; height: 64px;
+}
+.pd-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pd-thumb.active { border-color: #D9A441; }
+
+/* Info */
+.pd-info h1 { font-family: 'Fraunces', serif; font-size: 24px; margin: 0 0 6px; }
+.pd-seller { font-size: 13.5px; color: #6B7280; margin: 0 0 10px; }
+
+.pd-rating-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.pd-stars { color: #D9A441; letter-spacing: 1px; }
+.pd-star { color: #E5E0D3; }
+.pd-star-full { color: #D9A441; }
+.pd-rating-value { font-weight: 700; font-size: 14px; }
+.pd-rating-count { font-size: 13px; color: #6B7280; }
+.pd-bestseller-badge {
+  background: #1E7A46; color: #fff; font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 4px;
+}
+
+.pd-price-block { background: #FAF6EF; border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+.pd-deal-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.pd-deal-tag { font-size: 12px; font-weight: 700; color: #B5533C; text-transform: uppercase; }
+.pd-price-main { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.pd-price { font-size: 28px; font-weight: 700; color: #202A44; }
+.pd-mrp { font-size: 15px; color: #9CA3AF; text-decoration: line-through; }
+.pd-discount { font-size: 14px; color: #1E7A46; font-weight: 700; }
+.pd-inclusive { font-size: 12px; color: #6B7280; margin: 4px 0 0; }
+
+.pd-highlights { margin: 0 0 12px; padding-left: 18px; font-size: 14px; color: #374151; }
+.pd-highlights li { margin-bottom: 4px; }
+
+.pd-stock { font-size: 13.5px; font-weight: 600; color: #1E7A46; margin-bottom: 12px; }
+.pd-stock.low { color: #B5533C; }
+
+.pd-qty-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.pd-qty-row select { padding: 6px 10px; border-radius: 6px; border: 1px solid #C9C2B3; }
+
+.pd-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+.pd-btn {
+  border: none; border-radius: 8px; padding: 11px 18px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: filter .15s ease;
+}
+.pd-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.pd-btn-primary { background: #D9A441; color: #202A44; }
+.pd-btn-primary:hover:not(:disabled) { filter: brightness(0.95); }
+.pd-btn-buy { background: #202A44; color: #FAF6EF; }
+.pd-btn-buy:hover:not(:disabled) { filter: brightness(1.15); }
+.pd-btn-wishlist { background: #fff; color: #B5533C; border: 1px solid #B5533C; }
+.pd-btn-wishlist.active { background: #B5533C; color: #fff; }
+
+.pd-description { font-size: 14px; color: #374151; line-height: 1.6; }
+
+/* Side panel */
+.pd-side { display: flex; flex-direction: column; gap: 16px; }
+.pd-card { background: #fff; border: 1px solid #EDE7D9; border-radius: 10px; padding: 14px 16px; }
+.pd-card h3 { font-size: 14px; margin: 0 0 10px; font-family: 'Fraunces', serif; }
+.pd-emi-tenures { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+.pd-emi-pill {
+  border: 1px solid #C9C2B3; background: #fff; border-radius: 999px; padding: 4px 10px;
+  font-size: 12.5px; cursor: pointer;
+}
+.pd-emi-pill.active { background: #202A44; color: #FAF6EF; border-color: #202A44; }
+.pd-emi-amount { font-size: 20px; font-weight: 700; margin: 0 0 4px; }
+.pd-emi-amount span { font-size: 12px; font-weight: 500; color: #6B7280; margin-left: 4px; }
+.pd-emi-note { font-size: 11.5px; color: #9CA3AF; margin: 0; }
+.pd-chart-wrap { margin: -6px 0 6px -8px; }
+
+/* Reviews */
+.pd-reviews, .pd-related { margin-top: 40px; }
+.pd-reviews h2, .pd-related h2 { font-family: 'Fraunces', serif; font-size: 20px; margin-bottom: 16px; }
+.pd-reviews-summary { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.pd-reviews-score { font-size: 34px; font-weight: 700; }
+.pd-reviews-list { display: flex; flex-direction: column; gap: 14px; }
+.pd-review { border-bottom: 1px solid #EDE7D9; padding-bottom: 12px; }
+.pd-review-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+.pd-review-name { font-weight: 600; font-size: 13.5px; }
+.pd-review-date { font-size: 12px; color: #9CA3AF; }
+.pd-review p { font-size: 13.5px; color: #374151; margin: 0; }
+
+/* Related grid */
+.pd-related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+.pd-related-card {
+  border: 1px solid #EDE7D9; border-radius: 10px; padding: 10px; text-decoration: none; color: #202A44;
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+.pd-related-card:hover { box-shadow: 0 8px 20px rgba(32,42,68,0.12); transform: translateY(-2px); color: #202A44; }
+.pd-related-card img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; margin-bottom: 6px; }
+.pd-related-name {
+  font-size: 13px; font-weight: 600; margin: 0 0 4px; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.pd-related-price-row { display: flex; gap: 6px; align-items: center; font-size: 13px; font-weight: 700; }
+.pd-related-discount { font-size: 11.5px; color: #1E7A46; font-weight: 600; }

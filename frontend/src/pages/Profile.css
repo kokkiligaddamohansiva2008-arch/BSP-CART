@@ -1,0 +1,230 @@
+/*
+|--------------------------------------------------------------------------
+| Profile / Account page — custom visual styling
+|--------------------------------------------------------------------------
+| Builds on the app's existing CSS variables (styles/variables.css).
+*/
+
+.pf-hero {
+  background: linear-gradient(135deg, var(--primary-color), #7c3aed 60%, var(--secondary-color));
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.pf-hero::after {
+  content: "";
+  position: absolute;
+  right: -60px;
+  top: -60px;
+  width: 220px;
+  height: 220px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+}
+
+.pf-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.pf-hero-info {
+  z-index: 1;
+}
+
+.pf-hero-info h2 {
+  margin: 0 0 4px;
+  font-weight: 700;
+}
+
+.pf-hero-info p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+.pf-role-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+/* --------------------------- Details grid --------------------------- */
+
+.pf-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.pf-detail-card {
+  background: var(--surface-color);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.pf-detail-card h6 {
+  margin: 0 0 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 600;
+}
+
+.pf-detail-card p {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+/* --------------------------- Section header --------------------------- */
+
+.pf-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.pf-section-header h3 {
+  margin: 0;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* --------------------------- Uploaded products grid --------------------------- */
+
+.pf-product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 18px;
+}
+
+.pf-product-card {
+  background: var(--surface-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.pf-product-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.pf-product-thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--background-color);
+}
+
+.pf-product-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pf-product-body {
+  padding: 12px 14px 14px;
+}
+
+.pf-product-body h5 {
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pf-product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
+.pf-product-meta .price {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.pf-product-meta .stock {
+  color: var(--text-secondary);
+}
+
+.pf-product-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.pf-product-actions button,
+.pf-product-actions a {
+  flex: 1;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.pf-product-actions .manage-btn {
+  background: #dbeafe;
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+.pf-product-actions .manage-btn:hover { background: #bfdbfe; }
+
+.pf-product-actions .delete-btn {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.pf-product-actions .delete-btn:hover { background: #fecaca; }
+
+/* --------------------------- Empty state --------------------------- */
+
+.pf-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: var(--surface-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-secondary);
+}

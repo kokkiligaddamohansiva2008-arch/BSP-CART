@@ -1,0 +1,44 @@
+.btn-custom{
+    padding:12px 25px;
+    border:none;
+    border-radius:8px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+}
+
+.btn-custom.primary{
+    background:#2563EB;
+    color:white;
+}
+
+.btn-custom.primary:hover{
+    background:#1E40AF;
+}
+
+.btn-custom.secondary{
+    background:#F97316;
+    color:white;
+}
+
+.btn-custom.secondary:hover{
+    background:#EA580C;
+}
+
+.btn-custom.danger{
+    background:#EF4444;
+    color:white;
+}
+
+.btn-custom.danger:hover{
+    background:#DC2626;
+}
+
+.btn-custom:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}

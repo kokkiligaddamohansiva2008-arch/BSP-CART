@@ -1,0 +1,14 @@
+﻿node_modules/
+dist/
+build/
+target/
+.env
+.env.*
+!.env.example
+*.log
+uploads/
+
+.metals/
+
+.metals/
+frontend.zip

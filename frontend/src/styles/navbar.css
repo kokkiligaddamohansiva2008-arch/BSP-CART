@@ -1,0 +1,744 @@
+/* =========================================================
+   BSP CART NAVBAR
+========================================================= */
+
+.navbar-custom {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  width: 100%;
+
+  height: 70px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+
+  z-index: 9999;
+}
+
+
+/* =========================================================
+   NAVBAR CONTAINER
+========================================================= */
+
+.navbar-container {
+  width: 100%;
+
+  height: 70px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo {
+  display: flex;
+
+  align-items: center;
+
+  flex-shrink: 0;
+
+  text-decoration: none;
+}
+
+.logo-img {
+  width: 90px;
+
+  height: auto;
+
+  display: block;
+
+  object-fit: contain;
+}
+
+
+/* =========================================================
+   DESKTOP SEARCH
+========================================================= */
+
+.search-box {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  flex: 1;
+
+  max-width: 600px;
+
+  height: 42px;
+
+  margin-left: 5px;
+}
+
+.search-box input {
+  width: 100%;
+
+  height: 42px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #d5d9df;
+
+  border-radius: 7px;
+
+  background: #f8f9fa;
+
+  outline: none;
+
+  padding: 0 90px 0 15px;
+
+  font-size: 14px;
+
+  color: #222;
+}
+
+.search-box input:focus {
+  background: #ffffff;
+
+  border-color: #2874f0;
+
+  box-shadow:
+    0 0 0 3px rgba(40, 116, 240, 0.1);
+}
+
+
+/* SEARCH BUTTON */
+
+.search-submit {
+  position: absolute;
+
+  top: 0;
+  right: 0;
+
+  width: 48px;
+  height: 42px;
+
+  border: none;
+
+  border-radius: 0 7px 7px 0;
+
+  background: #2874f0;
+
+  color: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  cursor: pointer;
+
+  font-size: 16px;
+}
+
+.search-submit:hover {
+  background: #1765d1;
+}
+
+
+/* CLEAR SEARCH */
+
+.search-clear {
+  position: absolute;
+
+  right: 50px;
+
+  top: 0;
+
+  width: 36px;
+  height: 42px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #777;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.search-clear:hover {
+  color: #222;
+}
+
+
+/* =========================================================
+   NAVIGATION LINKS
+========================================================= */
+
+.nav-links {
+  display: flex;
+
+  align-items: center;
+
+  gap: 3px;
+
+  list-style: none;
+
+  margin: 0;
+  padding: 0;
+
+  flex-shrink: 0;
+}
+
+.nav-links li {
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  min-height: 40px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  padding: 7px 10px;
+
+  border-radius: 6px;
+
+  color: #222;
+
+  text-decoration: none;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  white-space: nowrap;
+
+  transition: 0.2s ease;
+}
+
+.nav-links a:hover {
+  background: #f1f5ff;
+
+  color: #2874f0;
+}
+
+.nav-links a.active {
+  color: #2874f0;
+
+  background: #eef4ff;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   ICON LINKS
+========================================================= */
+
+.icon-link {
+  min-width: 42px;
+}
+
+.icon-link svg {
+  font-size: 18px;
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+.profile-link {
+  max-width: 145px;
+}
+
+.profile-link svg {
+  flex-shrink: 0;
+}
+
+.profile-link span {
+  max-width: 90px;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   MOBILE CART TEXT
+========================================================= */
+
+.mobile-only-text {
+  display: none;
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+.logout-btn {
+  min-height: 40px;
+
+  padding: 7px 13px;
+
+  border: none;
+
+  border-radius: 6px;
+
+  background: #dc3545;
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+}
+
+.logout-btn:hover {
+  background: #bb2d3b;
+}
+
+
+/* =========================================================
+   MOBILE MENU ICON
+========================================================= */
+
+.menu-icon {
+  display: none;
+
+  width: 42px;
+  height: 42px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: #f2f4f7;
+
+  color: #222;
+
+  align-items: center;
+
+  justify-content: center;
+
+  cursor: pointer;
+
+  font-size: 21px;
+
+  flex-shrink: 0;
+}
+
+.menu-icon:hover {
+  background: #e7eaf0;
+}
+
+
+/* =========================================================
+   MOBILE SEARCH
+========================================================= */
+
+.mobile-search-box {
+  display: none;
+}
+
+
+/* =========================================================
+   IMPORTANT CONTENT OFFSET
+========================================================= */
+
+/*
+   Navbar is position: fixed.
+   Therefore the page needs 70px space at the top.
+*/
+
+body {
+  margin: 0;
+
+  padding-top: 70px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1200px) {
+
+  .navbar-container {
+    gap: 10px;
+
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .logo-img {
+    width: 90px;
+  }
+
+  .search-box {
+    max-width: 440px;
+  }
+
+  .nav-links a {
+    padding-left: 7px;
+    padding-right: 7px;
+
+    font-size: 13px;
+  }
+
+  .logout-btn {
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+}
+
+
+/* =========================================================
+   SMALL DESKTOP / TABLET
+========================================================= */
+
+@media (max-width: 1050px) {
+
+  .logo-img {
+    width: 105px;
+  }
+
+  .search-box {
+    max-width: 350px;
+  }
+
+  .nav-links {
+    gap: 1px;
+  }
+
+  .nav-links a {
+    padding: 6px;
+
+    font-size: 12px;
+  }
+
+  .logout-btn {
+    font-size: 12px;
+
+    padding: 6px 8px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .navbar-custom {
+    height: 125px;
+  }
+
+
+  /* Top row */
+
+  .navbar-container {
+    height: 70px;
+
+    padding: 0 14px;
+
+    gap: 10px;
+  }
+
+
+  .logo-img {
+    width: 115px;
+  }
+
+
+  /* Desktop search disappears */
+
+  .search-box {
+    display: none;
+  }
+
+
+  /* Menu button */
+
+  .menu-icon {
+    display: flex;
+
+    margin-left: auto;
+  }
+
+
+  /* Navigation dropdown */
+
+  .nav-links {
+    position: absolute;
+
+    top: 70px;
+
+    right: 12px;
+
+    width: 290px;
+
+    max-height: calc(100vh - 145px);
+
+    overflow-y: auto;
+
+    display: none;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 2px;
+
+    padding: 10px;
+
+    background: #ffffff;
+
+    border: 1px solid #e1e5ea;
+
+    border-radius: 10px;
+
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.16);
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .nav-links li {
+    width: 100%;
+  }
+
+  .nav-links a {
+    width: 100%;
+
+    min-height: 44px;
+
+    box-sizing: border-box;
+
+    justify-content: flex-start;
+
+    padding: 10px 13px;
+
+    font-size: 15px;
+  }
+
+  .icon-link {
+    justify-content: flex-start;
+  }
+
+  .mobile-only-text {
+    display: inline;
+  }
+
+  .profile-link {
+    max-width: none;
+  }
+
+  .profile-link span {
+    max-width: none;
+  }
+
+  .logout-btn {
+    width: 100%;
+
+    min-height: 44px;
+
+    text-align: left;
+
+    padding-left: 13px;
+
+    font-size: 15px;
+  }
+
+
+  /* Mobile search */
+
+  .mobile-search-box {
+    position: absolute;
+
+    display: flex;
+
+    align-items: center;
+
+    left: 14px;
+    right: 14px;
+
+    bottom: 8px;
+
+    height: 40px;
+  }
+
+  .mobile-search-box input {
+    width: 100%;
+
+    height: 40px;
+
+    box-sizing: border-box;
+
+    padding: 0 82px 0 13px;
+
+    border: 1px solid #d5d9df;
+
+    border-radius: 7px;
+
+    outline: none;
+
+    background: #f8f9fa;
+
+    font-size: 14px;
+  }
+
+  .mobile-search-box input:focus {
+    background: white;
+
+    border-color: #2874f0;
+
+    box-shadow:
+      0 0 0 3px rgba(40, 116, 240, 0.1);
+  }
+
+  .mobile-search-submit {
+    position: absolute;
+
+    right: 0;
+
+    top: 0;
+
+    width: 45px;
+    height: 40px;
+
+    border: none;
+
+    border-radius: 0 7px 7px 0;
+
+    background: #2874f0;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+  }
+
+  .mobile-search-clear {
+    position: absolute;
+
+    right: 45px;
+
+    top: 0;
+
+    width: 35px;
+    height: 40px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #777;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    cursor: pointer;
+  }
+
+
+  /*
+     Fixed navbar = 125px content offset
+  */
+
+  body {
+    padding-top: 125px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+  .navbar-custom {
+    height: 135px;
+  }
+
+  .navbar-container {
+    height: 75px;
+
+    padding: 0 10px;
+  }
+
+  .logo-img {
+    width: 100px;
+  }
+
+  .menu-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-links {
+    top: 75px;
+
+    right: 10px;
+
+    width: calc(100vw - 20px);
+  }
+
+  .mobile-search-box {
+    left: 10px;
+    right: 10px;
+
+    bottom: 10px;
+  }
+
+  .mobile-search-box input {
+    font-size: 13px;
+  }
+
+  body {
+    padding-top: 135px;
+  }
+}

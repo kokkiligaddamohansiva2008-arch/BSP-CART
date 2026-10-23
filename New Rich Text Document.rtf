@@ -1,0 +1,441 @@
+# BSP CART - Buying & Selling of Products Cart
+
+![BSP CART Logo](docs/Screenshots/logo.png)
+
+## 📋 Abstract
+
+**BSP CART (Buying & Selling of Products Cart)** is a comprehensive web-based e-commerce platform designed to provide a secure, reliable, and user-friendly solution for buying and selling products online. The platform connects buyers and sellers through a single integrated website where users register using their mobile phone number, provide delivery addresses, browse products, manage orders, and complete purchases seamlessly.
+
+Inspired by Amazon, BSP CART delivers a convenient and efficient online shopping experience tailored for modern e-commerce needs.
+
+---
+
+## 🎯 Key Features
+
+### 1. **Admin Module**
+
+- Comprehensive user management (buyers, sellers, admins)
+- Product catalog oversight and validation
+- Seller account management and verification
+- Complaint resolution and dispute handling
+- Transaction monitoring and analytics
+- Platform security and access control
+
+### 2. **Seller Module**
+
+- Upload and manage product listings
+- Update product descriptions, prices, and quantities
+- Organize products by categories
+- Upload product images and media
+- Track inventory levels
+- Monitor sales and order fulfillment
+- Manage seller profile and settings
+
+### 3. **Buyer Module**
+
+- Browse and search product catalog
+- View detailed product information
+- Add items to shopping cart
+- Place and track orders
+- Manage delivery addresses
+- View order history
+- Customer profile management
+
+### 4. **Shopping Cart System**
+
+- Add products to cart with quantity selection
+- Remove items from cart
+- Update item quantities
+- Real-time cart total calculation
+- Persistent cart storage
+- Cart review before checkout
+
+### 5. **Secure Authentication**
+
+- Phone number-based registration and login
+- Secure password encryption
+- Session management
+- User role-based access control
+- Data protection and privacy compliance
+
+---
+
+## 🏗️ Technology Stack
+
+### Backend
+
+- **Framework**: Spring Boot (Java)
+- **Build Tool**: Maven
+- **Database**: MySQL
+- **ORM**: Spring Data JPA / Hibernate
+- **Security**: Spring Security with JWT tokens
+- **API**: RESTful Web Services
+
+### Frontend
+
+- **Framework**: React.js
+- **Build Tool**: Vite
+- **Styling**: CSS3 / Tailwind CSS
+- **HTTP Client**: Axios
+- **State Management**: React Context API / Redux (optional)
+- **Routing**: React Router
+
+### Database
+
+- **DBMS**: MySQL 8.0+
+- **Version Control**: Git/GitHub
+
+---
+
+## 📁 Project Structure
+
+```
+BSP-CART/
+├── backend/                           # Spring Boot Application
+│   ├── pom.xml                       # Maven Configuration
+│   ├── README.md                     # Backend Documentation
+│   └── src/
+│       ├── main/
+│       │   ├── java/
+│       │   │   ├── BspCartApplication.java
+│       │   │   └── com/bspcart/
+│       │   │       ├── config/       # Spring Configurations
+│       │   │       ├── controller/   # REST Controllers
+│       │   │       ├── dto/          # Data Transfer Objects
+│       │   │       ├── entity/       # JPA Entities
+│       │   │       ├── exception/    # Custom Exceptions
+│       │   │       ├── repository/   # JPA Repositories
+│       │   │       ├── security/     # Security Configurations
+│       │   │       └── service/      # Business Logic
+│       │   └── resources/
+│       │       ├── application.properties
+│       │       ├── static/           # Static Files
+│       │       └── uploads/          # File Uploads
+│       └── test/
+│           └── java/                 # Unit Tests
+│
+├── frontend/                          # React Application
+│   ├── package.json                  # NPM Dependencies
+│   ├── vite.config.js                # Vite Configuration
+│   ├── public/                       # Public Assets
+│   └── src/
+│       ├── App.jsx                   # Root Component
+│       ├── main.jsx                  # Entry Point
+│       ├── pages/                    # Page Components
+│       ├── components/               # Reusable Components
+│       ├── services/                 # API Services
+│       ├── context/                  # React Context
+│       ├── hooks/                    # Custom Hooks
+│       ├── assets/                   # Images & Icons
+│       └── utils/                    # Utility Functions
+│
+├── database/                          # Database Files
+│   ├── schema.sql                    # Database Tables
+│   ├── sample_data.sql               # Sample Data
+│   └── er_diagram.png                # Entity Relationship Diagram
+│
+├── docs/                              # Documentation
+│   └── Screenshots/                  # Application Screenshots
+│
+├── LICENSE                            # Project License
+└── README.md                          # This File
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Java Development Kit (JDK)**: 11 or higher
+- **Maven**: 3.6.0+
+- **Node.js**: 16.x or higher
+- **npm**: 8.x or higher
+- **MySQL**: 8.0 or higher
+- **Git**: Latest version
+
+### Backend Setup
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/yourusername/BSP-CART.git
+   cd BSP-CART/backend
+   ```
+
+2. **Configure Database**
+   - Update `src/main/resources/application.properties` with your MySQL credentials:
+     ```properties
+     spring.datasource.url=jdbc:mysql://localhost:3306/bspcart_db
+     spring.datasource.username=root
+     spring.datasource.password=your_password
+     spring.jpa.hibernate.ddl-auto=create-drop
+     ```
+
+3. **Create Database**
+
+   ```bash
+   mysql -u root -p < ../database/schema.sql
+   mysql -u root -p bspcart_db < ../database/sample_data.sql
+   ```
+
+4. **Build & Run**
+   ```bash
+   mvn clean install
+   mvn spring-boot:run
+   ```
+   Backend runs on: `http://localhost:8080`
+
+### Frontend Setup
+
+1. **Navigate to frontend directory**
+
+   ```bash
+   cd BSP-CART/frontend
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Configure API endpoint**
+   - Update your API base URL in `src/services/`:
+     ```javascript
+     const API_URL = "http://localhost:8080/api";
+     ```
+
+4. **Run development server**
+   ```bash
+   npm run dev
+   ```
+   Frontend runs on: `http://localhost:5173`
+
+---
+
+## 📚 Database Schema
+
+The application uses the following main entities:
+
+- **User**: Base user entity (Admin, Buyer, Seller)
+- **Admin**: Administrator with full platform access
+- **Buyer**: Customer who purchases products
+- **Seller**: Merchant who sells products
+- **Product**: Product information (name, price, description, image)
+- **Category**: Product classification
+- **Cart**: Shopping cart for buyers
+- **CartItem**: Individual items in cart
+- **Order**: Customer purchases
+- **OrderItem**: Items in completed orders
+- **Address**: Delivery addresses
+- **Transaction**: Payment records
+- **Complaints**: Dispute/complaint management
+
+For detailed schema, see: `database/er_diagram.png`
+
+---
+
+## 🔌 API Endpoints
+
+### Authentication
+
+```
+POST   /api/auth/register        - Register new user
+POST   /api/auth/login           - Login with phone & password
+POST   /api/auth/logout          - Logout user
+GET    /api/auth/profile         - Get current user profile
+```
+
+### Products
+
+```
+GET    /api/products             - Get all products
+GET    /api/products/{id}        - Get product details
+POST   /api/products             - Create product (Seller)
+PUT    /api/products/{id}        - Update product (Seller)
+DELETE /api/products/{id}        - Delete product (Seller)
+```
+
+### Shopping Cart
+
+```
+GET    /api/cart                 - Get user's cart
+POST   /api/cart/items           - Add item to cart
+PUT    /api/cart/items/{id}      - Update cart item
+DELETE /api/cart/items/{id}      - Remove item from cart
+DELETE /api/cart                 - Clear cart
+```
+
+### Orders
+
+```
+POST   /api/orders               - Place order
+GET    /api/orders               - Get user's orders
+GET    /api/orders/{id}          - Get order details
+PUT    /api/orders/{id}          - Update order status
+```
+
+### Users
+
+```
+GET    /api/users/{id}           - Get user profile
+PUT    /api/users/{id}           - Update user profile
+POST   /api/users/addresses      - Add delivery address
+GET    /api/users/addresses      - Get user addresses
+```
+
+### Admin
+
+```
+GET    /api/admin/users          - List all users
+GET    /api/admin/sellers        - List all sellers
+GET    /api/admin/transactions   - View transactions
+POST   /api/admin/complaints     - Manage complaints
+```
+
+---
+
+## 📖 Modules Documentation
+
+- **[Backend Documentation](backend/README.md)** - Detailed backend setup and API documentation
+- **[Database Documentation](database/README.md)** - Database schema and sample queries
+- **[Screenshots & UI](docs/Screenshots/)** - Application screenshots and UI mockups
+
+---
+
+## 🔐 Security Features
+
+- **Phone Number Authentication**: Secure login using phone numbers
+- **Password Encryption**: Bcrypt hashing for password security
+- **JWT Tokens**: Token-based session management
+- **Role-Based Access Control (RBAC)**: Different permissions for Admin, Seller, Buyer
+- **Input Validation**: Server-side validation of all inputs
+- **SQL Injection Protection**: Parameterized queries via JPA
+- **CORS Configuration**: Secure cross-origin requests
+
+---
+
+## 🎨 User Interface
+
+### Buyer Interface
+
+- Home page with featured products
+- Product search and filtering
+- Product detail pages
+- Shopping cart management
+- Checkout process
+- Order tracking
+- User profile & address management
+
+### Seller Interface
+
+- Dashboard with sales statistics
+- Product management (CRUD operations)
+- Inventory tracking
+- Order fulfillment management
+- Seller profile settings
+
+### Admin Interface
+
+- User management dashboard
+- Product moderation
+- Transaction monitoring
+- Complaint resolution center
+- Platform analytics
+
+---
+
+## 🔄 Data Flow
+
+```
+1. User Registration → Phone verification → Profile setup
+2. Buyer browses products → Adds to cart → Checkout
+3. Cart items → Payment processing → Order creation
+4. Order → Seller fulfillment → Delivery tracking
+5. Admin monitors → Manages disputes → Platform maintenance
+```
+
+---
+
+## 🚧 Future Enhancements
+
+- **Payment Gateway Integration**: Online payment processing (Stripe, PayPal, Razorpay)
+- **Order Tracking**: Real-time delivery status updates
+- **Customer Reviews**: Rating and feedback system
+- **AI Recommendations**: Smart product recommendations
+- **Multilingual Support**: Multiple language interface
+- **Mobile App**: Native iOS/Android applications
+- **Advanced Analytics**: Sales trends and user behavior
+- **Notification System**: Email and SMS alerts
+- **Wishlist Feature**: Save products for later
+- **Chat Support**: Real-time customer support
+
+---
+
+## 📊 Testing
+
+### Backend Tests
+
+```bash
+cd backend
+mvn test
+```
+
+### Frontend Tests
+
+```bash
+cd frontend
+npm test
+```
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👥 Authors
+
+**BSP CART Development Team**
+
+- Project Lead: [Your Name]
+- Backend Developer: [Developer Name]
+- Frontend Developer: [Developer Name]
+- Database Admin: [Admin Name]
+
+---
+
+## 📧 Support & Contact
+
+For questions, issues, or suggestions:
+
+- **Email**: support@bspcart.com
+- **GitHub Issues**: [Report Bug](https://github.com/yourusername/BSP-CART/issues)
+- **Documentation**: [Visit Wiki](https://github.com/yourusername/BSP-CART/wiki)
+
+---
+
+## 🙏 Acknowledgments
+
+- Inspired by Amazon's e-commerce model
+- Built with modern web technologies
+- Community contributions and feedback
+
+---
+
+**Made with ❤️ for the e-commerce community**
+
+Last Updated: July 13, 2026

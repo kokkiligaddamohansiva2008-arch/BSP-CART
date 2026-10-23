@@ -1,0 +1,347 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+@import "./variables.css";
+
+/* ===============================
+   RESET
+================================ */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    font-family:'Poppins',sans-serif;
+
+    background:var(--background-color);
+
+    color:var(--text-primary);
+
+    overflow-x:hidden;
+
+}
+
+/* ===============================
+   LINKS
+================================ */
+
+a{
+
+    text-decoration:none;
+
+    color:inherit;
+
+}
+
+/* ===============================
+   IMAGES
+================================ */
+
+img{
+
+    width:100%;
+
+    display:block;
+
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+
+button{
+
+    cursor:pointer;
+
+    border:none;
+
+    outline:none;
+
+    transition:var(--transition);
+
+}
+
+/* ===============================
+   INPUTS
+================================ */
+
+input,
+textarea,
+select{
+
+    width:100%;
+
+    padding:12px 15px;
+
+    border:1px solid var(--border-color);
+
+    border-radius:var(--radius-sm);
+
+    font-size:15px;
+
+    transition:var(--transition);
+
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+
+    outline:none;
+
+    border-color:var(--primary-color);
+
+    box-shadow:0 0 10px rgba(37,99,235,.2);
+
+}
+
+/* ===============================
+   CONTAINER
+================================ */
+
+.container{
+
+    width:90%;
+
+    max-width:1300px;
+
+    margin:auto;
+
+}
+
+/* ===============================
+   SECTION
+================================ */
+
+.section{
+
+    padding:70px 0;
+
+}
+
+/* ===============================
+   HEADINGS
+================================ */
+
+h1{
+
+    font-size:3rem;
+
+    font-weight:700;
+
+}
+
+h2{
+
+    font-size:2.2rem;
+
+    font-weight:600;
+
+}
+
+h3{
+
+    font-size:1.5rem;
+
+}
+
+p{
+
+    color:var(--text-secondary);
+
+    line-height:1.7;
+
+}
+
+/* ===============================
+   CARDS
+================================ */
+
+.card{
+
+    background:var(--surface-color);
+
+    border-radius:var(--radius-md);
+
+    box-shadow:var(--shadow-md);
+
+    padding:20px;
+
+    transition:var(--transition);
+
+}
+
+.card:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:var(--shadow-lg);
+
+}
+
+/* ===============================
+   PRIMARY BUTTON
+================================ */
+
+.btn-primary{
+
+    background:var(--primary-color);
+
+    color:#fff;
+
+    padding:12px 28px;
+
+    border-radius:var(--radius-sm);
+
+    font-weight:600;
+
+}
+
+.btn-primary:hover{
+
+    background:var(--primary-dark);
+
+}
+
+/* ===============================
+   SECONDARY BUTTON
+================================ */
+
+.btn-secondary{
+
+    background:var(--secondary-color);
+
+    color:white;
+
+    padding:12px 28px;
+
+    border-radius:var(--radius-sm);
+
+}
+
+.btn-secondary:hover{
+
+    transform:translateY(-2px);
+
+}
+
+/* ===============================
+   FLEX
+================================ */
+
+.flex{
+
+    display:flex;
+
+}
+
+.flex-center{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+/* ===============================
+   GRID
+================================ */
+
+.grid{
+
+    display:grid;
+
+    gap:20px;
+
+}
+
+/* ===============================
+   SCROLLBAR
+================================ */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:var(--primary-color);
+
+    border-radius:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#f2f2f2;
+
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media(max-width:992px){
+
+    h1{
+
+        font-size:2.4rem;
+
+    }
+
+    h2{
+
+        font-size:1.8rem;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .container{
+
+        width:95%;
+
+    }
+
+    h1{
+
+        font-size:2rem;
+
+    }
+
+    h2{
+
+        font-size:1.6rem;
+
+    }
+
+}
+
+@media(max-width:480px){
+
+    h1{
+
+        font-size:1.6rem;
+
+    }
+
+    h2{
+
+        font-size:1.3rem;
+
+    }
+
+}

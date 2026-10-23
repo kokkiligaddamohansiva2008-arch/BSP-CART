@@ -1,0 +1,65 @@
+/* =====================================================================
+   BSP CART — global theme polish (loaded last, safe to remove)
+   Keeps the existing "bazaar-ledger" palette and adds consistent
+   focus states, motion, badges and accessibility defaults.
+===================================================================== */
+:root {
+  --bsp-paper: #faf6ef;
+  --bsp-ink: #202a44;
+  --bsp-marigold: #d9a441;
+  --bsp-rust: #b5533c;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bsp-paper);
+  color: var(--bsp-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { background: rgba(217, 164, 65, .35); }
+
+/* Visible keyboard focus everywhere */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid rgba(217, 164, 65, .75);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Smooth, consistent interactions */
+button, .btn, a { transition: background-color .15s, color .15s, transform .15s, box-shadow .15s, border-color .15s; }
+button:not(:disabled):active { transform: translateY(1px); }
+button:disabled { cursor: not-allowed; }
+
+/* Images never overflow and fade in */
+img { max-width: 100%; }
+
+/* Cart badge in the navbar */
+.icon-link { position: relative; }
+.cart-badge {
+  position: absolute; top: -6px; right: -10px;
+  min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 99px; background: var(--bsp-rust); color: #fff;
+  font-size: 11px; font-weight: 700; line-height: 18px; text-align: center;
+  box-shadow: 0 0 0 2px #fff;
+  animation: badgePop .25s ease;
+}
+@keyframes badgePop { from { transform: scale(.4); } to { transform: scale(1); } }
+
+/* Sticky navbar shadow for depth */
+.navbar-custom { box-shadow: 0 2px 14px rgba(32, 42, 68, .08); }
+
+/* Toasts (SweetAlert2) match the brand */
+.swal2-popup { border-radius: 16px !important; font-family: "Poppins", sans-serif !important; }
+.swal2-styled.swal2-confirm { background: var(--bsp-ink) !important; border-radius: 10px !important; }
+.swal2-styled.swal2-cancel { border-radius: 10px !important; }
+
+/* Slim branded scrollbar */
+* { scrollbar-width: thin; scrollbar-color: var(--bsp-marigold) transparent; }
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
