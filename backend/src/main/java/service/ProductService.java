@@ -2,289 +2,83 @@ package com.bspcart.service;
 
 import com.bspcart.dto.ProductRequest;
 import com.bspcart.dto.ProductResponse;
-import com.bspcart.entity.Category;
 import com.bspcart.entity.Product;
-import com.bspcart.entity.Seller;
-import com.bspcart.repository.CategoryRepository;
 import com.bspcart.repository.ProductRepository;
-import com.bspcart.repository.SellerRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-
 @Service
 public class ProductService {
 
-    private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
-    private final SellerRepository sellerRepository;
+    private final ProductRepository products;
 
-    public ProductService(
-            ProductRepository productRepository,
-            CategoryRepository categoryRepository,
-            SellerRepository sellerRepository) {
-
-        this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
-        this.sellerRepository = sellerRepository;
+    public ProductService(ProductRepository products) {
+        this.products = products;
     }
 
-    // ---------- PUBLIC ----------
+    // ---------- public ----------
 
-    public List<ProductResponse> getProducts(
-            String category,
-            String query) {
-
-        List<Product> products;
-
-        String cleanQuery = query == null ? "" : query.trim();
-        String cleanCategory = category == null ? "" : category.trim();
-
-        if (!cleanQuery.isBlank()) {
-
-            products = productRepository
-                    .findByProductNameContainingIgnoreCase(cleanQuery);
-
-        } else if (!cleanCategory.isBlank()) {
-
-            Category categoryEntity =
-                    categoryRepository
-                            .findByCategoryName(cleanCategory)
-                            .orElse(null);
-
-            if (categoryEntity == null) {
-                return List.of();
-            }
-
-            products = productRepository
-                    .findByCategoryAndAvailableTrue(categoryEntity);
-
-        } else {
-
-            products = productRepository
-                    .findByAvailableTrue();
-        }
-
-        return products.stream()
-                .map(this::toResponse)
-                .toList();
+    public List<ProductResponse> getProducts(String category, String query) {
+        String c = category == null ? "" : category.trim();
+        String q = query == null ? "" : query.trim();
+        return products.search(c, q).stream().map(ProductResponse::of).toList();
     }
 
     public ProductResponse getProductById(Long id) {
-
-        Product product = productRepository
-                .findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                NOT_FOUND,
-                                "Product not found"
-                        ));
-
-        return toResponse(product);
+        return ProductResponse.of(find(id));
     }
 
-    // ---------- SELLER ----------
+    // ---------- seller / admin ----------
 
     public List<ProductResponse> getSellerProducts(Long sellerId) {
-
-        Seller seller = sellerRepository
-                .findById(sellerId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                NOT_FOUND,
-                                "Seller not found"
-                        ));
-
-        return productRepository
-                .findBySeller(seller)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        return products.findBySellerId(sellerId).stream().map(ProductResponse::of).toList();
     }
 
-    public ProductResponse createProduct(
-            ProductRequest request,
-            Long sellerId) {
-
-        Seller seller = sellerRepository
-                .findById(sellerId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                NOT_FOUND,
-                                "Seller not found"
-                        ));
-
-        Product product = new Product();
-
-        product.setSeller(seller);
-
-        applyRequest(product, request);
-
-        return toResponse(
-                productRepository.save(product)
-        );
+    public ProductResponse createProduct(ProductRequest request, Long sellerId) {
+        Product p = new Product();
+        p.setSellerId(sellerId);
+        apply(p, request);
+        return ProductResponse.of(products.save(p));
     }
 
-    public ProductResponse updateProduct(
-            Long productId,
-            ProductRequest request,
-            Long sellerId,
-            boolean admin) {
-
-        Product product = productRepository
-                .findById(productId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                NOT_FOUND,
-                                "Product not found"
-                        ));
-
-        if (!admin &&
-                (product.getSeller() == null ||
-                 !product.getSeller().getId().equals(sellerId))) {
-
-            throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.FORBIDDEN,
-                    "This is not your product"
-            );
-        }
-
-        applyRequest(product, request);
-
-        return toResponse(
-                productRepository.save(product)
-        );
+    public ProductResponse updateProduct(Long productId, ProductRequest request, Long sellerId, boolean admin) {
+        Product p = owned(productId, sellerId, admin);
+        apply(p, request);
+        return ProductResponse.of(products.save(p));
     }
 
-    public void deleteProduct(
-            Long productId,
-            Long sellerId,
-            boolean admin) {
-
-        Product product = productRepository
-                .findById(productId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                NOT_FOUND,
-                                "Product not found"
-                        ));
-
-        if (!admin &&
-                (product.getSeller() == null ||
-                 !product.getSeller().getId().equals(sellerId))) {
-
-            throw new ResponseStatusException(
-                    org.springframework.http.HttpStatus.FORBIDDEN,
-                    "This is not your product"
-            );
-        }
-
-        productRepository.delete(product);
+    public void deleteProduct(Long productId, Long sellerId, boolean admin) {
+        products.delete(owned(productId, sellerId, admin));
     }
 
-    // ---------- HELPERS ----------
+    // ---------- helpers ----------
 
-    private void applyRequest(
-            Product product,
-            ProductRequest request) {
-
-        product.setProductName(
-                request.productName().trim()
-        );
-
-        product.setDescription(
-                request.description()
-        );
-
-        product.setPrice(
-                request.price()
-        );
-
-        product.setQuantity(
-                request.quantity()
-        );
-
-        product.setImageUrl(
-                request.imageUrl()
-        );
-
-        product.setBrand(
-                request.brand()
-        );
-
-        product.setAvailable(
-                request.available() == null
-                        ? true
-                        : request.available()
-        );
-
-        if (request.categoryId() != null) {
-
-            Category category =
-                    categoryRepository
-                            .findById(request.categoryId())
-                            .orElseThrow(() ->
-                                    new ResponseStatusException(
-                                            NOT_FOUND,
-                                            "Category not found"
-                                    ));
-
-            product.setCategory(category);
-
-        } else {
-
-            product.setCategory(null);
-        }
+    private Product find(Long id) {
+        return products.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
     }
 
-    private ProductResponse toResponse(Product product) {
-
-        ProductResponse response =
-                new ProductResponse();
-
-        response.setId(product.getId());
-        response.setProductName(product.getProductName());
-        response.setDescription(product.getDescription());
-        response.setPrice(product.getPrice());
-        response.setQuantity(product.getQuantity());
-        response.setBrand(product.getBrand());
-        response.setImageUrl(product.getImageUrl());
-        response.setAvailable(product.getAvailable());
-        response.setCreatedAt(product.getCreatedAt());
-
-        if (product.getCategory() != null) {
-
-            response.setCategoryId(
-                    product.getCategory().getId()
-            );
-
-            response.setCategoryName(
-                    product.getCategory().getCategoryName()
-            );
+    private Product owned(Long productId, Long sellerId, boolean admin) {
+        Product p = find(productId);
+        if (!admin && !p.getSellerId().equals(sellerId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This is not your product");
         }
+        return p;
+    }
 
-        if (product.getSeller() != null) {
-
-            response.setSellerId(
-                    product.getSeller().getId()
-            );
-
-            response.setSellerName(
-                    product.getSeller().getShopName()
-            );
-
-            if (response.getSellerName() == null ||
-                    response.getSellerName().isBlank()) {
-
-                response.setSellerName(
-                        product.getSeller().getFullName()
-                );
-            }
+    private void apply(Product p, ProductRequest r) {
+        p.setName(r.name().trim());
+        p.setDescription(r.description());
+        p.setPrice(r.price());
+        p.setMrp(r.mrp() != null ? r.mrp() : r.price());
+        p.setStock(r.stock() != null ? r.stock() : 0);
+        p.setCategory(r.category());
+        p.getImages().clear();
+        if (r.images() != null) {
+            p.getImages().addAll(r.images());
         }
-
-        return response;
     }
 }

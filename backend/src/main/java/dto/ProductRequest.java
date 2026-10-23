@@ -7,12 +7,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+/** Body of POST/PUT /api/seller/products. Field names match the Product entity and the React app. */
 public record ProductRequest(
 
         @NotBlank
         @Size(max = 255)
-        String productName,
+        String name,
 
         @Size(max = 3000)
         String description,
@@ -21,18 +23,19 @@ public record ProductRequest(
         @DecimalMin("0.0")
         BigDecimal price,
 
-        @NotNull
+        /** Maximum retail price; defaults to price when omitted. */
+        @DecimalMin("0.0")
+        BigDecimal mrp,
+
+        /** Defaults to 0 when omitted. */
         @Min(0)
-        Integer quantity,
+        Integer stock,
 
+        /** grocery, electronics, fashion, home */
         @Size(max = 255)
-        String imageUrl,
+        String category,
 
-        @Size(max = 255)
-        String brand,
-
-        Boolean available,
-
-        Long categoryId
+        /** Image URLs (first one is the main photo). */
+        List<@Size(max = 2000) String> images
 ) {
 }
