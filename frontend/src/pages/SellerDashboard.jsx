@@ -439,7 +439,7 @@ const SellerDashboard = () => {
 
         <div className="sd-search-box">
           <FaSearch />
-          <input
+          <input id="sd-my-product-search" name="my-product-search"
             type="text"
             placeholder="Search your products..."
             value={search}
@@ -511,7 +511,7 @@ const SellerDashboard = () => {
         <form className="sd-form" onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">Product Name</label>
-            <input
+            <input id="sd-name"
               type="text"
               className="form-control"
               name="name"
@@ -524,7 +524,7 @@ const SellerDashboard = () => {
           <div className="row">
             <div className="col-md-6 mb-3">
               <label className="form-label">Category</label>
-              <select
+              <select id="sd-category"
                 className="form-select"
                 name="category"
                 value={form.category}
@@ -540,7 +540,7 @@ const SellerDashboard = () => {
 
             <div className="col-md-6 mb-3">
               <label className="form-label">Stock</label>
-              <input
+              <input id="sd-stock"
                 type="number"
                 min="0"
                 className="form-control"
@@ -555,7 +555,7 @@ const SellerDashboard = () => {
           <div className="row">
             <div className="col-md-6 mb-3">
               <label className="form-label">Price (₹)</label>
-              <input
+              <input id="sd-price"
                 type="number"
                 min="1"
                 className="form-control"
@@ -568,7 +568,7 @@ const SellerDashboard = () => {
 
             <div className="col-md-6 mb-3">
               <label className="form-label">MRP (₹, optional)</label>
-              <input
+              <input id="sd-mrp"
                 type="number"
                 min="0"
                 className="form-control"
@@ -582,7 +582,7 @@ const SellerDashboard = () => {
 
           <div className="mb-3">
             <label className="form-label">Description</label>
-            <textarea
+            <textarea id="sd-description"
               className="form-control"
               name="description"
               rows={3}
@@ -599,7 +599,7 @@ const SellerDashboard = () => {
             <div className={`sd-image-dropzone ${images.length >= MAX_GALLERY_IMAGES ? "disabled" : ""}`}>
               <FaImages className="mb-1" style={{ fontSize: 20 }} />
               <div>Click or drop images here</div>
-              <input
+              <input id="sd-product-images" name="product-images"
                 type="file"
                 accept="image/*"
                 multiple
@@ -672,7 +672,7 @@ const SellerDashboard = () => {
                 </div>
 
                 <div className="sd-bulk-grid">
-                  <input
+                  <input id={`bulk-name-${row.key}`} name={`bulk-name-${row.key}`}
                     type="text"
                     className="form-control sd-bulk-name"
                     placeholder="Product name"
@@ -680,7 +680,7 @@ const SellerDashboard = () => {
                     onChange={(e) => updateRow(row.key, "name", e.target.value)}
                   />
 
-                  <select
+                  <select id={`bulk-category-${row.key}`} name={`bulk-category-${row.key}`}
                     className="form-select"
                     value={row.category}
                     onChange={(e) => updateRow(row.key, "category", e.target.value)}
@@ -692,7 +692,7 @@ const SellerDashboard = () => {
                     ))}
                   </select>
 
-                  <input
+                  <input id={`bulk-price-${row.key}`} name={`bulk-price-${row.key}`}
                     type="number"
                     min="1"
                     className="form-control"
@@ -701,7 +701,7 @@ const SellerDashboard = () => {
                     onChange={(e) => updateRow(row.key, "price", e.target.value)}
                   />
 
-                  <input
+                  <input id={`bulk-mrp-${row.key}`} name={`bulk-mrp-${row.key}`}
                     type="number"
                     min="0"
                     className="form-control"
@@ -710,7 +710,7 @@ const SellerDashboard = () => {
                     onChange={(e) => updateRow(row.key, "mrp", e.target.value)}
                   />
 
-                  <input
+                  <input id={`bulk-stock-${row.key}`} name={`bulk-stock-${row.key}`}
                     type="number"
                     min="0"
                     className="form-control"
@@ -720,7 +720,7 @@ const SellerDashboard = () => {
                   />
                 </div>
 
-                <input
+                <input id={`bulk-description-${row.key}`} name={`bulk-description-${row.key}`}
                   type="text"
                   className="form-control mt-2"
                   placeholder="Short description (optional)"
@@ -733,7 +733,7 @@ const SellerDashboard = () => {
                     className={`sd-bulk-pick ${row.images.length >= MAX_GALLERY_IMAGES ? "disabled" : ""}`}
                   >
                     <FaImages /> Add images ({row.images.length}/{MAX_GALLERY_IMAGES})
-                    <input
+                    <input id={`bulk-images-${row.key}`} name={`bulk-images-${row.key}`}
                       type="file"
                       accept="image/*"
                       multiple

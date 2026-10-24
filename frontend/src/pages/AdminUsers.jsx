@@ -54,8 +54,8 @@ export default function AdminUsers() {
       <div className="dashboard-main">
         <DashboardHeader title="Users" subtitle="Search, change roles, remove accounts" />
         <div className="adm-bar">
-          <input placeholder="Search username or name" value={q} onChange={(e) => setQ(e.target.value)} />
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
+          <input id="admusers-user-search" name="user-search" placeholder="Search username or name" value={q} onChange={(e) => setQ(e.target.value)} />
+          <select id="admusers-role-filter" name="role-filter" value={role} onChange={(e) => setRole(e.target.value)}>
             <option value="">All roles</option>
             {ROLE_LIST.map((r) => <option key={r}>{r}</option>)}
           </select>
@@ -73,7 +73,7 @@ export default function AdminUsers() {
                     <td>{u.username}</td>
                     <td>{u.name}</td>
                     <td>
-                      <select
+                      <select id={`role-${u.id}`} name={`role-${u.id}`}
                         className="adm-select" value={u.role}
                         onChange={(e) => run(() => setUserRole(u.id, e.target.value), `${u.name} is now ${e.target.value}`)}
                       >

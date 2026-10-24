@@ -8,7 +8,7 @@
   min-height: 100vh;
   background: #faf6ef;
   color: #202a44;
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: var(--font-body);
   overflow-x: hidden;
 }
 
@@ -89,7 +89,7 @@ a {
 
   border-radius: 8px;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 19px;
   font-weight: 800;
 }
@@ -101,7 +101,7 @@ a {
 }
 
 .brand-name {
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 21px;
   font-weight: 700;
 }
@@ -312,7 +312,7 @@ a {
 .hero-copy h1 {
   margin: 0 0 20px;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: clamp(44px, 6vw, 78px);
   line-height: 0.98;
@@ -417,7 +417,7 @@ a {
 .hero-offer-big {
   margin: 17px 0;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: 21px;
 }
@@ -539,7 +539,7 @@ a {
 .category-section-heading h2 {
   margin: 5px 0 5px;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: 31px;
 }
@@ -816,7 +816,7 @@ a {
 
   margin: 9px 0;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: 25px;
 }
@@ -1168,7 +1168,7 @@ a {
 .payment-card h3 {
   margin: 6px 0;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: 21px;
 }
@@ -1249,7 +1249,7 @@ a {
 .under-nine-section h2 {
   margin: 7px 0;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: 38px;
 }
@@ -1292,7 +1292,7 @@ a {
   background: #d9a441;
   color: #202a44;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
   font-size: 37px;
   font-weight: 700;
 }
@@ -1366,7 +1366,7 @@ a {
 .festival-copy h2 {
   margin: 10px 0 15px;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: 49px;
   line-height: 1;
@@ -1415,7 +1415,7 @@ a {
 }
 
 .festival-discount strong {
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   color: #f4d16c;
 
@@ -1536,7 +1536,7 @@ a {
 .empty-state h3 {
   color: #202a44;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: 25px;
 }
@@ -1594,7 +1594,7 @@ a {
 .seller-cta h2 {
   margin: 5px 0;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: 29px;
 }
@@ -1645,7 +1645,7 @@ a {
 .newsletter h2 {
   margin: 7px 0;
 
-  font-family: "Fraunces", serif;
+  font-family: var(--font-display);
 
   font-size: 31px;
 }

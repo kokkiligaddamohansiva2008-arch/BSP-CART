@@ -4,7 +4,7 @@ function DashboardCard({
   title,
   value,
   icon,
-  color = "#2563EB",
+  color = "#202a44",
 }) {
   return (
     <div className="dashboard-card">

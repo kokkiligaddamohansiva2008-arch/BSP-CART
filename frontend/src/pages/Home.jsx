@@ -344,7 +344,7 @@ const wishlistCount = wishlist.length;
             );
           }}
         >
-          <input
+          <input id="home-search-for-products" name="search-for-products"
             type="search"
             className="search-input"
             placeholder="Search for products, brands and categories..."

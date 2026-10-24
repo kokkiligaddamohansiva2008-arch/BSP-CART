@@ -9,7 +9,7 @@
 
   color: #ffffff;
 
-  background: #111827;
+  background: #141b30;
 }
 
 
@@ -18,7 +18,7 @@
 ========================================================= */
 
 .footer-main {
-  background: #111827;
+  background: #141b30;
 
   padding: 60px 0 35px;
 }
@@ -118,7 +118,7 @@
 
   color: #ffffff;
 
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
 
   font-size: 27px;
 }
@@ -161,7 +161,7 @@
 
   border-radius: 50%;
 
-  background: #2563eb;
+  background: #202a44;
 
   color: #ffffff;
 
@@ -175,7 +175,7 @@
 }
 
 .footer-socials a:hover {
-  background: #1d4ed8;
+  background: #141b30;
 
   color: #ffffff;
 
@@ -257,7 +257,7 @@
 
   background: #ffffff;
 
-  color: #111827;
+  color: #141b30;
 
   font-size: 14px;
 }

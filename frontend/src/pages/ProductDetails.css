@@ -4,7 +4,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px 32px 40px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-body);
   color: #202A44;
 }
 
@@ -68,7 +68,7 @@
 .pd-thumb.active { border-color: #D9A441; }
 
 /* Info */
-.pd-info h1 { font-family: 'Fraunces', serif; font-size: 24px; margin: 0 0 6px; }
+.pd-info h1 { font-family: var(--font-display); font-size: 24px; margin: 0 0 6px; }
 .pd-seller { font-size: 13.5px; color: #6B7280; margin: 0 0 10px; }
 
 .pd-rating-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
@@ -118,7 +118,7 @@
 /* Side panel */
 .pd-side { display: flex; flex-direction: column; gap: 16px; }
 .pd-card { background: #fff; border: 1px solid #EDE7D9; border-radius: 10px; padding: 14px 16px; }
-.pd-card h3 { font-size: 14px; margin: 0 0 10px; font-family: 'Fraunces', serif; }
+.pd-card h3 { font-size: 14px; margin: 0 0 10px; font-family: var(--font-display); }
 .pd-emi-tenures { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
 .pd-emi-pill {
   border: 1px solid #C9C2B3; background: #fff; border-radius: 999px; padding: 4px 10px;
@@ -132,7 +132,7 @@
 
 /* Reviews */
 .pd-reviews, .pd-related { margin-top: 40px; }
-.pd-reviews h2, .pd-related h2 { font-family: 'Fraunces', serif; font-size: 20px; margin-bottom: 16px; }
+.pd-reviews h2, .pd-related h2 { font-family: var(--font-display); font-size: 20px; margin-bottom: 16px; }
 .pd-reviews-summary { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
 .pd-reviews-score { font-size: 34px; font-weight: 700; }
 .pd-reviews-list { display: flex; flex-direction: column; gap: 14px; }

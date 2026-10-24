@@ -201,7 +201,7 @@ export default function ProductDetails() {
 
           <div className="pd-qty-row">
             <label htmlFor="pd-qty">Qty</label>
-            <select
+            <select name="pd-qty"
               id="pd-qty"
               value={quantity}
               onChange={(e) => setQuantity(Number(e.target.value))}

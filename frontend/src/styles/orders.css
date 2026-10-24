@@ -15,9 +15,9 @@
 .orders-hero {
   background: linear-gradient(
     135deg,
-    #1d4ed8,
-    #2563eb,
-    #3b82f6
+    #141b30,
+    #202a44,
+    #2b375a
   );
 
   color: white;
@@ -131,13 +131,13 @@
 }
 
 .stat-icon.blue {
-  background: #eff6ff;
-  color: #2563eb;
+  background: #f4f1ea;
+  color: #202a44;
 }
 
 .stat-icon.orange {
   background: #fff7ed;
-  color: #f97316;
+  color: #b5533c;
 }
 
 .stat-icon.purple {
@@ -254,14 +254,14 @@
 }
 
 .status-filters button:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  border-color: #202a44;
+  color: #202a44;
 }
 
 .status-filters button.active {
-  background: #2563eb;
+  background: #202a44;
   color: white;
-  border-color: #2563eb;
+  border-color: #202a44;
 }
 
 /* =========================================================
@@ -298,7 +298,7 @@
 
   background: transparent;
 
-  color: #2563eb;
+  color: #202a44;
 
   cursor: pointer;
 
@@ -413,12 +413,12 @@
 
 .order-status.processing {
   background: #fff7ed;
-  color: #ea580c;
+  color: #b5533c;
 }
 
 .order-status.shipped {
-  background: #eff6ff;
-  color: #2563eb;
+  background: #f4f1ea;
+  color: #202a44;
 }
 
 .order-status.cancelled {
@@ -539,7 +539,7 @@
 .progress-line-filled {
   height: 100%;
 
-  background: #2563eb;
+  background: #202a44;
 
   transition: width 0.3s ease;
 }
@@ -582,14 +582,14 @@
 }
 
 .progress-step.completed {
-  color: #2563eb;
+  color: #202a44;
 
   font-weight: 600;
 }
 
 .progress-step.completed
 .progress-icon {
-  background: #2563eb;
+  background: #202a44;
 
   color: white;
 }
@@ -666,15 +666,15 @@
 }
 
 .primary-action {
-  border: 1px solid #2563eb;
+  border: 1px solid #202a44;
 
-  background: #2563eb;
+  background: #202a44;
 
   color: white;
 }
 
 .primary-action:hover {
-  background: #1d4ed8;
+  background: #141b30;
 }
 
 .secondary-action {
@@ -686,9 +686,9 @@
 }
 
 .secondary-action:hover {
-  border-color: #2563eb;
+  border-color: #202a44;
 
-  color: #2563eb;
+  color: #202a44;
 }
 
 .cancel-action {
@@ -731,9 +731,9 @@
 
   border-radius: 50%;
 
-  background: #eff6ff;
+  background: #f4f1ea;
 
-  color: #2563eb;
+  color: #202a44;
 
   font-size: 30px;
 }
@@ -755,7 +755,7 @@
 .orders-empty button {
   border: none;
 
-  background: #2563eb;
+  background: #202a44;
 
   color: white;
 
@@ -898,7 +898,7 @@
 
   background: #f8fafc;
 
-  color: #2563eb;
+  color: #202a44;
 }
 
 .detail-box span {
@@ -1053,11 +1053,11 @@
 }
 
 .tracking-popup-step.completed {
-  border-left-color: #2563eb;
+  border-left-color: #202a44;
 }
 
 .tracking-popup-step.current {
-  border-left-color: #f97316;
+  border-left-color: #b5533c;
 
   background: #fff7ed;
 }

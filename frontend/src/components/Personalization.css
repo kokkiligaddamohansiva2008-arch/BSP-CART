@@ -5,7 +5,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-body);
   font-weight: 600;
   font-size: 14px;
   color: #B5533C;
@@ -37,7 +37,7 @@
   margin-bottom: 14px;
 }
 .bsp-section-head h2 {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-display);
   font-size: 22px;
   color: #202A44;
   margin: 0;

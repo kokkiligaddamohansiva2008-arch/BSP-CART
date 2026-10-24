@@ -102,7 +102,7 @@ function Navbar() {
           className="search-box"
           onSubmit={handleSearch}
         >
-          <input
+          <input id="nav-search-desktop" name="search-desktop"
             type="search"
             value={search}
             placeholder="Search products..."
@@ -352,7 +352,7 @@ function Navbar() {
         className="mobile-search-box"
         onSubmit={handleSearch}
       >
-        <input
+        <input id="nav-search-mobile" name="search-mobile"
           type="search"
           value={search}
           placeholder="Search products..."

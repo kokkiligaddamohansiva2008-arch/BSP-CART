@@ -138,7 +138,7 @@ export default function Checkout() {
           <div className="co-pay">
             {PAYMENT_METHODS.map((m) => (
               <label key={m.id} className={form.paymentMethod === m.id ? "selected" : ""}>
-                <input type="radio" name="paymentMethod" value={m.id}
+                <input id={`pay-${m.id}`} type="radio" name="paymentMethod" value={m.id}
                   checked={form.paymentMethod === m.id} onChange={update} />
                 <span><strong>{m.label}</strong><small>{m.hint}</small></span>
               </label>

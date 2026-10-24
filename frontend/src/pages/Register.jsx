@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { register } from "../services/authService";
 import { isSupabaseConfigured } from "../lib/supabase";
+import SocialButtons from "../components/auth/SocialButtons";
+import { AuthAside } from "./Login";
 import "./Login.css";
 
 function strength(pw) {
@@ -70,64 +72,75 @@ export default function Register() {
 
   return (
     <div className="login-container">
-      <div className="login-box">
-        <div className="login-brand" aria-hidden="true">BC</div>
-        <h1>Create your account</h1>
-        <p className="login-sub">Join BSP CART in a few seconds</p>
+      <div className="auth-shell">
+        <AuthAside
+          title="Start shopping — or start selling."
+          text="Create your free account in a few seconds. Switch between buying and selling whenever you like."
+        />
 
-        <form onSubmit={handleRegister} noValidate>
-          <label>I want to</label>
-          <div className="role-pick">
-            <button type="button" className={role === "buyer" ? "active" : ""} onClick={() => setRole("buyer")}>
+        <div className="login-box">
+          <h1>Create your account</h1>
+          <p className="login-sub">Join BSP CART with a social account or your email</p>
+
+          <div className="field-label" id="role-label">I want to</div>
+          <div className="role-pick" role="group" aria-labelledby="role-label">
+            <button type="button" className={role === "buyer" ? "active" : ""} aria-pressed={role === "buyer"} onClick={() => setRole("buyer")}>
               🛍️ Shop
             </button>
-            <button type="button" className={role === "seller" ? "active" : ""} onClick={() => setRole("seller")}>
+            <button type="button" className={role === "seller" ? "active" : ""} aria-pressed={role === "seller"} onClick={() => setRole("seller")}>
               🏪 Sell
             </button>
           </div>
 
-          <label htmlFor="name">Full name</label>
-          <input id="name" type="text" autoComplete="name" placeholder="Your full name"
-            value={name} onChange={(e) => setName(e.target.value)} />
+          <SocialButtons verb="Sign up" role={role} onError={setError} disabled={busy} />
 
-          <label htmlFor="username">Username</label>
-          <input id="username" type="text" autoComplete="username" placeholder="Choose a username"
-            value={username} onChange={(e) => setUsername(e.target.value)} />
+          <div className="auth-divider"><span>or sign up with email</span></div>
 
-          <label htmlFor="email">Email</label>
-          <input id="email" type="email" autoComplete="email" placeholder="you@example.com"
-            value={email} onChange={(e) => setEmail(e.target.value)} />
+          <form onSubmit={handleRegister} noValidate>
+            <label htmlFor="name">Full name</label>
+            <input id="name" name="name" type="text" autoComplete="name" placeholder="Your full name"
+              value={name} onChange={(e) => setName(e.target.value)} />
 
-          <label htmlFor="password">Password</label>
-          <div className="pw-wrap">
-            <input id="password" type={showPw ? "text" : "password"} autoComplete="new-password"
-              placeholder="At least 6 characters" value={password}
-              onChange={(e) => setPassword(e.target.value)} />
-            <button type="button" className="pw-toggle" onClick={() => setShowPw((v) => !v)}>
-              {showPw ? "Hide" : "Show"}
-            </button>
-          </div>
-          {password && (
-            <>
-              <div className="pw-meter"><span style={{ width: s.w, background: s.c }} /></div>
-              <div className="pw-hint">{s.t}</div>
-            </>
-          )}
+            <label htmlFor="username">Username</label>
+            <input id="username" name="username" type="text" autoComplete="username" placeholder="Choose a username"
+              value={username} onChange={(e) => setUsername(e.target.value)} />
 
-          <label htmlFor="confirm">Confirm password</label>
-          <input id="confirm" type={showPw ? "text" : "password"} autoComplete="new-password"
-            placeholder="Re-enter your password" value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)} />
+            <label htmlFor="email">Email</label>
+            <input id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com"
+              value={email} onChange={(e) => setEmail(e.target.value)} />
 
-          {error && <p className="login-error" role="alert">{error}</p>}
+            <label htmlFor="password">Password</label>
+            <div className="pw-wrap">
+              <input id="password" name="password" type={showPw ? "text" : "password"} autoComplete="new-password"
+                placeholder="At least 6 characters" value={password}
+                onChange={(e) => setPassword(e.target.value)} />
+              <button type="button" className="pw-toggle" onClick={() => setShowPw((v) => !v)}
+                aria-label={showPw ? "Hide password" : "Show password"} aria-pressed={showPw}>
+                {showPw ? "Hide" : "Show"}
+              </button>
+            </div>
+            {password && (
+              <>
+                <div className="pw-meter"><span style={{ width: s.w, background: s.c }} /></div>
+                <div className="pw-hint">{s.t}</div>
+              </>
+            )}
 
-          <button type="submit" disabled={busy}>{busy ? "Creating…" : "Create account"}</button>
-        </form>
+            <label htmlFor="confirm">Confirm password</label>
+            <input id="confirm" name="confirm" type={showPw ? "text" : "password"} autoComplete="new-password"
+              placeholder="Re-enter your password" value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)} />
 
-        <p className="signup-prompt">
-          Already have an account?{" "}
-          <button type="button" className="link-btn" onClick={() => navigate("/login")}>Sign in</button>
-        </p>
+            {error && <p className="login-error" role="alert">{error}</p>}
+
+            <button type="submit" disabled={busy}>{busy ? "Creating…" : "Create account"}</button>
+          </form>
+
+          <p className="signup-prompt">
+            Already have an account?{" "}
+            <button type="button" className="link-btn" onClick={() => navigate("/login")}>Sign in</button>
+          </p>
+        </div>
       </div>
     </div>
   );

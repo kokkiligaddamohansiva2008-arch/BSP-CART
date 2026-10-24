@@ -9,7 +9,7 @@ const SearchBar = () => {
           <FaSearch />
         </span>
 
-        <input
+        <input id="searchbar-product-search" name="product-search"
           type="search"
           className="form-control border-start-0"
           placeholder="Search products..."

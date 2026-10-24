@@ -71,9 +71,9 @@ export default function AdminDashboard() {
         {error && <div className="adm-empty" role="alert">{error}</div>}
 
         <StatsGrid>
-          <DashboardCard title="Registered Users" value={s.users.length} icon={<FaUsers />} color="#2563EB" />
+          <DashboardCard title="Registered Users" value={s.users.length} icon={<FaUsers />} color="#202a44" />
           <DashboardCard title="Products" value={s.products.length} icon={<FaBoxOpen />} color="#10B981" />
-          <DashboardCard title="Low Stock" value={s.low.length} icon={<FaExclamationTriangle />} color="#F97316" />
+          <DashboardCard title="Low Stock" value={s.low.length} icon={<FaExclamationTriangle />} color="#b5533c" />
           <DashboardCard title="Inventory Value" value={inr(s.value)} icon={<FaRupeeSign />} color="#EF4444" />
         </StatsGrid>
 

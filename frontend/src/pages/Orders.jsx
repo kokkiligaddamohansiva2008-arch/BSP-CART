@@ -245,7 +245,7 @@ const Orders = () => {
         </div>
       `,
       confirmButtonText: "Close",
-      confirmButtonColor: "#2563eb",
+      confirmButtonColor: "#202a44",
     });
   };
 
@@ -288,7 +288,7 @@ const Orders = () => {
           icon: "success",
           title: "Order Cancelled",
           text: `Order #${order.id} has been cancelled.`,
-          confirmButtonColor: "#2563eb",
+          confirmButtonColor: "#202a44",
         });
       }
     });
@@ -431,7 +431,7 @@ const Orders = () => {
 
             <FaSearch />
 
-            <input
+            <input id="orders-search-by-order" name="search-by-order"
               type="search"
               placeholder="Search by order ID or product name..."
               value={search}

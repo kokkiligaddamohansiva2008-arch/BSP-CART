@@ -284,7 +284,7 @@ function Footer() {
               noValidate
             >
 
-              <input
+              <input id="footer-newsletter-email" name="email"
                 type="email"
                 placeholder="Enter your email"
                 aria-label="Email address"

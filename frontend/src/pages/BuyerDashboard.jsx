@@ -659,7 +659,7 @@ const BuyerDashboard = () => {
               <div
                 className="bd-stat-icon"
                 style={{
-                  background: "#2563EB",
+                  background: "#202a44",
                 }}
               >
                 <FaClipboardList />
@@ -903,7 +903,7 @@ const BuyerDashboard = () => {
                       <FaSearch className="text-muted" />
                     </span>
 
-                    <input
+                    <input id="bd-order-search" name="order-search"
                       type="text"
                       className="form-control border-start-0"
                       placeholder="Search by order ID or product"
@@ -917,7 +917,7 @@ const BuyerDashboard = () => {
 
                   </div>
 
-                  <select
+                  <select id="bd-order-status-filter" name="order-status-filter"
                     className="form-select"
                     style={{
                       maxWidth: 180,
@@ -1556,7 +1556,7 @@ const BuyerDashboard = () => {
                       Name
                     </label>
 
-                    <input
+                    <input id="bd-profile-name" name="profile-name"
                       type="text"
                       className="form-control"
                       value={
@@ -1580,7 +1580,7 @@ const BuyerDashboard = () => {
                       Role
                     </label>
 
-                    <input
+                    <input id="bd-profile-role" name="profile-role"
                       type="text"
                       className="form-control"
                       value={
@@ -1598,7 +1598,7 @@ const BuyerDashboard = () => {
                       Email
                     </label>
 
-                    <input
+                    <input id="bd-profile-email" name="profile-email"
                       type="email"
                       className="form-control"
                       value={
@@ -1622,7 +1622,7 @@ const BuyerDashboard = () => {
                       Phone
                     </label>
 
-                    <input
+                    <input id="bd-profile-phone" name="profile-phone"
                       type="tel"
                       className="form-control"
                       value={
@@ -1679,7 +1679,7 @@ const BuyerDashboard = () => {
             Label
           </label>
 
-          <input
+          <input id="bd-address-label" name="address-label"
             type="text"
             className="form-control"
             placeholder="e.g. Home, Work"
@@ -1700,7 +1700,7 @@ const BuyerDashboard = () => {
             Address
           </label>
 
-          <textarea
+          <textarea id="bd-address-line" name="address-line"
             className="form-control"
             rows={3}
             placeholder="House no, Street, City, State - Pincode"
@@ -1745,7 +1745,7 @@ const BuyerDashboard = () => {
             Method
           </label>
 
-          <select
+          <select id="bd-payment-method" name="payment-method"
             className="form-select"
             value={paymentForm.method}
             onChange={(e) =>
@@ -1782,7 +1782,7 @@ const BuyerDashboard = () => {
             Details
           </label>
 
-          <input
+          <input id="bd-payment-detail" name="payment-detail"
             type="text"
             className="form-control"
             placeholder="e.g. name@bank or card ending 1234"
@@ -1823,7 +1823,7 @@ const BuyerDashboard = () => {
             Product
           </label>
 
-          <input
+          <input id="bd-review-product" name="review-product"
             type="text"
             className="form-control"
             placeholder="Which product is this review for?"
@@ -1875,7 +1875,7 @@ const BuyerDashboard = () => {
             Comment
           </label>
 
-          <textarea
+          <textarea id="bd-review-comment" name="review-comment"
             className="form-control"
             rows={3}
             placeholder="Share your experience..."

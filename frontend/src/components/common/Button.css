@@ -12,21 +12,21 @@
 }
 
 .btn-custom.primary{
-    background:#2563EB;
+    background:#202a44;
     color:white;
 }
 
 .btn-custom.primary:hover{
-    background:#1E40AF;
+    background:#141b30;
 }
 
 .btn-custom.secondary{
-    background:#F97316;
+    background:#b5533c;
     color:white;
 }
 
 .btn-custom.secondary:hover{
-    background:#EA580C;
+    background:#b5533c;
 }
 
 .btn-custom.danger{

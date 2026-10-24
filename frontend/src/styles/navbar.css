@@ -113,7 +113,7 @@
 .search-box input:focus {
   background: #ffffff;
 
-  border-color: #2874f0;
+  border-color: #202a44;
 
   box-shadow:
     0 0 0 3px rgba(40, 116, 240, 0.1);
@@ -135,7 +135,7 @@
 
   border-radius: 0 7px 7px 0;
 
-  background: #2874f0;
+  background: #202a44;
 
   color: white;
 
@@ -242,11 +242,11 @@
 .nav-links a:hover {
   background: #f1f5ff;
 
-  color: #2874f0;
+  color: #202a44;
 }
 
 .nav-links a.active {
-  color: #2874f0;
+  color: #202a44;
 
   background: #eef4ff;
 
@@ -625,7 +625,7 @@ body {
   .mobile-search-box input:focus {
     background: white;
 
-    border-color: #2874f0;
+    border-color: #202a44;
 
     box-shadow:
       0 0 0 3px rgba(40, 116, 240, 0.1);
@@ -645,7 +645,7 @@ body {
 
     border-radius: 0 7px 7px 0;
 
-    background: #2874f0;
+    background: #202a44;
 
     color: white;
 

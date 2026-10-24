@@ -66,7 +66,7 @@
 .sd-add-btn {
   z-index: 1;
   background: #fff;
-  color: var(--primary-dark, #1e40af);
+  color: var(--primary-dark, #141b30);
   border: none;
   border-radius: var(--radius-md);
   padding: 12px 22px;
@@ -120,9 +120,9 @@
   flex-shrink: 0;
 }
 
-.sd-stat-icon.products { background: linear-gradient(135deg, #2563EB, #3b82f6); }
+.sd-stat-icon.products { background: linear-gradient(135deg, #202a44, #2b375a); }
 .sd-stat-icon.orders { background: linear-gradient(135deg, #16a34a, #22c55e); }
-.sd-stat-icon.inventory { background: linear-gradient(135deg, #ea580c, #f97316); }
+.sd-stat-icon.inventory { background: linear-gradient(135deg, #b5533c, #b5533c); }
 
 .sd-stat-info h5 {
   margin: 0 0 4px;
@@ -356,7 +356,7 @@
 
 .sd-image-dropzone:hover {
   border-color: var(--primary-color);
-  background: #eff6ff;
+  background: #f4f1ea;
 }
 
 .sd-image-dropzone input[type="file"] {

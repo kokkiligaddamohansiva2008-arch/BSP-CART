@@ -32,7 +32,7 @@ function SalesChart() {
           <Line
             type="monotone"
             dataKey="sales"
-            stroke="#2563EB"
+            stroke="#202a44"
             strokeWidth={3}
           />
         </LineChart>

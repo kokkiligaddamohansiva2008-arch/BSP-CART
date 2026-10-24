@@ -266,7 +266,7 @@ const Products = () => {
         >
           <div className="input-group">
 
-            <input
+            <input id="plp-product-search" name="product-search"
               type="search"
               className="form-control"
               placeholder="Search products..."
@@ -319,7 +319,7 @@ const Products = () => {
         ))}
 
         {/* SORT */}
-        <select
+        <select id="plp-sort-by" name="sort-by"
           className="form-select form-select-sm ms-auto"
           style={{ maxWidth: 220 }}
           value={sort}

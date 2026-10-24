@@ -19,7 +19,7 @@
 }
 
 .sidebar-logo span{
-    color:#F97316;
+    color:#b5533c;
 }
 
 .sidebar a{
@@ -35,12 +35,12 @@
 }
 
 .sidebar a:hover{
-    background:#2563EB;
+    background:#202a44;
     color:white;
 }
 
 .sidebar a.active{
-    background:#2563EB;
+    background:#202a44;
     color:white;
 }
 

@@ -51,7 +51,7 @@ function Signup() {
 
         <form onSubmit={handleSignup}>
           <label>Username</label>
-          <input
+          <input id="su-choose-a-username" name="choose-a-username"
             type="text"
             placeholder="Choose a username"
             value={username}
@@ -60,7 +60,7 @@ function Signup() {
           />
 
           <label>Password</label>
-          <input
+          <input id="su-at-least-6" name="at-least-6"
             type="password"
             placeholder="At least 6 characters"
             value={password}
@@ -69,7 +69,7 @@ function Signup() {
           />
 
           <label>Confirm Password</label>
-          <input
+          <input id="su-re-enter-your" name="re-enter-your"
             type="password"
             placeholder="Re-enter your password"
             value={confirmPassword}

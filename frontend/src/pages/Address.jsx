@@ -92,7 +92,7 @@ const Address = () => {
                 <div className="row">
                   <div className="col-md-6 mb-3">
                     <label className="form-label">Full Name</label>
-                    <input
+                    <input id="addr-fullName"
                       type="text"
                       className="form-control"
                       name="fullName"
@@ -104,7 +104,7 @@ const Address = () => {
 
                   <div className="col-md-6 mb-3">
                     <label className="form-label">Mobile Number</label>
-                    <input
+                    <input id="addr-mobile"
                       type="tel"
                       className="form-control"
                       name="mobile"
@@ -119,7 +119,7 @@ const Address = () => {
 
                   <div className="col-12 mb-3">
                     <label className="form-label">Address</label>
-                    <textarea
+                    <textarea id="addr-address"
                       rows="3"
                       className="form-control"
                       name="address"
@@ -132,7 +132,7 @@ const Address = () => {
 
                   <div className="col-md-4 mb-3">
                     <label className="form-label">City</label>
-                    <input
+                    <input id="addr-city"
                       type="text"
                       className="form-control"
                       name="city"
@@ -144,7 +144,7 @@ const Address = () => {
 
                   <div className="col-md-4 mb-3">
                     <label className="form-label">State</label>
-                    <input
+                    <input id="addr-state"
                       type="text"
                       className="form-control"
                       name="state"
@@ -156,7 +156,7 @@ const Address = () => {
 
                   <div className="col-md-4 mb-3">
                     <label className="form-label">Pincode</label>
-                    <input
+                    <input id="addr-pincode"
                       type="text"
                       className="form-control"
                       name="pincode"
