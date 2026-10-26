@@ -56,7 +56,7 @@ export default function Login() {
   const [error, setError] = useState(() => oauthErrorFromUrl());
   const [busy, setBusy] = useState(false);
 
-  // Already signed in (or just returned from Google / Microsoft / GitHub) → go to the right dashboard.
+  // Already signed in (or just returned from Google / GitHub) → go to the right dashboard.
   useEffect(() => {
     if (ready && user) navigate(from || homeFor(user.role), { replace: true });
   }, [ready, user, from, navigate]);
