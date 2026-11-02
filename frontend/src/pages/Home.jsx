@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import { FiSearch, FiUser, FiShoppingCart, FiTruck, FiLock, FiRefreshCw, FiStore, FiMessageCircle, FiTag, FiSmartphone, FiShoppingBag, FiHome, FiGift, FiMenu } from "react-icons/fi";
+import { FiSearch, FiUser, FiShoppingCart, FiTruck, FiLock, FiRefreshCw, FiStore, FiMessageCircle, FiTag, FiSmartphone, FiShoppingBag, FiHome, FiGift, FiMenu, FiCreditCard, FiBriefcase, FiDollarSign, FiStar, FiZap, FiAward } from "react-icons/fi";
 import {
   CATEGORIES,
   PRODUCTS,
@@ -207,6 +207,8 @@ const wishlistCount = wishlist.length;
               src={product.image}
               alt={product.name}
               loading="lazy"
+              decoding="async"
+              onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = "https://placehold.co/480x480/faf6ef/202a44?text=Product+Image"; }}
             />
           </Link>
 
@@ -895,14 +897,14 @@ const wishlistCount = wishlist.length;
         <div className="section-heading">
           <div>
             <span>EXTRA SAVINGS</span>
-            <h2>💳 Payment Offers</h2>
+            <h2><FiCreditCard aria-hidden="true" /> Payment Offers</h2>
           </div>
         </div>
 
         <div className="payment-offer-grid">
 
           <div className="payment-card">
-            <span>🏦</span>
+            <span><FiBriefcase aria-hidden="true" /></span>
             <div>
               <strong>Bank Offer</strong>
               <h3>10% Instant Discount</h3>
@@ -920,7 +922,7 @@ const wishlistCount = wishlist.length;
           </div>
 
           <div className="payment-card">
-            <span>💰</span>
+            <span><FiDollarSign aria-hidden="true" /></span>
             <div>
               <strong>New Customer</strong>
               <h3>₹200 OFF</h3>
@@ -938,7 +940,7 @@ const wishlistCount = wishlist.length;
           </div>
 
           <div className="payment-card">
-            <span>🎁</span>
+            <span><FiGift aria-hidden="true" /></span>
             <div>
               <strong>Festival Offer</strong>
               <h3>Extra 15% OFF</h3>
@@ -989,7 +991,7 @@ const wishlistCount = wishlist.length;
         <div className="section-heading">
           <div>
             <span>CUSTOMER FAVOURITES</span>
-            <h2>⭐ Top Rated Products</h2>
+            <h2><FiStar aria-hidden="true" /> Top Rated Products</h2>
             <p>
               Products customers are loving.
             </p>
@@ -1013,7 +1015,7 @@ const wishlistCount = wishlist.length;
         <div className="section-heading">
           <div>
             <span>JUST ARRIVED</span>
-            <h2>✨ New Arrivals</h2>
+            <h2><FiZap aria-hidden="true" /> New Arrivals</h2>
             <p>
               Fresh products added to BSP CART.
             </p>
@@ -1073,7 +1075,7 @@ const wishlistCount = wishlist.length;
       <section className="festival-section">
 
         <div className="festival-copy">
-          <span>🎉 BSP CART FESTIVAL</span>
+          <span><FiGift aria-hidden="true" /> BSP CART FESTIVAL</span>
 
           <h2>
             Celebrate more.
@@ -1114,7 +1116,7 @@ const wishlistCount = wishlist.length;
         <div className="section-heading">
           <div>
             <span>MOST POPULAR</span>
-            <h2>🏆 Bestsellers</h2>
+            <h2><FiAward aria-hidden="true" /> Bestsellers</h2>
             <p>
               Popular products across BSP CART.
             </p>
@@ -1189,7 +1191,7 @@ const wishlistCount = wishlist.length;
 
         {filtered.length === 0 ? (
           <div className="empty-state">
-            <div>🔎</div>
+            <div><FiSearch aria-hidden="true" /></div>
 
             <h3>
               No products found
@@ -1238,7 +1240,7 @@ const wishlistCount = wishlist.length;
       <section className="seller-cta">
 
         <div className="seller-icon">
-          🏪
+          <FiStore aria-hidden="true" />
         </div>
 
         <div>
