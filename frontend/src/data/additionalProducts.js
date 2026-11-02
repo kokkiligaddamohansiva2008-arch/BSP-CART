@@ -29,11 +29,19 @@ const images = [
   "photo-1618221195710-dd6b41faaea6","photo-1505751172876-fa1923c5c528","photo-1450778869180-41d0601e046e","photo-1581147036324-c1c89c2c8a7d",
   "photo-1503376780353-7e6692767b70","photo-1513201099705-a9746e1e201f"
 ];
-export const ADDITIONAL_CATEGORIES = Object.entries(ids).map(([label, id]) => ({ id, label }));
+export const ADDITIONAL_CATEGORIES = Object.entries(ids).map(([label, id], index) => ({
+  id,
+  label,
+  image: `https://images.unsplash.com/${images[index]}?auto=format&fit=crop&w=720&h=480&q=75`,
+}));
 export const ADDITIONAL_PRODUCTS = Object.entries(groups).flatMap(([category, raw], groupIndex) =>
   raw.split("|").map((name, index) => {
     const price = Math.round((bases[groupIndex] + ((index * 37) % (bases[groupIndex] * 2))) / 5) * 5;
-    const image = `https://images.unsplash.com/${images[groupIndex]}?auto=format&fit=crop&w=300&h=300&q=60`;
+    // Use name-specific food photography for grocery items instead of one shared category photo.
+    const groceryImage = category === "Groceries & Staples"
+      ? `https://loremflickr.com/480/480/${encodeURIComponent(name.toLowerCase())},food?lock=${index + 101}`
+      : null;
+    const image = groceryImage || `https://images.unsplash.com/${images[groupIndex]}?auto=format&fit=crop&w=480&h=480&q=65`;
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     return {
       id: `extra-${ids[category]}-${slug}`, name, category: ids[category], price,
