@@ -24,7 +24,10 @@ function ProductCard({ product, onAddToCart, onView }) {
             src={product.imageUrl || product.image || defaultImage}
             alt={product.name}
             loading="lazy"
-            style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", borderRadius: "10px" }}
+            decoding="async"
+            width="300"
+            height="300"
+            style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", borderRadius: "10px" }}
           />
           {pct > 0 && (
             <span
