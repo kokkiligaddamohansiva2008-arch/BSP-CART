@@ -12,6 +12,7 @@
 | (public URLs are saved in the product row — no more base64 in the browser).
 */
 import { supabase } from "../lib/supabase";
+import { ADDITIONAL_CATEGORIES, ADDITIONAL_PRODUCTS } from "./additionalProducts";
 
 export const CATEGORIES = [
   { id: "all", label: "All Stalls" },
@@ -22,6 +23,18 @@ export const CATEGORIES = [
 ];
 
 export const PRODUCTS = [];
+
+// Keep the owner-supplied sample catalogue in the frontend only.
+// Negative IDs prevent collisions with real Supabase product IDs.
+const SAMPLE_PRODUCTS = ADDITIONAL_PRODUCTS.map((product, index) => ({
+  ...product,
+  id: -(index + 1),
+  isSampleCatalogProduct: true,
+}));
+
+CATEGORIES.push(...ADDITIONAL_CATEGORIES.filter(
+  (category) => !CATEGORIES.some((existing) => existing.id === category.id)
+));
 
 const BUCKET = "product-images";
 const CHANGED = "bsp-products-changed";
@@ -67,7 +80,7 @@ const notify = () => window.dispatchEvent(new Event(CHANGED));
 export async function loadProducts() {
   const { data, error } = await supabase.from("products").select("*").order("id", { ascending: true });
   if (error) throw error;
-  PRODUCTS.splice(0, PRODUCTS.length, ...data.map(fromRow));
+  PRODUCTS.splice(0, PRODUCTS.length, ...data.map(fromRow), ...SAMPLE_PRODUCTS);
   notify();
   return PRODUCTS;
 }
