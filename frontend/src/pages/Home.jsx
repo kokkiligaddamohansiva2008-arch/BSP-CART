@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import { FiSearch, FiUser, FiShoppingCart, FiTruck, FiLock, FiRefreshCw, FiStore, FiMessageCircle, FiTag, FiSmartphone, FiShoppingBag, FiHome, FiGift, FiMenu, FiCreditCard, FiBriefcase, FiDollarSign, FiStar, FiZap, FiAward } from "react-icons/fi";
+import { FiSearch, FiUser, FiShoppingCart, FiTruck, FiLock, FiRefreshCw, FiGrid, FiMessageCircle, FiTag, FiSmartphone, FiShoppingBag, FiHome, FiGift, FiMenu, FiCreditCard, FiBriefcase, FiDollarSign, FiStar, FiZap, FiAward } from "react-icons/fi";
 import {
   CATEGORIES,
   PRODUCTS,
@@ -565,7 +565,7 @@ const wishlistCount = wishlist.length;
         </div>
 
         <div className="benefit-item">
-          <span><FiStore aria-hidden="true" /></span>
+          <span><FiGrid aria-hidden="true" /></span>
           <div>
             <strong>Trusted Sellers</strong>
             <small>Multiple sellers marketplace</small>
@@ -1240,7 +1240,7 @@ const wishlistCount = wishlist.length;
       <section className="seller-cta">
 
         <div className="seller-icon">
-          <FiStore aria-hidden="true" />
+          <FiGrid aria-hidden="true" />
         </div>
 
         <div>
