@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import { FiSearch, FiUser, FiShoppingCart, FiTruck, FiLock, FiRefreshCw, FiStore, FiMessageCircle, FiTag, FiSmartphone, FiShoppingBag, FiHome, FiGift, FiMenu } from "react-icons/fi";
 import {
   CATEGORIES,
   PRODUCTS,
@@ -14,6 +15,14 @@ import DealCountdown from "../components/DealCountdown";
 import RecommendedProducts from "../components/RecommendedProducts";
 import BuyItAgain from "../components/BuyItAgain";
 import "./Home.css";
+
+const categoryVisuals = {
+  all: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=720&h=480&q=75",
+  grocery: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=720&h=480&q=75",
+  electronics: "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=720&h=480&q=75",
+  fashion: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=720&h=480&q=75",
+  home: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=720&h=480&q=75",
+};
 
 const getCategoryProducts = (category) =>
   PRODUCTS.filter(
@@ -303,7 +312,7 @@ const wishlistCount = wishlist.length;
       ====================================================== */}
       <div className="top-offer-bar">
         <div>
-          🎉 BSP CART FESTIVAL SALE — Extra savings every day
+          <FiGift aria-hidden="true" /> BSP CART FESTIVAL SALE — Extra savings every day
         </div>
 
         <div className="top-links">
@@ -353,7 +362,7 @@ const wishlistCount = wishlist.length;
           />
 
           <button type="submit" className="search-button">
-            🔍 Search
+            <FiSearch aria-hidden="true" /> Search
           </button>
         </form>
 
@@ -363,7 +372,7 @@ const wishlistCount = wishlist.length;
             className="header-action"
             onClick={() => navigate("/login")}
           >
-            👤
+            <FiUser aria-hidden="true" />
             <span>Account</span>
           </button>
 
@@ -391,7 +400,7 @@ const wishlistCount = wishlist.length;
             className="header-action cart-header"
             onClick={() => navigate("/cart")}
           >
-            🛒
+            <FiShoppingCart aria-hidden="true" />
             <span>Cart</span>
 
             {cartCount > 0 && (
@@ -406,7 +415,7 @@ const wishlistCount = wishlist.length;
       ====================================================== */}
       <div className="mega-category-bar">
         <div className="category-menu-item all-menu">
-          ☰ All Categories
+          <FiMenu aria-hidden="true" /> All Categories
         </div>
 
         {CATEGORIES.slice(0, 8).map((category) => (
@@ -427,7 +436,7 @@ const wishlistCount = wishlist.length;
               ?.scrollIntoView({ behavior: "smooth" })
           }
         >
-          🔥 Today's Deals
+          <FiTag aria-hidden="true" /> Today's Deals
         </button>
       </div>
 
@@ -530,7 +539,7 @@ const wishlistCount = wishlist.length;
       <section className="benefit-strip">
 
         <div className="benefit-item">
-          <span>🚚</span>
+          <span><FiTruck aria-hidden="true" /></span>
           <div>
             <strong>Fast Delivery</strong>
             <small>Quick doorstep delivery</small>
@@ -538,7 +547,7 @@ const wishlistCount = wishlist.length;
         </div>
 
         <div className="benefit-item">
-          <span>🔒</span>
+          <span><FiLock aria-hidden="true" /></span>
           <div>
             <strong>Secure Payments</strong>
             <small>Safe and protected checkout</small>
@@ -546,7 +555,7 @@ const wishlistCount = wishlist.length;
         </div>
 
         <div className="benefit-item">
-          <span>↩️</span>
+          <span><FiRefreshCw aria-hidden="true" /></span>
           <div>
             <strong>Easy Returns</strong>
             <small>Simple return experience</small>
@@ -554,7 +563,7 @@ const wishlistCount = wishlist.length;
         </div>
 
         <div className="benefit-item">
-          <span>🏪</span>
+          <span><FiStore aria-hidden="true" /></span>
           <div>
             <strong>Trusted Sellers</strong>
             <small>Multiple sellers marketplace</small>
@@ -562,7 +571,7 @@ const wishlistCount = wishlist.length;
         </div>
 
         <div className="benefit-item">
-          <span>💬</span>
+          <span><FiMessageCircle aria-hidden="true" /></span>
           <div>
             <strong>Customer Support</strong>
             <small>We're here to help</small>
@@ -580,7 +589,7 @@ const wishlistCount = wishlist.length;
         <div className="section-heading light-heading">
           <div>
             <span>LIMITED TIME</span>
-            <h2>🔥 Mega Deals</h2>
+            <h2><FiTag aria-hidden="true" /> Mega Deals</h2>
             <p>
               Prices you don't want to miss.
             </p>
@@ -682,10 +691,22 @@ const wishlistCount = wishlist.length;
                   browseCategory(category.id)
                 }
               >
-                <div className="category-icon">
-                  {["🛒", "📱", "👕", "🏠", "💻", "🎧"][
-                    index % 6
-                  ]}
+                <div className="category-photo">
+                  <img
+                    src={category.image || categoryVisuals[category.id] || categoryVisuals.grocery}
+                    alt={category.label}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span className="category-photo-shade" />
+                  <span className="category-photo-icon" aria-hidden="true">
+                    {category.id.includes("electronic") ? <FiSmartphone /> :
+                      category.id.includes("fashion") ? <FiShoppingBag /> :
+                      category.id.includes("home") ? <FiHome /> :
+                      category.id.includes("gift") ? <FiGift /> :
+                      category.id.includes("auto") ? <FiTruck /> :
+                      <FiShoppingCart />}
+                  </span>
                 </div>
 
                 <strong>{category.label}</strong>
@@ -788,7 +809,7 @@ const wishlistCount = wishlist.length;
 
           <div>
             <span>TECH ZONE</span>
-            <h2>📱 Electronics Deals</h2>
+            <h2><FiSmartphone aria-hidden="true" /> Electronics Deals</h2>
             <p>
               Gadgets, accessories and everyday technology.
             </p>
@@ -817,7 +838,7 @@ const wishlistCount = wishlist.length;
 
           <div>
             <span>STYLE STORE</span>
-            <h2>👕 Fashion Picks</h2>
+            <h2><FiShoppingBag aria-hidden="true" /> Fashion Picks</h2>
             <p>
               Everyday fashion at marketplace prices.
             </p>
@@ -846,7 +867,7 @@ const wishlistCount = wishlist.length;
 
           <div>
             <span>MAKE IT HOME</span>
-            <h2>🏠 Home & Living</h2>
+            <h2><FiHome aria-hidden="true" /> Home & Living</h2>
             <p>
               Useful products for every corner of your home.
             </p>
