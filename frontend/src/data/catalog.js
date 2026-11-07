@@ -50,18 +50,40 @@ const DEFAULT_PRODUCT_IMAGE =
 
 // DB row -> the object shape the UI already uses
 function fromRow(r) {
-  const images = r.images?.length ? r.images : [DEFAULT_PRODUCT_IMAGE];
+  // Support both the current catalogue schema and the earlier starter schema
+  // (image_url + category_id). This keeps existing Supabase rows visible
+  // while the database is being brought into alignment with seller features.
+  const legacyImage = r.image_url || null;
+  const images = r.images?.length
+    ? r.images
+    : legacyImage
+      ? [legacyImage]
+      : [DEFAULT_PRODUCT_IMAGE];
+  const categoryName = r.category || r.categories?.name || r.category_name || "";
+  const categoryKey = ({
+    electronics: "electronics",
+    clothing: "fashion",
+    fashion: "fashion",
+    accessories: "electronics",
+    grocery: "grocery",
+    groceries: "grocery",
+    "groceries & staples": "grocery",
+    "home & kitchen": "home",
+    home: "home",
+  })[String(categoryName).trim().toLowerCase()]
+    || String(categoryName).trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
   return {
     id: Number(r.id),
     createdAt: r.created_at || null,
     name: r.name,
-    category: r.category,
+    category: categoryKey,
     price: Number(r.price),
-    mrp: Number(r.mrp),
+    mrp: Number(r.mrp ?? r.price),
     stock: Number(r.stock),
-    seller: r.seller_name,
+    seller: r.seller_name || "BSP CART",
     rating: Number(r.rating) || 0,
-    ratingCount: r.rating_count || 0,
+    ratingCount: Number(r.rating_count) || 0,
     bestseller: !!r.bestseller,
     image: images[0],
     images,
@@ -79,7 +101,10 @@ const notify = () => window.dispatchEvent(new Event(CHANGED));
 
 /** (Re)load the whole catalog from Supabase into PRODUCTS. */
 export async function loadProducts() {
-  const { data, error } = await supabase.from("products").select("*").order("id", { ascending: true });
+  const { data, error } = await supabase
+    .from("products")
+    .select("*, categories(name)")
+    .order("id", { ascending: true });
   if (error) throw error;
   PRODUCTS.splice(0, PRODUCTS.length, ...data.map(fromRow), ...SAMPLE_PRODUCTS);
   notify();
