@@ -37,11 +37,12 @@ export const ADDITIONAL_CATEGORIES = Object.entries(ids).map(([label, id], index
 export const ADDITIONAL_PRODUCTS = Object.entries(groups).flatMap(([category, raw], groupIndex) =>
   raw.split("|").map((name, index) => {
     const price = Math.round((bases[groupIndex] + ((index * 37) % (bases[groupIndex] * 2))) / 5) * 5;
-    // Use name-specific food photography for grocery items instead of one shared category photo.
-    const groceryImage = category === "Groceries & Staples"
-      ? `https://loremflickr.com/480/480/${encodeURIComponent(name.toLowerCase())},food?lock=${index + 101}`
-      : null;
-    const image = groceryImage || `https://images.unsplash.com/${images[groupIndex]}?auto=format&fit=crop&w=480&h=480&q=65`;
+    // Request a product-specific image for every listing. The previous code
+    // reused one category-level photo for almost every non-grocery product,
+    // which made unrelated products display the same image.
+    // Include the category to make ambiguous product names more specific.
+    const imageQuery = encodeURIComponent(`${name.toLowerCase()},${category.toLowerCase()}`);
+    const image = `https://loremflickr.com/480/480/${imageQuery}?lock=${groupIndex * 1000 + index + 101}`;
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     return {
       id: `extra-${ids[category]}-${slug}`, name, category: ids[category], price,
