@@ -53,6 +53,7 @@ function fromRow(r) {
   const images = r.images?.length ? r.images : [DEFAULT_PRODUCT_IMAGE];
   return {
     id: Number(r.id),
+    createdAt: r.created_at || null,
     name: r.name,
     category: r.category,
     price: Number(r.price),
