@@ -14,6 +14,19 @@ const SORT_OPTIONS = [
   { id: "newest", label: "Newest First" },
 ];
 
+// Convert numbers and formatted currency strings safely before comparing.
+const numericValue = (value) => {
+  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+  const parsed = Number(String(value ?? "").replace(/[^0-9.-]/g, ""));
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const productDate = (product) => {
+  const value = product.createdAt || product.created_at || product.createdOn || product.dateAdded;
+  const timestamp = value ? Date.parse(value) : NaN;
+  return Number.isFinite(timestamp) ? timestamp : null;
+};
+
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -136,27 +149,34 @@ const Products = () => {
     switch (sort) {
       case "price-asc":
         list = [...list].sort(
-          (a, b) => Number(a.price || 0) - Number(b.price || 0)
+          (a, b) => numericValue(a.price) - numericValue(b.price)
         );
         break;
 
       case "price-desc":
         list = [...list].sort(
-          (a, b) => Number(b.price || 0) - Number(a.price || 0)
+          (a, b) => numericValue(b.price) - numericValue(a.price)
         );
         break;
 
       case "rating":
         list = [...list].sort(
-          (a, b) =>
-            Number(b.rating || 0) - Number(a.rating || 0)
+          (a, b) => numericValue(b.rating) - numericValue(a.rating)
         );
         break;
 
       case "newest":
-        list = [...list].sort(
-          (a, b) => Number(b.id || 0) - Number(a.id || 0)
-        );
+        list = [...list].sort((a, b) => {
+          const dateA = productDate(a);
+          const dateB = productDate(b);
+
+          // Prefer the actual creation timestamp; use ID only when dates
+          // are unavailable (for older sample/catalogue records).
+          if (dateA !== null && dateB !== null) return dateB - dateA;
+          if (dateA !== null) return -1;
+          if (dateB !== null) return 1;
+          return numericValue(b.id) - numericValue(a.id);
+        });
         break;
 
       case "relevance":
@@ -348,7 +368,7 @@ const Products = () => {
           found
         </span>
 
-        {(search.trim() || category !== "all") && (
+        {(search.trim() || category !== "all" || sort !== "relevance") && (
           <button
             type="button"
             className="btn btn-link btn-sm text-decoration-none"
