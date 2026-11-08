@@ -19,15 +19,49 @@ import "./Home.css";
 const categoryVisuals = {
   all: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=720&h=480&q=75",
   grocery: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=720&h=480&q=75",
+  "groceries-and-staples": "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=720&h=480&q=75",
+  "snacks-and-beverages": "https://images.unsplash.com/photo-1621939514649-280e2aa7f1f9?auto=format&fit=crop&w=720&h=480&q=75",
+  "dairy-and-bakery": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=720&h=480&q=75",
+  "fruits-and-vegetables": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=720&h=480&q=75",
+  "household-and-cleaning": "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=720&h=480&q=75",
+  "kitchen-and-dining": "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=720&h=480&q=75",
+  "personal-care": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=720&h=480&q=75",
   electronics: "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=720&h=480&q=75",
+  "electronics-and-accessories": "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=720&h=480&q=75",
   fashion: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=720&h=480&q=75",
+  "men-s-fashion": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=720&h=480&q=75",
+  "women-s-fashion": "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=720&h=480&q=75",
+  "kids-and-baby": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=720&h=480&q=75",
+  "stationery-and-office": "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=720&h=480&q=75",
   home: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=720&h=480&q=75",
+  "home-decor-and-furnishing": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=720&h=480&q=75",
+  "health-and-wellness": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=720&h=480&q=75",
+  "pet-and-garden": "https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=720&h=480&q=75",
+  "tools-and-hardware": "https://images.unsplash.com/photo-1581147036324-c1c89c2c8a7d?auto=format&fit=crop&w=720&h=480&q=75",
+  "auto-and-travel": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=720&h=480&q=75",
+  "gifts-and-festival": "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=720&h=480&q=75",
+};
+
+const CATEGORY_COUNT_GROUPS = {
+  grocery: ["grocery", "groceries-and-staples", "snacks-and-beverages", "dairy-and-bakery", "fruits-and-vegetables", "household-and-cleaning", "kitchen-and-dining", "personal-care"],
+  home: ["home", "home-decor-and-furnishing", "kitchen-and-dining"],
+  electronics: ["electronics", "electronics-and-accessories"],
+  fashion: ["fashion", "men-s-fashion", "women-s-fashion"],
 };
 
 const getCategoryProducts = (category) =>
   PRODUCTS.filter(
     (p) => String(p.category).toLowerCase() === String(category).toLowerCase()
   );
+
+const getCategoryCount = (category) => {
+  const id = String(category.id || "").toLowerCase();
+  if (id === "all") return PRODUCTS.length;
+  const included = CATEGORY_COUNT_GROUPS[id] || [id];
+  return PRODUCTS.filter((product) =>
+    included.includes(String(product.category || "").toLowerCase())
+  ).length;
+};
 
 const getDiscountedProducts = () =>
   PRODUCTS.filter((p) => Number(p.mrp) > Number(p.price))
@@ -681,9 +715,7 @@ const wishlistCount = wishlist.length;
         <div className="category-grid">
 
           {CATEGORIES.map((category, index) => {
-            const count = getCategoryProducts(
-              category.id
-            ).length;
+            const count = getCategoryCount(category);
 
             return (
               <button
@@ -696,6 +728,10 @@ const wishlistCount = wishlist.length;
                 <div className="category-photo">
                   <img
                     src={category.image || categoryVisuals[category.id] || categoryVisuals.grocery}
+                    onError={(event) => {
+                      event.currentTarget.onerror = null;
+                      event.currentTarget.src = categoryVisuals.grocery;
+                    }}
                     alt={category.label}
                     loading="lazy"
                     decoding="async"
@@ -704,10 +740,17 @@ const wishlistCount = wishlist.length;
                   <span className="category-photo-icon" aria-hidden="true">
                     {category.id.includes("electronic") ? <FiSmartphone /> :
                       category.id.includes("fashion") ? <FiShoppingBag /> :
-                      category.id.includes("home") ? <FiHome /> :
+                      category.id.includes("home") || category.id.includes("kitchen") ? <FiHome /> :
                       category.id.includes("gift") ? <FiGift /> :
-                      category.id.includes("auto") ? <FiTruck /> :
-                      <FiShoppingCart />}
+                      category.id.includes("auto") || category.id.includes("travel") ? <FiTruck /> :
+                      category.id.includes("snack") || category.id.includes("dairy") ? <FiCoffee /> :
+                      category.id.includes("fruit") || category.id.includes("garden") ? <FiFeather /> :
+                      category.id.includes("household") || category.id.includes("cleaning") ? <FiDroplet /> :
+                      category.id.includes("personal") || category.id.includes("health") ? <FiHeart /> :
+                      category.id.includes("stationery") || category.id.includes("office") ? <FiBook /> :
+                      category.id.includes("tool") || category.id.includes("hardware") ? <FiTool /> :
+                      category.id.includes("kids") || category.id.includes("baby") ? <FiGift /> :
+                      category.id === "all" ? <FiGrid /> : <FiShoppingCart />}
                   </span>
                 </div>
 
