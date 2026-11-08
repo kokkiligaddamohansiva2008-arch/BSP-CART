@@ -1,10 +1,7 @@
 # BSP CART product image assets
 
-This folder contains lightweight, locally hosted SVG thumbnails for the sample catalogue.
+This directory stores the lightweight static fallback image used if a browser cannot render a product thumbnail.
 
-- 360 product-specific SVG files across 18 catalogue categories.
-- Each file is named with its category and product slug.
-- SVG files are vector-based and small, so they load quickly and do not depend on third-party image hosts.
-- Seller-uploaded photos remain stored in Supabase Storage and are not overwritten.
+The 360 sample-catalogue product thumbnails (20 products in each of 18 categories) are generated as compact, product-name-specific SVG data images by `frontend/src/data/additionalProducts.js`. This avoids hundreds of third-party image requests and prevents empty/broken image tiles when an external image host is unavailable.
 
-The thumbnails are branded illustrative product cards with the exact product name; replace them with seller photography when real product photos are available.
+Seller-uploaded product photos remain in Supabase Storage and are not replaced by these sample thumbnails. These generated SVGs are clean illustrative thumbnails, not photographs of the exact retail item.
