@@ -19,6 +19,7 @@ import { addRecentlyViewed, isWishlisted, toggleWishlist } from "../utils/bspSto
 import { addToCart as addToStoredCart } from "../utils/cartStore";
 import DealCountdown from "../components/DealCountdown";
 import RecommendedProducts from "../components/RecommendedProducts";
+import { productThumbnail } from "../data/additionalProducts";
 import "./ProductDetails.css";
 
 function buildMockReviews(product) {
@@ -81,6 +82,7 @@ export default function ProductDetails() {
     );
   }
 
+  const fallbackImage = productThumbnail(product.name, product.category, product.id);
   const effectivePrice = product.deal ? product.deal.price : product.price;
   const pct = discountPercent(effectivePrice, product.mrp);
   const related = getRelatedProducts(product);
@@ -121,7 +123,7 @@ export default function ProductDetails() {
         {/* Gallery */}
         <div className="pd-gallery">
           <div className="pd-gallery-main">
-            <img src={product.images?.[activeImage] || product.image} alt={product.name} />
+            <img src={product.images?.[activeImage] || product.image || fallbackImage} alt={product.name} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage; }} />
             {product.deal && <span className="pd-deal-ribbon">Limited-time deal</span>}
           </div>
           {product.images && product.images.length > 1 && (
@@ -133,7 +135,7 @@ export default function ProductDetails() {
                   onClick={() => setActiveImage(idx)}
                   aria-label={`View image ${idx + 1}`}
                 >
-                  <img src={src} alt={`${product.name} ${idx + 1}`} />
+                  <img src={src} alt={`${product.name} ${idx + 1}`} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage; }} />
                 </button>
               ))}
             </div>
