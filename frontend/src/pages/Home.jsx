@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import { FiSearch, FiUser, FiShoppingCart, FiTruck, FiLock, FiRefreshCw, FiGrid, FiMessageCircle, FiTag, FiSmartphone, FiShoppingBag, FiHome, FiGift, FiMenu, FiCreditCard, FiBriefcase, FiDollarSign, FiStar, FiZap, FiAward } from "react-icons/fi";
+import { FiSearch, FiUser, FiShoppingCart, FiTruck, FiLock, FiRefreshCw, FiGrid, FiMessageCircle, FiTag, FiSmartphone, FiShoppingBag, FiHome, FiGift, FiMenu, FiCreditCard, FiBriefcase, FiDollarSign, FiStar, FiZap, FiAward, FiCoffee, FiFeather, FiDroplet, FiHeart, FiBook, FiTool, FiGrid } from "react-icons/fi";
 import {
   CATEGORIES,
   PRODUCTS,
@@ -17,8 +17,8 @@ import BuyItAgain from "../components/BuyItAgain";
 import "./Home.css";
 
 const categoryVisuals = {
-  all: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=720&h=480&q=75",
-  grocery: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=720&h=480&q=75",
+  all: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=720&h=480&q=75",
+  grocery: "https://images.unsplash.com/photo-1604719312566-8912e9c8a213?auto=format&fit=crop&w=720&h=480&q=75",
   "groceries-and-staples": "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=720&h=480&q=75",
   "snacks-and-beverages": "https://images.unsplash.com/photo-1621939514649-280e2aa7f1f9?auto=format&fit=crop&w=720&h=480&q=75",
   "dairy-and-bakery": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=720&h=480&q=75",
@@ -27,13 +27,13 @@ const categoryVisuals = {
   "kitchen-and-dining": "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=720&h=480&q=75",
   "personal-care": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=720&h=480&q=75",
   electronics: "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=720&h=480&q=75",
-  "electronics-and-accessories": "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=720&h=480&q=75",
+  "electronics-and-accessories": "https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=720&h=480&q=75",
   fashion: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=720&h=480&q=75",
-  "men-s-fashion": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=720&h=480&q=75",
+  "men-s-fashion": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=720&h=480&q=75",
   "women-s-fashion": "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=720&h=480&q=75",
   "kids-and-baby": "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=720&h=480&q=75",
   "stationery-and-office": "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=720&h=480&q=75",
-  home: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=720&h=480&q=75",
+  home: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=720&h=480&q=75",
   "home-decor-and-furnishing": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=720&h=480&q=75",
   "health-and-wellness": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=720&h=480&q=75",
   "pet-and-garden": "https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=720&h=480&q=75",
