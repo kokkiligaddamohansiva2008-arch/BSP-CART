@@ -51,8 +51,8 @@ const DEFAULT_PRODUCT_IMAGE =
 // Product-specific image fallback used when existing catalogue rows share
 // the same photo. It keeps a repeated category placeholder from appearing
 // on every product while preserving unique seller-uploaded photos.
-function productImageSearchUrl(name, id) {
-  const keywords = encodeURIComponent(String(name || "product").toLowerCase().trim().replace(/\s+/g, ","));
+function productImageSearchUrl(name, category, id) {
+  const keywords = encodeURIComponent(`${name || "product"} ${category || ""}`.toLowerCase().trim().replace(/\s+/g, ","));
   return `https://loremflickr.com/480/480/${keywords}?lock=${encodeURIComponent(String(id || name))}`;
 }
 
@@ -128,7 +128,7 @@ export async function loadProducts() {
   // product a name-specific image URL. Unique seller photos remain untouched.
   databaseProducts.forEach((product) => {
     if (product.image && imageCounts.get(product.image) > 1) {
-      const replacement = productImageSearchUrl(product.name, product.id);
+      const replacement = productImageSearchUrl(product.name, product.category, product.id);
       product.image = replacement;
       product.images = [replacement, ...(product.images || []).slice(1)];
     }
