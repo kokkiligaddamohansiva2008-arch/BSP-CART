@@ -37,11 +37,9 @@ export const ADDITIONAL_CATEGORIES = Object.entries(ids).map(([label, id], index
 export const ADDITIONAL_PRODUCTS = Object.entries(groups).flatMap(([category, raw], groupIndex) =>
   raw.split("|").map((name, index) => {
     const price = Math.round((bases[groupIndex] + ((index * 37) % (bases[groupIndex] * 2))) / 5) * 5;
-    // Request a product-specific image for every listing. The previous code
-    // reused one category-level photo for almost every non-grocery product,
-    // which made unrelated products display the same image.
-    // Include the category to make ambiguous product names more specific.
-    const imageQuery = encodeURIComponent(`${name.toLowerCase()},${category.toLowerCase()}`);
+    // Resolve each listing using its own product name, not a shared category
+    // keyword. A stable, unique lock keeps images distinct within each category.
+    const imageQuery = encodeURIComponent(name.toLowerCase().replace(/\\s+/g, ","));
     const image = `https://loremflickr.com/480/480/${imageQuery}?lock=${groupIndex * 1000 + index + 101}`;
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     return {
