@@ -12,7 +12,7 @@
 | (public URLs are saved in the product row — no more base64 in the browser).
 */
 import { supabase } from "../lib/supabase";
-import { ADDITIONAL_CATEGORIES, ADDITIONAL_PRODUCTS } from "./additionalProducts";
+import { ADDITIONAL_CATEGORIES, ADDITIONAL_PRODUCTS, productThumbnail } from "./additionalProducts";
 
 export const CATEGORIES = [
   { id: "all", label: "All Stalls" },
@@ -66,7 +66,7 @@ function fromRow(r) {
     ? r.images
     : legacyImage
       ? [legacyImage]
-      : [DEFAULT_PRODUCT_IMAGE];
+      : null;
   const categoryName = r.category || r.categories?.name || r.category_name || "";
   const categoryKey = ({
     electronics: "electronics",
@@ -80,6 +80,7 @@ function fromRow(r) {
     home: "home",
   })[String(categoryName).trim().toLowerCase()]
     || String(categoryName).trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const resolvedImages = images || [productThumbnail(r.name, categoryKey, r.id)];
 
   return {
     id: Number(r.id),
@@ -93,8 +94,8 @@ function fromRow(r) {
     rating: Number(r.rating) || 0,
     ratingCount: Number(r.rating_count) || 0,
     bestseller: !!r.bestseller,
-    image: images[0],
-    images,
+    image: resolvedImages[0],
+    images: resolvedImages,
     description: r.description || "",
     highlights: r.highlights || [],
     priceHistory: (r.price_history || []).map(Number),
@@ -128,7 +129,7 @@ export async function loadProducts() {
   // product a name-specific image URL. Unique seller photos remain untouched.
   databaseProducts.forEach((product) => {
     if (product.image && imageCounts.get(product.image) > 1) {
-      const replacement = productImageSearchUrl(product.name, product.category, product.id);
+      const replacement = productThumbnail(product.name, product.category, product.id);
       product.image = replacement;
       product.images = [replacement, ...(product.images || []).slice(1)];
     }
