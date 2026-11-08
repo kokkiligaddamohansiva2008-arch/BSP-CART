@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { FiGrid, FiShoppingBag, FiSmartphone, FiTag, FiHome, FiPackage, FiCoffee, FiFeather, FiDroplet, FiHeart, FiHeadphones, FiUser, FiSmile, FiBook, FiActivity, FiGitBranch, FiTool, FiTruck, FiGift } from "react-icons/fi";
 import Swal from "sweetalert2";
 import ProductCard from "../components/ProductCard";
 import { CATEGORIES, PRODUCTS } from "../data/catalog";
@@ -13,6 +14,35 @@ const SORT_OPTIONS = [
   { id: "rating", label: "Avg. Customer Rating" },
   { id: "newest", label: "Newest First" },
 ];
+
+// Parent filters include their matching subcategories in the catalogue.
+const CATEGORY_GROUPS = {
+  grocery: ["grocery", "groceries-and-staples", "snacks-and-beverages", "dairy-and-bakery", "fruits-and-vegetables", "household-and-cleaning", "kitchen-and-dining", "personal-care"],
+  electronics: ["electronics", "electronics-and-accessories"],
+  fashion: ["fashion", "mens-fashion", "womens-fashion"],
+  home: ["home", "home-decor-and-furnishing", "kitchen-and-dining"],
+};
+
+const categoryIcon = (category) => {
+  const label = String(category.label || "").toLowerCase();
+  const id = String(category.id || "").toLowerCase();
+  if (id === "all") return FiGrid;
+  if (id === "grocery" || label.includes("grocery")) return label.includes("staples") ? FiPackage : FiShoppingBag;
+  if (label.includes("snack") || label.includes("dairy")) return FiCoffee;
+  if (label.includes("fruit")) return FiFeather;
+  if (label.includes("household")) return FiDroplet;
+  if (label.includes("personal care") || label.includes("health")) return FiHeart;
+  if (label.includes("electronic")) return label.includes("accessories") ? FiHeadphones : FiSmartphone;
+  if (label.includes("fashion") || label.includes("clothing")) return label.includes("women") || label.includes("men") ? FiUser : FiTag;
+  if (label.includes("kids") || label.includes("baby")) return FiSmile;
+  if (label.includes("stationery") || label.includes("office")) return FiBook;
+  if (label.includes("pet") || label.includes("garden")) return FiGitBranch;
+  if (label.includes("tool") || label.includes("hardware")) return FiTool;
+  if (label.includes("auto") || label.includes("travel")) return FiTruck;
+  if (label.includes("gift") || label.includes("festival")) return FiGift;
+  if (label.includes("home") || label.includes("kitchen") || label.includes("decor")) return FiHome;
+  return FiTag;
+};
 
 // Convert numbers and formatted currency strings safely before comparing.
 const numericValue = (value) => {
@@ -103,10 +133,12 @@ const Products = () => {
 
     let list = PRODUCTS.filter((product) => {
       // Category filtering
+      const selectedCategory = String(category || "").toLowerCase();
+      const productCategory = String(product.category || "").toLowerCase();
+      const includedCategories = CATEGORY_GROUPS[selectedCategory] || [selectedCategory];
       const matchesCategory =
-        category === "all" ||
-        String(product.category || "").toLowerCase() ===
-          String(category || "").toLowerCase();
+        selectedCategory === "all" ||
+        includedCategories.includes(productCategory);
 
       if (!matchesCategory) {
         return false;
@@ -333,8 +365,13 @@ const Products = () => {
                 : "btn-outline-dark"
             }`}
             onClick={() => setCategory(c.id)}
+            aria-pressed={category === c.id}
           >
-            {c.label}
+            {(() => {
+              const Icon = categoryIcon(c);
+              return <Icon aria-hidden="true" size={16} strokeWidth={2.1} />;
+            })()}
+            <span>{c.label}</span>
           </button>
         ))}
 
