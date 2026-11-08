@@ -48,14 +48,6 @@ const DEFAULT_PRODUCT_IMAGE =
 
 /* ------------------------------ mapping ------------------------------ */
 
-// Product-specific image fallback used when existing catalogue rows share
-// the same photo. It keeps a repeated category placeholder from appearing
-// on every product while preserving unique seller-uploaded photos.
-function productImageSearchUrl(name, category, id) {
-  const keywords = encodeURIComponent(`${name || "product"} ${category || ""}`.toLowerCase().trim().replace(/\s+/g, ","));
-  return `https://loremflickr.com/480/480/${keywords}?lock=${encodeURIComponent(String(id || name))}`;
-}
-
 // DB row -> the object shape the UI already uses
 function fromRow(r) {
   // Support both the current catalogue schema and the earlier starter schema
