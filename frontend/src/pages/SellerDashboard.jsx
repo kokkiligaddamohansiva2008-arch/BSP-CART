@@ -197,6 +197,13 @@ const SellerDashboard = () => {
       return;
     }
 
+    // New seller listings must include at least one image selected from the device.
+    // Existing uploaded images remain available when editing a product.
+    if (!editingId && images.length === 0) {
+      Swal.fire("Product image required", "Please upload at least one product image before adding this product.", "warning");
+      return;
+    }
+
     if (Number(form.price) <= 0 || Number(form.stock) < 0) {
       Swal.fire("Invalid values", "Price must be positive and stock cannot be negative.", "warning");
       return;
@@ -304,6 +311,10 @@ const SellerDashboard = () => {
     for (const { row, number } of filled) {
       if (!row.name.trim() || !row.price || row.stock === "") {
         Swal.fire("Missing details", `Product ${number}: name, price and stock are required.`, "warning");
+        return;
+      }
+      if (row.images.length === 0) {
+        Swal.fire("Product image required", `Product ${number}: upload at least one image.`, "warning");
         return;
       }
       if (Number(row.price) <= 0 || Number(row.stock) < 0) {
