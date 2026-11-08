@@ -1,10 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { discountPercent } from "../data/catalog";
-import defaultImage from "../assets/default-Product.png";
+import { productThumbnail } from "../data/additionalProducts";
 
 function ProductCard({ product, onAddToCart, onView }) {
   const pct = discountPercent(product.price, product.mrp);
+  const fallbackImage = productThumbnail(product.name, product.category, product.id);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -21,11 +22,11 @@ function ProductCard({ product, onAddToCart, onView }) {
           className="text-decoration-none text-dark position-relative"
         >
           <img
-            src={product.imageUrl || product.image || defaultImage}
+            src={product.imageUrl || product.image || fallbackImage}
             alt={product.name}
             loading="lazy"
             decoding="async"
-            onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = defaultImage; }}
+            onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage; }}
             width="300"
             height="300"
             style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", borderRadius: "10px" }}
