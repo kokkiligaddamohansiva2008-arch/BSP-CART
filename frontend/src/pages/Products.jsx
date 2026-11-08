@@ -19,7 +19,7 @@ const SORT_OPTIONS = [
 const CATEGORY_GROUPS = {
   grocery: ["grocery", "groceries-and-staples", "snacks-and-beverages", "dairy-and-bakery", "fruits-and-vegetables", "household-and-cleaning", "kitchen-and-dining", "personal-care"],
   electronics: ["electronics", "electronics-and-accessories"],
-  fashion: ["fashion", "mens-fashion", "womens-fashion"],
+  fashion: ["fashion", "men-s-fashion", "women-s-fashion"],
   home: ["home", "home-decor-and-furnishing", "kitchen-and-dining"],
 };
 
@@ -359,7 +359,7 @@ const Products = () => {
           <button
             key={c.id}
             type="button"
-            className={`btn btn-sm ${
+            className={`btn btn-sm d-inline-flex align-items-center gap-2 ${
               category === c.id
                 ? "btn-dark"
                 : "btn-outline-dark"
