@@ -57,9 +57,6 @@ export async function loginWithProvider(key, { role } = {}) {
 | is the safety net) and apply a "Sell" choice to brand-new accounts only.
 */
 async function ensureProfile(user) {
-  const pendingSeller = localStorage.getItem(PENDING_ROLE_KEY) === "SELLER";
-  const isNew = Date.now() - new Date(user.created_at || 0).getTime() < 2 * 60 * 1000;
-
   let profile = await fetchProfile(user.id);
 
   if (!profile) {
