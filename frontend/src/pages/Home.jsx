@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import { FiSearch, FiUser, FiShoppingCart, FiTruck, FiLock, FiRefreshCw, FiGrid, FiMessageCircle, FiTag, FiSmartphone, FiShoppingBag, FiHome, FiGift, FiMenu, FiCreditCard, FiBriefcase, FiDollarSign, FiStar, FiZap, FiAward, FiCoffee, FiFeather, FiDroplet, FiHeart, FiBook, FiTool, FiGrid } from "react-icons/fi";
+import { FiSearch, FiUser, FiShoppingCart, FiTruck, FiLock, FiRefreshCw, FiGrid, FiMessageCircle, FiTag, FiSmartphone, FiShoppingBag, FiHome, FiGift, FiMenu, FiCreditCard, FiBriefcase, FiDollarSign, FiStar, FiZap, FiAward, FiCoffee, FiFeather, FiDroplet, FiHeart, FiBook, FiTool } from "react-icons/fi";
 import {
   CATEGORIES,
   PRODUCTS,
