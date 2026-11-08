@@ -35,7 +35,7 @@ export const ADDITIONAL_CATEGORIES = Object.entries(ids).map(([label, id], index
   image: `https://images.unsplash.com/${images[index]}?auto=format&fit=crop&w=720&h=480&q=75`,
 }));
 export const ADDITIONAL_PRODUCTS = Object.entries(groups).flatMap(([category, raw], groupIndex) =>
-  raw.split("|").map((name, index) => {
+  raw.split("|").slice(0, 20).map((name, index) => {
     const price = Math.round((bases[groupIndex] + ((index * 37) % (bases[groupIndex] * 2))) / 5) * 5;
     // Resolve each listing using its own product name, not a shared category
     // keyword. A stable, unique lock keeps images distinct within each category.
