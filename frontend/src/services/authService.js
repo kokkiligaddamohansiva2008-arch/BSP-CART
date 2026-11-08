@@ -76,19 +76,10 @@ async function ensureProfile(user) {
         email: user.email,
         name: meta.full_name || meta.name || base,
         username: `${base}${Math.random().toString(36).slice(2, 6)}`,
-        role: pendingSeller && isNew ? "SELLER" : "BUYER",
       })
       .select("id, username, name, email, role")
       .maybeSingle();
     profile = data || (await fetchProfile(user.id));
-  } else if (pendingSeller && isNew && profile.role === "BUYER") {
-    const { data } = await supabase
-      .from("profiles")
-      .update({ role: "SELLER" })
-      .eq("id", user.id)
-      .select("id, username, name, email, role")
-      .maybeSingle();
-    if (data) profile = data;
   }
 
   localStorage.removeItem(PENDING_ROLE_KEY);
