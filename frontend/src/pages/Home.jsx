@@ -14,6 +14,7 @@ import { addToCart as addToStoredCart, useCartStore } from "../utils/cartStore";
 import DealCountdown from "../components/DealCountdown";
 import RecommendedProducts from "../components/RecommendedProducts";
 import BuyItAgain from "../components/BuyItAgain";
+import { productThumbnail } from "../data/additionalProducts";
 import "./Home.css";
 
 const categoryVisuals = {
@@ -238,11 +239,16 @@ const wishlistCount = wishlist.length;
             onClick={() => handleProductClick(product.id)}
           >
             <img
-              src={product.image}
+              src={product.imageUrl || product.image || productThumbnail(product.name, product.category, product.id)}
               alt={product.name}
               loading="lazy"
               decoding="async"
-              onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = "https://placehold.co/480x480/faf6ef/202a44?text=Product+Image"; }}
+              width="480"
+              height="480"
+              onError={(event) => {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src = productThumbnail(product.name, product.category, product.id);
+              }}
             />
           </Link>
 
@@ -655,9 +661,16 @@ const wishlistCount = wishlist.length;
                 >
                   <div className="mega-deal-image">
                     <img
-                      src={product.image}
+                      src={product.imageUrl || product.image || productThumbnail(product.name, product.category, product.id)}
                       alt={product.name}
                       loading="lazy"
+                      decoding="async"
+                      width="480"
+                      height="480"
+                      onError={(event) => {
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = productThumbnail(product.name, product.category, product.id);
+                      }}
                     />
 
                     {pct > 0 && (
