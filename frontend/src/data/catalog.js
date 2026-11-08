@@ -52,7 +52,7 @@ const DEFAULT_PRODUCT_IMAGE =
 // the same photo. It keeps a repeated category placeholder from appearing
 // on every product while preserving unique seller-uploaded photos.
 function productImageSearchUrl(name, id) {
-  const keywords = encodeURIComponent(String(name || "product").toLowerCase().trim().replace(/\\s+/g, ","));
+  const keywords = encodeURIComponent(String(name || "product").toLowerCase().trim().replace(/\s+/g, ","));
   return `https://loremflickr.com/480/480/${keywords}?lock=${encodeURIComponent(String(id || name))}`;
 }
 
