@@ -203,7 +203,13 @@ export async function addSellerProducts(ownerUsername, ownerName, list) {
   try {
     const rows = [];
     for (const data of list) {
-      const { urls, paths } = await uploadImages(userId, imagesOf(data));
+      const productImages = imagesOf(data);
+      // Enforce image uploads at the data layer too, so the rule cannot be
+      // bypassed by another caller of addSellerProduct(s).
+      if (!productImages.length || !productImages.some((image) => String(image).startsWith("data:image/"))) {
+        throw new Error(`Upload at least one product image for "${data.name || "this product"}" before saving.`);
+      }
+      const { urls, paths } = await uploadImages(userId, productImages);
       allPaths.push(...paths);
       const price = Number(data.price) || 0;
       rows.push({
