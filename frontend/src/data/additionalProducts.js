@@ -39,7 +39,7 @@ export const ADDITIONAL_PRODUCTS = Object.entries(groups).flatMap(([category, ra
     const price = Math.round((bases[groupIndex] + ((index * 37) % (bases[groupIndex] * 2))) / 5) * 5;
     // Resolve each listing using its own product name, not a shared category
     // keyword. A stable, unique lock keeps images distinct within each category.
-    const imageQuery = encodeURIComponent(name.toLowerCase().replace(/\s+/g, ","));
+    const imageQuery = encodeURIComponent(`${name} ${category}`.toLowerCase().replace(/\s+/g, ","));
     const image = `https://loremflickr.com/480/480/${imageQuery}?lock=${groupIndex * 1000 + index + 101}`;
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     return {
