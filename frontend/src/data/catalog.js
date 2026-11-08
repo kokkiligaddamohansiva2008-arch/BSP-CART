@@ -48,6 +48,14 @@ const DEFAULT_PRODUCT_IMAGE =
 
 /* ------------------------------ mapping ------------------------------ */
 
+// Product-specific image fallback used when existing catalogue rows share
+// the same photo. It keeps a repeated category placeholder from appearing
+// on every product while preserving unique seller-uploaded photos.
+function productImageSearchUrl(name, id) {
+  const keywords = encodeURIComponent(String(name || "product").toLowerCase().trim().replace(/\\s+/g, ","));
+  return `https://loremflickr.com/480/480/${keywords}?lock=${encodeURIComponent(String(id || name))}`;
+}
+
 // DB row -> the object shape the UI already uses
 function fromRow(r) {
   // Support both the current catalogue schema and the earlier starter schema
@@ -106,7 +114,27 @@ export async function loadProducts() {
     .select("*, categories(name)")
     .order("id", { ascending: true });
   if (error) throw error;
-  PRODUCTS.splice(0, PRODUCTS.length, ...data.map(fromRow), ...SAMPLE_PRODUCTS);
+
+  const databaseProducts = data.map(fromRow);
+  const imageCounts = new Map();
+  databaseProducts.forEach((product) => {
+    const image = product.image;
+    if (image && !String(image).startsWith("data:")) {
+      imageCounts.set(image, (imageCounts.get(image) || 0) + 1);
+    }
+  });
+
+  // If multiple database products point to one identical photo, give each
+  // product a name-specific image URL. Unique seller photos remain untouched.
+  databaseProducts.forEach((product) => {
+    if (product.image && imageCounts.get(product.image) > 1) {
+      const replacement = productImageSearchUrl(product.name, product.id);
+      product.image = replacement;
+      product.images = [replacement, ...(product.images || []).slice(1)];
+    }
+  });
+
+  PRODUCTS.splice(0, PRODUCTS.length, ...databaseProducts, ...SAMPLE_PRODUCTS);
   notify();
   return PRODUCTS;
 }
