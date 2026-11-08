@@ -238,7 +238,6 @@ export default function ProductDetails() {
             <p className="pd-muted-note">Last 7 weeks — lowest price is highlighted by the current deal, if any.</p>
           </div>
         </div>
-        </div>
       </div>
 
       {/* Reviews */}
