@@ -1,4 +1,22 @@
 // Lightweight supplementary catalogue. Prices are sample INR estimates.
+// Offline, product-specific SVG thumbnails: tiny, deterministic and never dependent on an image CDN.
+const escapeSvg = (value) => String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+export const productThumbnail = (name, category, seed = 0) => {
+  const palettes = [["#F2E6C9","#A36B28","#E2A83B"],["#E4F0DA","#4D7D43","#9DC56C"],["#E7EFF8","#345A8A","#7AA8D9"],["#F8E7E9","#A34E69","#D98EA0"],["#F1EADF","#79634A","#B99B76"],["#E9E4F6","#66528B","#AA98D4"],["#E5F2EE","#3D806C","#82B8A4"],["#F5EBDD","#A36B28","#D9A85F"]];
+  const [bg, fg, accent] = palettes[Math.abs(Number(seed) || 0) % palettes.length];
+  const group = String(category || "").toLowerCase();
+  let art = '<rect x="170" y="110" width="140" height="150" rx="24" fill="' + fg + '"/><rect x="182" y="122" width="116" height="112" rx="10" fill="' + bg + '"/>';
+  if (/fruit|vegetable|grocery|staple|snack|dairy|bakery/.test(group)) art = '<path d="M240 122 C185 94 145 150 173 207 C192 246 228 252 240 241 C252 252 288 246 307 207 C335 150 295 94 240 122Z" fill="' + accent + '"/><path d="M240 126 Q235 101 260 92 Q270 118 240 126Z" fill="' + fg + '"/>';
+  else if (/electronic/.test(group)) art = '<rect x="170" y="108" width="140" height="148" rx="20" fill="' + fg + '"/><rect x="181" y="121" width="118" height="116" rx="10" fill="' + bg + '"/><circle cx="240" cy="246" r="5" fill="' + bg + '"/>';
+  else if (/fashion|kids/.test(group)) art = '<path d="M198 112 L222 96 L258 96 L282 112 L322 145 L295 177 L278 159 L278 255 L202 255 L202 159 L185 177 L158 145Z" fill="' + accent + '" stroke="' + fg + '" stroke-width="7"/>';
+  else if (/home|kitchen|furnishing/.test(group)) art = '<path d="M145 183 L240 105 L335 183" fill="none" stroke="' + fg + '" stroke-width="16"/><rect x="169" y="177" width="142" height="90" rx="10" fill="' + accent + '"/>';
+  else if (/personal care|health/.test(group)) art = '<rect x="197" y="111" width="86" height="148" rx="18" fill="' + accent + '"/><rect x="215" y="91" width="50" height="24" rx="6" fill="' + fg + '"/><path d="M240 150 V218 M206 184 H274" stroke="' + bg + '" stroke-width="12" stroke-linecap="round"/>';
+  const safeName = escapeSvg(name);
+  const parts = safeName.length > 27 ? [safeName.slice(0, 27), safeName.slice(27, 54)] : [safeName];
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480"><rect width="480" height="480" rx="32" fill="' + bg + '"/><circle cx="410" cy="70" r="90" fill="' + accent + '" opacity=".12"/><rect x="142" y="82" width="196" height="196" rx="34" fill="' + accent + '" opacity=".15"/>' + art + '<text x="240" y="325" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="' + fg + '">' + escapeSvg(String(category || "BSP CART").toUpperCase()) + '</text><text x="240" y="365" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#243047">' + parts.map((part, i) => '<tspan x="240" dy="' + (i ? 27 : 0) + '">' + part + '</tspan>').join("") + '</text><text x="240" y="445" text-anchor="middle" font-family="Arial" font-size="12" letter-spacing="2" fill="' + fg + '">BSP CART</text></svg>';
+  return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+};
+
 const groups = {
   "Groceries & Staples": "Basmati Rice|Sona Masoori Rice|Brown Rice|Poha (Flattened Rice)|Toor Dal|Moong Dal|Chana Dal|Urad Dal|Masoor Dal|Rajma|Kabuli Chana|Black Chana|Green Moong|Whole Wheat Atta|Multigrain Atta|Maida|Besan|Rice Flour|Ragi Flour|Rava (Semolina)|Vermicelli|Sugar|Jaggery|Rock Salt|Iodised Salt|Turmeric Powder|Red Chilli Powder|Coriander Powder|Cumin Seeds|Mustard Seeds|Black Pepper|Cardamom|Cloves|Cinnamon Sticks|Garam Masala|Sambar Powder|Biryani Masala|Tamarind|Dry Red Chillies|Bay Leaves|Fennel Seeds|Fenugreek Seeds|Sunflower Oil|Groundnut Oil|Mustard Oil|Coconut Oil|Pure Ghee|Cashew Nuts|Almonds|Raisins|Idli Rice|Parboiled Rice|Foxtail Millet|Jowar Flour|Bajra Flour|Cornmeal|Sesame Seeds|Poppy Seeds|Asafoetida (Hing)|Chaat Masala",
   "Snacks & Beverages": "Potato Chips|Banana Chips|Masala Peanuts|Aloo Bhujia|Murukku|Mixture Namkeen|Popcorn|Nachos|Cream Biscuits|Digestive Biscuits|Glucose Biscuits|Marie Biscuits|Cookies Assorted Pack|Rusk|Khakhra|Roasted Makhana|Trail Mix|Protein Bars|Granola|Oats|Corn Flakes|Muesli|Dark Chocolate Bar|Milk Chocolate Bar|Chocolate Wafers|Toffees|Mints|Gummy Candies|Chikki|Dry Fruit Laddu|Tea Powder|Green Tea Bags|Masala Chai Mix|Instant Coffee|Filter Coffee Powder|Cold Coffee Mix|Hot Chocolate Mix|Health Drink Powder|Fruit Juice Mango|Fruit Juice Orange|Coconut Water|Lemon Soda|Cola Drink|Energy Drink|Packaged Drinking Water|Buttermilk Pack|Lassi Pack|Rose Syrup|Squash Concentrate|Instant Noodles|Pasta Penne|Macaroni|Ready-to-Eat Pav Bhaji|Instant Upma Mix|Gulab Jamun Mix|Sev|Chakli|Mathri|Kokum Syrup|Jaljeera Drink|Roasted Chana",
@@ -37,10 +55,8 @@ export const ADDITIONAL_CATEGORIES = Object.entries(ids).map(([label, id], index
 export const ADDITIONAL_PRODUCTS = Object.entries(groups).flatMap(([category, raw], groupIndex) =>
   raw.split("|").slice(0, 20).map((name, index) => {
     const price = Math.round((bases[groupIndex] + ((index * 37) % (bases[groupIndex] * 2))) / 5) * 5;
-    // Resolve each listing using its own product name, not a shared category
-    // keyword. A stable, unique lock keeps images distinct within each category.
-    const imageQuery = encodeURIComponent(`${name} ${category}`.toLowerCase().replace(/\s+/g, ","));
-    const image = `https://loremflickr.com/480/480/${imageQuery}?lock=${groupIndex * 1000 + index + 101}`;
+    // Local SVG thumbnails are unique to the product name and work offline.
+    const image = productThumbnail(name, category, groupIndex * 20 + index);
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     return {
       id: `extra-${ids[category]}-${slug}`, name, category: ids[category], price,
