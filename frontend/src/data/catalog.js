@@ -109,18 +109,21 @@ export async function loadProducts() {
   if (error) throw error;
 
   const databaseProducts = data.map(fromRow);
+  // A shared image URL is not evidence that the photo matches any product.
+  // Never overwrite seller-uploaded photos: sellers may intentionally reuse
+  // their own image across variants. For imported legacy rows with a shared
+  // generic image, use an explicitly named, product-specific illustration.
   const imageCounts = new Map();
   databaseProducts.forEach((product) => {
+    if (product.isSellerAdded) return;
     const image = product.image;
-    if (image && !String(image).startsWith("data:")) {
+    if (typeof image === "string" && /^https?:\/\//i.test(image)) {
       imageCounts.set(image, (imageCounts.get(image) || 0) + 1);
     }
   });
-
-  // If multiple database products point to one identical photo, give each
-  // product a name-specific image URL. Unique seller photos remain untouched.
   databaseProducts.forEach((product) => {
-    if (product.image && imageCounts.get(product.image) > 1) {
+    if (product.isSellerAdded) return;
+    if (imageCounts.get(product.image) > 1) {
       const replacement = productThumbnail(product.name, product.category, product.id);
       product.image = replacement;
       product.images = [replacement, ...(product.images || []).slice(1)];
