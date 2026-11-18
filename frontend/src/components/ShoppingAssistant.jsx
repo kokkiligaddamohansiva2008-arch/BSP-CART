@@ -23,7 +23,7 @@ export function recommendCatalogueProducts(request, catalogue = PRODUCTS) {
   const min = between ? Number(between[1]) : minMatch ? Number(minMatch[1]) : null;
   const needsStock = /in.stock|available|buy now|ready to ship/i.test(text);
   const budgetOnly = numbers.length > 0 && normalized.split(/\s+/).filter(t => !STOP.has(t) && !/^\d+$/.test(t)).length === 0;
-  const terms = normalized.split(/[^a-z0-9]+/g).filter(t => t.length > 1 && !STOP.has(t) && !/^\d+$/.test(t));
+  const terms = normalized.split(/[^a-z0-9]+/g).filter(t => t.length > 1 && !STOP.has(t) && !/^\d+$/.test(t)).map(t => t === "grocery" ? "grocer" : t);
   const ranked = catalogue.filter(p => {
     const price = cost(p.price);
     if (max != null && price > max) return false;
@@ -67,7 +67,7 @@ export default function ShoppingAssistant() {
   return (
     <aside aria-label="BSP CART shopping assistant" style={{ position: "fixed", right: 16, bottom: 16, zIndex: 1200, maxWidth: "calc(100vw - 32px)", fontFamily: "inherit" }}>
       {open && (
-        <div style={{ width: 355, maxWidth: "100%", height: "min(560px, calc(100vh - 110px))", background: "#fff", display: "flex", flexDirection: "column", borderRadius: 14, overflow: "hidden", border: "1px solid #d7d0c5", boxShadow: "0 10px 38px #202a4430", marginBottom: 8 }}>
+        <div id="shopping-assistant-panel" style={{ width: 355, maxWidth: "100%", height: "min(560px, calc(100vh - 110px))", background: "#fff", display: "flex", flexDirection: "column", borderRadius: 14, overflow: "hidden", border: "1px solid #d7d0c5", boxShadow: "0 10px 38px #202a4430", marginBottom: 8 }}>
           <header style={{ background: "#202a44", color: "white", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div><strong>BSP CART Shopping Assistant</strong><div style={{ fontSize: 11, opacity: .85 }}>Catalogue-powered • no external AI model</div></div>
             <button type="button" onClick={() => setOpen(false)} style={{ color: "white", border: "none", background: "transparent", fontSize: 23 }} aria-label="Close assistant">×</button>
