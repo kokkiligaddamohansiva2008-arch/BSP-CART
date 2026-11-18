@@ -13,8 +13,16 @@ export default function ProductsGate({ children }) {
   useEffect(() => {
     if (!isSupabaseConfigured) return;
     loadProducts()
-      .then(() => setState("ready"))
+      .then((products) => {
+        console.info(
+          "%c[BSP CART] You are connected to Supabase.",
+          "color: #16a34a; font-weight: bold;",
+          `Successfully loaded ${products.length} products.`
+        );
+        setState("ready");
+      })
       .catch((e) => {
+        console.error("[BSP CART] Supabase connection or product query failed:", e);
         setMessage(e.message || "Could not reach Supabase");
         setState("error");
       });
