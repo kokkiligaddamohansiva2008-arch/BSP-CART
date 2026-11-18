@@ -12,7 +12,7 @@
 | (public URLs are saved in the product row — no more base64 in the browser).
 */
 import { supabase } from "../lib/supabase";
-import { ADDITIONAL_CATEGORIES, ADDITIONAL_PRODUCTS, productThumbnail } from "./additionalProducts";
+import { ADDITIONAL_CATEGORIES, ADDITIONAL_PRODUCTS } from "./additionalProducts";
 import { matchingProductVisual } from "./productVisuals";
 
 export const CATEGORIES = [
@@ -124,7 +124,8 @@ export async function loadProducts() {
   });
   databaseProducts.forEach((product) => {
     if (product.isSellerAdded) return;
-    if (imageCounts.get(product.image) > 1) {
+    const oldArt = typeof product.image === "string" && (/^data:image\/svg\+xml/i.test(product.image) || /\/images\/products\/groceries-and-staples-[^/]+\.svg(?:\?|$)/i.test(product.image));
+    if (oldArt || imageCounts.get(product.image) > 1) {
       const replacement = matchingProductVisual(product.name, product.category, product.id);
       product.image = replacement;
       product.images = [replacement, ...(product.images || []).slice(1)];
