@@ -1,7 +1,28 @@
-# BSP CART product image assets
+# BSP CART product photos
 
-This directory stores the lightweight static fallback image used if a browser cannot render a product thumbnail.
+Run the downloader from this `frontend` directory:
 
-The 360 sample-catalogue product thumbnails (20 products in each of 18 categories) are generated as compact, product-name-specific SVG data images by `frontend/src/data/additionalProducts.js`. This avoids hundreds of third-party image requests and prevents empty/broken image tiles when an external image host is unavailable.
+```powershell
+$env:PIXABAY_KEY="your_pixabay_api_key"
+npm run images
+```
 
-Seller-uploaded product photos remain in Supabase Storage and are not replaced by these sample thumbnails. These generated SVGs are clean illustrative thumbnails, not photographs of the exact retail item.
+Preview search queries without downloading:
+
+```powershell
+npm run images -- --dry
+```
+
+Limit to one category:
+
+```powershell
+npm run images -- --only=electronics-and-accessories
+```
+
+The script writes `public/images/products/<product-id>.jpg` and updates
+`src/data/productImages.js` after each successful download. It resumes from
+the manifest; use `--force` to replace existing photos.
+
+Pixabay's top result can be imperfect. Review each downloaded image against
+its product name before publishing. Products without a photo keep the offline
+SVG thumbnail. Seller-uploaded Supabase Storage images are not changed.
