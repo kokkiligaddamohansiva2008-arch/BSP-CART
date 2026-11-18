@@ -239,7 +239,7 @@ const wishlistCount = wishlist.length;
             onClick={() => handleProductClick(product.id)}
           >
             <img
-              src={product.imageUrl || product.image || productThumbnail(product.name, product.category, product.id)}
+              src={product.image || product.images?.[0] || product.imageUrl || productThumbnail(product.name, product.category, product.id)}
               alt={product.name}
               loading="lazy"
               decoding="async"
@@ -661,7 +661,7 @@ const wishlistCount = wishlist.length;
                 >
                   <div className="mega-deal-image">
                     <img
-                      src={product.imageUrl || product.image || productThumbnail(product.name, product.category, product.id)}
+                      src={product.image || product.images?.[0] || product.imageUrl || productThumbnail(product.name, product.category, product.id)}
                       alt={product.name}
                       loading="lazy"
                       decoding="async"
