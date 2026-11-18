@@ -1,4 +1,4 @@
-import { PRODUCT_PHOTOS } from "./productImages.js";
+import { matchingProductVisual } from "./productVisuals.js";
 
 // Lightweight supplementary catalogue. Prices are sample INR estimates.
 // Offline, product-specific SVG thumbnails: deterministic and independent of image CDNs.
@@ -94,10 +94,7 @@ export const ADDITIONAL_PRODUCTS = Object.entries(groups).flatMap(([category, ra
     const productId = `extra-${ids[category]}-${slug}`;
     // Use a downloaded, product-specific photo when present; otherwise retain
     // the deterministic offline thumbnail so the catalogue never has broken images.
-    const photo = PRODUCT_PHOTOS[productId];
-    // Existing manually named rice/pulse SVG files are mislabeled apple art.
-    // Prefer the name-aware generator unless a reviewed photograph exists.
-    const image = photo ? (/^https?:\/\//i.test(photo) ? photo : `/images/products/${photo}`) : productThumbnail(name, category, groupIndex * 20 + index);
+    const image = matchingProductVisual(name, ids[category], productId);
     return {
       id: productId, name, category: ids[category], price,
       mrp: Math.round(price * 1.18 / 5) * 5, stock: 10 + (index % 31),
