@@ -71,10 +71,45 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   useEffect(() => {
+    let mounted = true;
+    let firstLoad = true;
+    let previous = new Map();
+    const sync = async () => {
+      try {
+        await refreshOrders();
+        if (!mounted) return;
+        const latest = loadStoredOrders();
+        if (!firstLoad) {
+          for (const order of latest) {
+            const lastStatus = previous.get(String(order.id));
+            if (lastStatus && lastStatus !== order.status) {
+              Swal.fire({
+                toast: true, position: "top-end", timer: 4500,
+                showConfirmButton: false, icon: "info",
+                title: "Order #" + order.id + ": " + order.status,
+              });
+            }
+          }
+        }
+        previous = new Map(latest.map((o) => [String(o.id), o.status]));
+        firstLoad = false;
+        setOrders(latest);
+      } catch (error) {
+        console.error("Couldn't refresh order tracking", error);
+      }
+    };
     setOrders(loadStoredOrders());
-    refreshOrders()
-      .then(() => setOrders(loadStoredOrders()))
-      .catch((e) => console.error("Could not load orders", e));
+    sync();
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible") sync();
+    }, 60000);
+    const onFocus = () => sync();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      mounted = false;
+      window.clearInterval(timer);
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
 
   /* =========================================================
@@ -200,51 +235,25 @@ const Orders = () => {
   ========================================================= */
 
   const trackOrder = (order) => {
+    // Reflect only statuses actually recorded in the database.
+    const stages = ["Processing", "Shipped", "Delivered"];
+    const current = stages.indexOf(order.status);
+    const safeId = String(order.id).replace(/[&<>"']/g, "");
+    const isCancelled = order.status === "Cancelled";
+    const steps = stages.map((name, index) => {
+      const completed = current > index;
+      const active = current === index;
+      const cls = completed ? "completed" : active ? "current" : "";
+      const description = completed ? "Completed" : active ? "Current status" : "Not yet reached";
+      return '<div class="tracking-popup-step ' + cls + '"><strong>' + name +
+        '</strong><span>' + description + '</span></div>';
+    }).join("");
     Swal.fire({
-      title: `Track Order #${order.id}`,
-      html: `
-        <div class="tracking-popup">
-
-          <div class="tracking-popup-step completed">
-            <strong>Order Placed</strong>
-            <span>Order successfully placed</span>
-          </div>
-
-          <div class="tracking-popup-step completed">
-            <strong>Order Confirmed</strong>
-            <span>Seller confirmed your order</span>
-          </div>
-
-          <div class="tracking-popup-step ${
-            order.status === "Processing"
-              ? "current"
-              : "completed"
-          }">
-            <strong>Processing</strong>
-            <span>Your order is being prepared</span>
-          </div>
-
-          <div class="tracking-popup-step ${
-            order.status === "Shipped" ||
-            order.status === "Delivered"
-              ? "completed"
-              : ""
-          }">
-            <strong>Shipped</strong>
-            <span>Your package is on the way</span>
-          </div>
-
-          <div class="tracking-popup-step ${
-            order.status === "Delivered"
-              ? "completed"
-              : ""
-          }">
-            <strong>Delivered</strong>
-            <span>Package delivered successfully</span>
-          </div>
-
-        </div>
-      `,
+      title: "Track Order #" + safeId,
+      html: '<div class="tracking-popup">' +
+        '<p>Order placed: ' + String(order.date).replace(/[<>&"']/g, "") + '</p>' +
+        (isCancelled ? '<div class="tracking-popup-step current"><strong>Cancelled</strong></div>' : steps) +
+        '<small>Updates reflect the status recorded by BSP CART. Carrier tracking is not connected yet.</small></div>',
       confirmButtonText: "Close",
       confirmButtonColor: "#202a44",
     });
@@ -257,40 +266,21 @@ const Orders = () => {
   const cancelOrder = (order) => {
     Swal.fire({
       title: "Cancel this order?",
-      text: `Order #${order.id} will be cancelled.`,
-      icon: "warning",
-      showCancelButton: true,
+      text: "Order #" + order.id + " will be cancelled.",
+      icon: "warning", showCancelButton: true,
       confirmButtonText: "Yes, Cancel Order",
       cancelButtonText: "Keep Order",
       confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#6b7280",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        cancelOrderRpc(order.id)
-          .then(() => refreshOrders())
-          .catch((e) =>
-            Swal.fire({ icon: "error", title: "Couldn't cancel", text: e.message })
-          );
-        setOrders((previousOrders) =>
-          previousOrders.map((item) =>
-            item.id === order.id
-              ? {
-                  ...item,
-                  status: "Cancelled",
-                  payment: "Refund Processing",
-                }
-              : item
-          )
-        );
-
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
+      try {
+        await cancelOrderRpc(order.id);
+        await refreshOrders();
+        setOrders(loadStoredOrders());
         setSelectedOrder(null);
-
-        Swal.fire({
-          icon: "success",
-          title: "Order Cancelled",
-          text: `Order #${order.id} has been cancelled.`,
-          confirmButtonColor: "#202a44",
-        });
+        Swal.fire({ icon: "success", title: "Order cancelled", text: "Your order was cancelled successfully." });
+      } catch (error) {
+        Swal.fire({ icon: "error", title: "Couldn't cancel", text: error.message || "Please try again." });
       }
     });
   };
