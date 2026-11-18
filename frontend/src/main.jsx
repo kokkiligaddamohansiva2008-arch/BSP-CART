@@ -8,11 +8,7 @@ import ProductsGate from "./components/ProductsGate";
 import "./styles/variables.css";
 import "./styles/theme.css";
 
-import { testSupabaseConnection } from "./lib/testSupabase";
-import { testProductsConnection } from "./lib/testProducts";
 
-testSupabaseConnection();
-testProductsConnection();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

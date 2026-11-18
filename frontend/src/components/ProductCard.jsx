@@ -26,7 +26,10 @@ function ProductCard({ product, onAddToCart, onView }) {
             alt={product.name}
             loading="lazy"
             decoding="async"
-            onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage; }}
+            onError={(event) => {
+              event.currentTarget.onerror = null;
+              event.currentTarget.src = fallbackImage;
+            }}
             width="300"
             height="300"
             style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", borderRadius: "10px" }}

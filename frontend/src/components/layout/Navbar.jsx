@@ -10,7 +10,6 @@ import {
 import { useState, useEffect } from "react";
 import { useCartStore } from "../../utils/cartStore";
 import { logout as signOut } from "../../services/authService";
-import logo from "../../assets/logo.png";
 import "../../styles/navbar.css";
 
 function Navbar() {
@@ -87,8 +86,11 @@ function Navbar() {
           onClick={closeMenu}
         >
           <img
-            src={logo}
+            src="/logo.png"
             alt="BSP CART"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             className="logo-img"
           />
         </Link>

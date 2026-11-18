@@ -249,6 +249,10 @@ const wishlistCount = wishlist.length;
                 event.currentTarget.onerror = null;
                 event.currentTarget.src = productThumbnail(product.name, product.category, product.id);
               }}
+              onError={(event) => {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src = productThumbnail(product.name, product.category, product.id);
+              }}
             />
           </Link>
 
@@ -667,6 +671,10 @@ const wishlistCount = wishlist.length;
                       decoding="async"
                       width="480"
                       height="480"
+              onError={(event) => {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src = productThumbnail(product.name, product.category, product.id);
+              }}
                       onError={(event) => {
                         event.currentTarget.onerror = null;
                         event.currentTarget.src = productThumbnail(product.name, product.category, product.id);
@@ -743,7 +751,7 @@ const wishlistCount = wishlist.length;
                     src={category.image || categoryVisuals[category.id] || categoryVisuals.grocery}
                     onError={(event) => {
                       event.currentTarget.onerror = null;
-                      event.currentTarget.src = categoryVisuals.grocery;
+                      event.currentTarget.src = "/images/products/product-fallback.svg";
                     }}
                     alt={category.label}
                     loading="lazy"

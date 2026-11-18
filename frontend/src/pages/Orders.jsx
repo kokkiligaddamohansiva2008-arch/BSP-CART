@@ -1,3 +1,4 @@
+import { productThumbnail } from "../data/additionalProducts";
 import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import {
@@ -602,6 +603,10 @@ const Orders = () => {
                             <img
                               src={item.image}
                               alt={item.name}
+                              onError={(event) => {
+                                event.currentTarget.onerror = null;
+                                event.currentTarget.src = productThumbnail(item.name, item.category, item.id);
+                              }}
                             />
                           </div>
 
@@ -899,6 +904,10 @@ const Orders = () => {
                       <img
                         src={item.image}
                         alt={item.name}
+                        onError={(event) => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.src = productThumbnail(item.name, item.category, item.id);
+                        }}
                       />
 
                       <div>

@@ -275,7 +275,16 @@ export default function ProductDetails() {
               const relPct = discountPercent(p.price, p.mrp);
               return (
                 <Link className="pd-related-card" to={`/products/${p.id}`} key={p.id}>
-                  <img src={p.image} alt={p.name} />
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    loading="lazy"
+                    decoding="async"
+                    onError={(event) => {
+                      event.currentTarget.onerror = null;
+                      event.currentTarget.src = productThumbnail(p.name, p.category, p.id);
+                    }}
+                  />
                   <p className="pd-related-name">{p.name}</p>
                   <div className="pd-related-price-row">
                     <span>{formatINR(p.price)}</span>

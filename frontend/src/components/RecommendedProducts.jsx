@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { PRODUCTS, formatINR, discountPercent, getProductById } from "../data/catalog";
 import { getRecentlyViewed } from "../utils/bspStorage";
+import { productThumbnail } from "../data/additionalProducts";
 import "./Personalization.css";
 
 /*
@@ -55,7 +56,16 @@ export default function RecommendedProducts({ excludeId, limit = 8, title = "Rec
           const pct = discountPercent(p.price, p.mrp);
           return (
             <Link className="bsp-mini-card" to={`/products/${p.id}`} key={p.id}>
-              <img src={p.image} alt={p.name} loading="lazy" />
+              <img
+                src={p.image}
+                alt={p.name}
+                loading="lazy"
+                decoding="async"
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = productThumbnail(p.name, p.category, p.id);
+                }}
+              />
               <p className="bsp-mini-name">{p.name}</p>
               <div className="bsp-mini-price-row">
                 <span className="bsp-mini-price">{formatINR(p.price)}</span>
