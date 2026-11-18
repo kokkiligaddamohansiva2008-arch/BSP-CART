@@ -249,10 +249,6 @@ const wishlistCount = wishlist.length;
                 event.currentTarget.onerror = null;
                 event.currentTarget.src = productThumbnail(product.name, product.category, product.id);
               }}
-              onError={(event) => {
-                event.currentTarget.onerror = null;
-                event.currentTarget.src = productThumbnail(product.name, product.category, product.id);
-              }}
             />
           </Link>
 
@@ -675,10 +671,6 @@ const wishlistCount = wishlist.length;
                 event.currentTarget.onerror = null;
                 event.currentTarget.src = productThumbnail(product.name, product.category, product.id);
               }}
-                      onError={(event) => {
-                        event.currentTarget.onerror = null;
-                        event.currentTarget.src = productThumbnail(product.name, product.category, product.id);
-                      }}
                     />
 
                     {pct > 0 && (
