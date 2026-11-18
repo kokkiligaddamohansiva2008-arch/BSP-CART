@@ -26,6 +26,16 @@ export const productThumbnail = (name, category, seed = 0) => {
   } else if (/apple|orange|mango|banana|grape|guava|papaya|watermelon|melon|fruit|lemon|pear|kiwi|pomegranate|strawberry|pineapple/.test(item)) {
     const fruit = /banana/.test(item) ? '<path d="M170 215 Q195 105 300 125 Q285 210 170 215Z" fill="#E6C64D"/>' : /orange|lemon/.test(item) ? '<circle cx="240" cy="185" r="70" fill="#E99A32"/>' : '<path d="M240 125 C185 94 145 150 173 207 C192 246 228 252 240 241 C252 252 288 246 307 207 C335 150 295 94 240 125Z" fill="' + accent + '"/><path d="M240 126 Q235 101 260 92 Q270 118 240 126Z" fill="' + fg + '"/>';
     art = fruit;
+  } else if (/charger|power bank|adapter/.test(item)) {
+    art = '<rect x="170" y="125" width="140" height="120" rx="22" fill="' + fg + '"/><rect x="190" y="145" width="100" height="80" rx="12" fill="' + accent + '"/><path d="M210 125 V98 M270 125 V98" stroke="' + fg + '" stroke-width="12" stroke-linecap="round"/>';
+  } else if (/cable|usb|hdmi|lightning/.test(item)) {
+    art = '<path d="M160 175 C165 105 315 105 320 185 S185 270 190 205" fill="none" stroke="' + fg + '" stroke-width="19" stroke-linecap="round"/><rect x="145" y="160" width="38" height="35" rx="6" fill="' + accent + '"/><rect x="302" y="174" width="38" height="35" rx="6" fill="' + accent + '"/>';
+  } else if (/headphone|earphone|earbud|neckband/.test(item)) {
+    art = '<path d="M165 195 V168 A75 75 0 0 1 315 168 V195" fill="none" stroke="' + fg + '" stroke-width="20"/><rect x="148" y="180" width="40" height="70" rx="14" fill="' + accent + '"/><rect x="292" y="180" width="40" height="70" rx="14" fill="' + accent + '"/>';
+  } else if (/mouse|keyboard/.test(item)) {
+    art = /keyboard/.test(item) ? '<rect x="125" y="160" width="230" height="85" rx="14" fill="' + fg + '"/>' + Array.from({length:24},(_,i)=>'<rect x="' + (143+(i%8)*26) + '" y="' + (176+Math.floor(i/8)*20) + '" width="19" height="12" rx="2" fill="' + accent + '"/>').join("") : '<rect x="195" y="105" width="90" height="150" rx="45" fill="' + fg + '"/><path d="M240 110 V170" stroke="' + accent + '" stroke-width="7"/>';
+  } else if (/watch|fitness band/.test(item)) {
+    art = '<rect x="215" y="75" width="50" height="210" rx="14" fill="' + fg + '"/><rect x="180" y="125" width="120" height="115" rx="26" fill="' + accent + '" stroke="' + fg + '" stroke-width="10"/><circle cx="240" cy="182" r="32" fill="' + bg + '"/>';
   } else if (/electronic|phone|charger|cable|laptop|computer|mouse|keyboard|speaker|headphone|watch|camera|bulb|router|power bank|usb/.test(item+" "+group)) {
     art = '<rect x="185" y="92" width="110" height="172" rx="20" fill="' + fg + '"/><rect x="195" y="105" width="90" height="135" rx="12" fill="' + accent + '"/><circle cx="240" cy="250" r="6" fill="' + bg + '"/>';
   } else if (/shirt|t-shirt|jeans|trouser|dress|saree|kurti|kurta|shoe|sandal|jacket|hoodie|fashion|clothing/.test(item+" "+group)) {
