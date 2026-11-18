@@ -18,6 +18,7 @@ const expected = new Set();
 const missing = [];
 const urls = new Map();
 const badMappings = [];
+const unusedKeys = [];
 const localAssets = [];
 const slug = value => String(value || "").toLowerCase().replace(/&/g,"and").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 const { existsSync } = await import("node:fs");
@@ -39,14 +40,15 @@ for (const item of ADDITIONAL_PRODUCTS) {
   }
 }
 for (const key of Object.keys(PRODUCT_PHOTOS)) {
-  if (!expected.has(key) && !/^-?\d+$/.test(key)) badMappings.push("Unused manifest key: " + key);
+  if (!expected.has(key) && !/^-?\d+$/.test(key)) unusedKeys.push(key);
 }
 const reusedUrls = [...urls].filter(([,products]) => products.length > 1);
 console.log("BSP CART product photo audit");
 console.log("Sample catalogue listings:", ADDITIONAL_PRODUCTS.length);
 console.log("Mappings to photographs:", ADDITIONAL_PRODUCTS.length - missing.length);
 console.log("Missing real photographs:", missing.length);
-console.log("Broken/local/unused manifest entries:", badMappings.length);
+console.log("Broken local image mappings:", badMappings.length);
+console.log("Manifest keys outside sample catalogue (may belong to database products):", unusedKeys.length);
 console.log("Shared remote URLs:", reusedUrls.length);
 for (const issue of badMappings) console.error("ERROR", issue);
 for (const [url, names] of reusedUrls) console.warn("REVIEW: one photo represents", names.join(", "), url);
