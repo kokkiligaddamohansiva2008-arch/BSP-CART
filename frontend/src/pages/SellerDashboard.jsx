@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { getSellerOrders } from "../services/orderService";
 import {
   FaBoxOpen,
   FaShoppingBag,
@@ -106,6 +108,8 @@ const SellerDashboard = () => {
   const [form, setForm] = useState(EMPTY_FORM);
   const [images, setImages] = useState([]); // array of data URLs
   const [saving, setSaving] = useState(false);
+  const [sellerOrders, setSellerOrders] = useState([]);
+  const [ordersError, setOrdersError] = useState(false);
 
   // Bulk upload
   const [showBulk, setShowBulk] = useState(false);
@@ -125,14 +129,36 @@ const SellerDashboard = () => {
   };
 
   useEffect(() => {
-    loadProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    let active = true;
+    const syncProducts = () => { if (active) setProducts(getSellerProducts(sellerUsername)); };
+    syncProducts();
+    window.addEventListener("bsp-products-changed", syncProducts);
+    getSellerOrders()
+      .then((orders) => { if (active) setSellerOrders(orders); })
+      .catch((error) => {
+        console.warn("Seller order statistics unavailable", error);
+        if (active) setOrdersError(true);
+      });
+    return () => { active = false; window.removeEventListener("bsp-products-changed", syncProducts); };
+  }, [sellerUsername]);
 
   const inventoryValue = useMemo(
     () => products.reduce((sum, p) => sum + p.price * p.stock, 0),
     [products]
   );
+
+  const lowStockCount = useMemo(() => products.filter((p) => Number(p.stock) <= LOW_STOCK_THRESHOLD).length, [products]);
+  const inventoryByCategory = useMemo(() => {
+    const totals = new Map();
+    for (const product of products) {
+      const category = product.category || "Other";
+      totals.set(category, (totals.get(category) || 0) + Number(product.stock || 0));
+    }
+    return [...totals].map(([name, units]) => ({ name: name.replace(/-/g, " ").slice(0, 20), units }))
+      .sort((a, b) => b.units - a.units).slice(0, 7);
+  }, [products]);
+  const sellerRevenue = useMemo(() => sellerOrders.filter((o) => o.status !== "Cancelled")
+    .reduce((sum, o) => sum + Number(o.total || 0), 0), [sellerOrders]);
 
   const filteredProducts = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -419,7 +445,7 @@ const SellerDashboard = () => {
           </div>
           <div className="sd-stat-info">
             <h5>Total Orders</h5>
-            <h2>15</h2>
+            <h2>{ordersError ? "—" : sellerOrders.length}</h2>
           </div>
         </div>
 
@@ -433,6 +459,47 @@ const SellerDashboard = () => {
           </div>
         </div>
       </div>
+
+      <section className="row g-3 mb-4" aria-label="Seller inventory and sales insights">
+        <div className="col-12 col-md-4">
+          <div className="card h-100 p-3">
+            <h3 className="h6">Low-stock listings</h3>
+            <div className="fs-3 fw-bold">{lowStockCount}</div>
+            <small className="text-muted">Items with {LOW_STOCK_THRESHOLD} or fewer units</small>
+          </div>
+        </div>
+        <div className="col-12 col-md-4">
+          <div className="card h-100 p-3">
+            <h3 className="h6">Seller order value</h3>
+            <div className="fs-3 fw-bold">{ordersError ? "Unavailable" : formatINR(sellerRevenue)}</div>
+            <small className="text-muted">Recorded orders, excluding cancelled orders; not net payout</small>
+          </div>
+        </div>
+        <div className="col-12 col-md-4">
+          <div className="card h-100 p-3">
+            <h3 className="h6">Listed categories</h3>
+            <div className="fs-3 fw-bold">{inventoryByCategory.length}</div>
+            <small className="text-muted">Categories in your seller catalogue</small>
+          </div>
+        </div>
+        <div className="col-12">
+          <div className="card p-3">
+            <h3 className="h6">Inventory units by category</h3>
+            {inventoryByCategory.length ? (
+              <div style={{ width: "100%", height: 230 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={inventoryByCategory} margin={{ top: 12, right: 20, left: -22, bottom: 35 }}>
+                    <XAxis dataKey="name" angle={-20} textAnchor="end" interval={0} height={55} tick={{ fontSize: 11 }} />
+                    <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                    <Tooltip />
+                    <Bar dataKey="units" fill="#6b5c83" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : <p className="text-muted mb-0">Add products to see inventory trends.</p>}
+          </div>
+        </div>
+      </section>
 
       {/* Toolbar */}
       <div className="sd-toolbar">

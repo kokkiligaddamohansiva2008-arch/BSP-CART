@@ -51,7 +51,8 @@ export async function getProducts() {
     stock: Number(p.stock) || 0,
     seller: p.seller || "—",
     image: p.images?.[0] || p.image,
-    editable: true, // admins can manage every product
+    isSellerAdded: p.isSellerAdded,
+    editable: !p.isSampleCatalogProduct, // local samples cannot be mutated in Supabase
   }));
 }
 

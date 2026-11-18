@@ -66,6 +66,10 @@ const Products = () => {
   const [search, setSearch] = useState(urlSearch);
   const [category, setCategory] = useState("all");
   const [sort, setSort] = useState("relevance");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [minRating, setMinRating] = useState("0");
+  const [inStockOnly, setInStockOnly] = useState(false);
 
   /*
    * Keep local search synchronized with the URL.
@@ -140,9 +144,12 @@ const Products = () => {
         selectedCategory === "all" ||
         includedCategories.includes(productCategory);
 
-      if (!matchesCategory) {
-        return false;
-      }
+      if (!matchesCategory) return false;
+      const price = numericValue(product.price);
+      if (minPrice !== "" && price < Number(minPrice)) return false;
+      if (maxPrice !== "" && price > Number(maxPrice)) return false;
+      if (Number(minRating) > 0 && numericValue(product.rating) < Number(minRating)) return false;
+      if (inStockOnly && numericValue(product.stock) <= 0) return false;
 
       // No search entered
       if (searchWords.length === 0) {
@@ -213,17 +220,20 @@ const Products = () => {
 
       case "relevance":
       default:
-        /*
-         * Keep original catalog order for relevance.
-         *
-         * Since the catalog is currently local/static,
-         * this is the safest default.
-         */
+        if (normalizedSearch) {
+          list = [...list].sort((a, b) => {
+            const score = (p) => {
+              const title = String(p.name || "").toLowerCase();
+              return title === normalizedSearch ? 3 : title.startsWith(normalizedSearch) ? 2 : title.includes(normalizedSearch) ? 1 : 0;
+            };
+            return score(b) - score(a);
+          });
+        }
         break;
     }
 
     return list;
-  }, [search, category, sort]);
+  }, [search, category, sort, minPrice, maxPrice, minRating, inStockOnly]);
 
   /*
    * Add product to cart.
@@ -261,6 +271,10 @@ const Products = () => {
     setSearch("");
     setCategory("all");
     setSort("relevance");
+    setMinPrice("");
+    setMaxPrice("");
+    setMinRating("0");
+    setInStockOnly(false);
 
     setSearchParams({}, { replace: true });
   };
@@ -394,6 +408,36 @@ const Products = () => {
         </select>
       </div>
 
+      <div className="row g-2 align-items-end mb-3" aria-label="Advanced product filters">
+        <div className="col-6 col-lg-2">
+          <label className="form-label small" htmlFor="plp-min-price">Minimum price (₹)</label>
+          <input id="plp-min-price" className="form-control form-control-sm" type="number" min="0" inputMode="numeric"
+            value={minPrice} onChange={(e) => setMinPrice(e.target.value)} placeholder="0" />
+        </div>
+        <div className="col-6 col-lg-2">
+          <label className="form-label small" htmlFor="plp-max-price">Maximum price (₹)</label>
+          <input id="plp-max-price" className="form-control form-control-sm" type="number" min="0" inputMode="numeric"
+            value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} placeholder="Any" />
+        </div>
+        <div className="col-6 col-lg-2">
+          <label className="form-label small" htmlFor="plp-min-rating">Minimum rating</label>
+          <select id="plp-min-rating" className="form-select form-select-sm" value={minRating}
+            onChange={(e) => setMinRating(e.target.value)}>
+            <option value="0">Any rating</option>
+            <option value="3">3+ stars</option>
+            <option value="4">4+ stars</option>
+            <option value="4.5">4.5+ stars</option>
+          </select>
+        </div>
+        <div className="col-6 col-lg-3">
+          <div className="form-check mb-2">
+            <input id="plp-in-stock" className="form-check-input" type="checkbox"
+              checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} />
+            <label htmlFor="plp-in-stock" className="form-check-label">Only in-stock products</label>
+          </div>
+        </div>
+      </div>
+
       {/* RESULT COUNT */}
       <div className="d-flex justify-content-between align-items-center mb-3">
 
@@ -405,7 +449,7 @@ const Products = () => {
           found
         </span>
 
-        {(search.trim() || category !== "all" || sort !== "relevance") && (
+        {(search.trim() || category !== "all" || sort !== "relevance" || minPrice !== "" || maxPrice !== "" || minRating !== "0" || inStockOnly) && (
           <button
             type="button"
             className="btn btn-link btn-sm text-decoration-none"

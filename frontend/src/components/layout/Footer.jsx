@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import { supabase } from "../../lib/supabase";
+import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 import {
   FaFacebookF,
   FaInstagram,
@@ -14,30 +14,43 @@ import "../../styles/footer.css";
 function Footer() {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
-
+    if (submitting) return;
     const value = email.trim().toLowerCase();
-
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
       Swal.fire("Invalid email", "Please enter a valid email address.", "warning");
       return;
     }
-
-    const { error } = await supabase.from("newsletter_subscribers").insert({ email: value });
-
-    if (error?.code === "23505") {
-      Swal.fire("Already subscribed", "This email is already on our list.", "info");
+    if (!isSupabaseConfigured || !supabase) {
+      Swal.fire("Subscription unavailable", "The newsletter service is not configured.", "error");
       return;
     }
-    if (error) {
-      Swal.fire("Couldn't subscribe", "Please try again.", "error");
-      return;
+    setSubmitting(true);
+    try {
+      // Never write directly to the private subscriber table from the browser.
+      const { data, error } = await supabase.functions.invoke("newsletter", {
+        body: { email: value },
+      });
+      if (error || !data?.subscribed) {
+        throw new Error(data?.error || error?.message || "Please try again.");
+      }
+      setEmail("");
+      Swal.fire({
+        icon: "success",
+        title: "You are subscribed successfully!",
+        text: data.emailSent
+          ? "A confirmation email has been sent to your address."
+          : "You're on the BSP CART list. Email confirmations are not currently enabled.",
+        confirmButtonColor: "#202a44",
+      });
+    } catch (error) {
+      Swal.fire("Couldn't subscribe", error.message || "Please try again.", "error");
+    } finally {
+      setSubmitting(false);
     }
-
-    setEmail("");
-    Swal.fire("Subscribed!", "Thanks for subscribing to BSP CART updates.", "success");
   };
 
   return (
@@ -293,9 +306,9 @@ function Footer() {
                 required
               />
 
-              <button type="submit">
+              <button type="submit" disabled={submitting} aria-busy={submitting}>
                 <FaEnvelope />
-                Subscribe
+                {submitting ? "Subscribing..." : "Subscribe"}
               </button>
 
             </form>

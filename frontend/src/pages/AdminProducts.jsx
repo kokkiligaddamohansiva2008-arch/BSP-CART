@@ -15,7 +15,21 @@ export default function AdminProducts() {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("");
   const [lowOnly, setLowOnly] = useState(false);
+  const [photoIssuesOnly, setPhotoIssuesOnly] = useState(false);
+  const [brokenPhotoIds, setBrokenPhotoIds] = useState([]);
   const [edits, setEdits] = useState({});
+
+  const duplicateImageCount = useMemo(() => {
+    const counts = new Map();
+    items.filter((p) => !p.isSellerAdded && /^https?:\/\//i.test(String(p.image || "")))
+      .forEach((p) => counts.set(p.image, (counts.get(p.image) || 0) + 1));
+    return counts;
+  }, [items]);
+  const hasImageIssue = (p) =>
+    brokenPhotoIds.includes(p.id) || !p.image || /product-fallback\.svg/i.test(p.image) ||
+    /^data:image\/svg\+xml/i.test(p.image) ||
+    (!p.isSellerAdded && (duplicateImageCount.get(p.image) || 0) > 1);
+  const imageIssueCount = items.filter(hasImageIssue).length;
 
   const cats = useMemo(() => [...new Set(items.map((p) => p.category).filter(Boolean))], [items]);
 
@@ -25,9 +39,10 @@ export default function AdminProducts() {
       (p) =>
         (!cat || p.category === cat) &&
         (!lowOnly || p.stock <= LOW_STOCK) &&
+        (!photoIssuesOnly || hasImageIssue(p)) &&
         (!s || p.name.toLowerCase().includes(s))
     );
-  }, [items, q, cat, lowOnly]);
+  }, [items, q, cat, lowOnly, photoIssuesOnly, brokenPhotoIds, duplicateImageCount]);
 
   useEffect(() => {
     getProducts().then(setItems).catch((e) => toast("error", errMsg(e)));
@@ -62,7 +77,8 @@ export default function AdminProducts() {
     <div className="dashboard-layout">
       <Sidebar />
       <div className="dashboard-main">
-        <DashboardHeader title="Products" subtitle="Monitor inventory and remove seller listings" />
+        <DashboardHeader title="Products" subtitle="Monitor inventory, image quality, and seller listings" />
+        <p style={{ padding: "0 16px" }}><strong>{imageIssueCount}</strong> product images need review (missing, failed to load, or reused across unrelated imported listings). Visual product/name matches still require human review.</p>
         <div className="adm-bar">
           <input id="admprod-product-search" name="product-search" placeholder="Search products" value={q} onChange={(e) => setQ(e.target.value)} />
           <select id="admprod-category-filter" name="category-filter" value={cat} onChange={(e) => setCat(e.target.value)}>
@@ -71,6 +87,9 @@ export default function AdminProducts() {
           </select>
           <label style={{ alignSelf: "center" }}>
             <input id="admprod-low-stock-only" name="low-stock-only" type="checkbox" checked={lowOnly} onChange={(e) => setLowOnly(e.target.checked)} /> Low stock only
+          </label>
+          <label style={{ alignSelf: "center" }}>
+            <input id="admprod-image-issues-only" name="image-issues-only" type="checkbox" checked={photoIssuesOnly} onChange={(e) => setPhotoIssuesOnly(e.target.checked)} /> Photo issues only
           </label>
           <span className="adm-count">{rows.length} of {items.length}</span>
         </div>
@@ -85,8 +104,13 @@ export default function AdminProducts() {
                   const dirty = edits[p.id] !== undefined && String(edits[p.id]) !== String(p.stock);
                   return (
                     <tr key={p.id}>
-                      <td><img className="adm-thumb" src={p.image} alt="" loading="lazy" /></td>
-                      <td>{p.name}</td>
+                      <td><img className="adm-thumb" src={p.image || "/images/products/product-fallback.svg"} alt="" loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = "/images/products/product-fallback.svg";
+                          setBrokenPhotoIds((old) => old.includes(p.id) ? old : [...old, p.id]);
+                        }} /></td>
+                      <td>{p.name}{hasImageIssue(p) && <span className="adm-badge low" style={{ marginLeft: 6 }} title="Photograph requires review">Check image</span>}</td>
                       <td style={{ textTransform: "capitalize" }}>{p.category || "—"}</td>
                       <td>{inr(p.price)}</td>
                       <td>

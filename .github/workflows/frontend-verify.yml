@@ -1,0 +1,38 @@
+name: Frontend validation
+
+on:
+  push:
+    branches:
+      - feat/marketplace-upgrades-20261118
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Test shopping assistant
+        run: npm run test:catalog
+      - name: Audit image mapping
+        run: npm run images:audit
+      - name: Build React/Vite
+        run: npm run build

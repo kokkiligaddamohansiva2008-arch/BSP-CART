@@ -1,0 +1,71 @@
+import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { PRODUCTS } from "../data/catalog";
+import { assistantAnswer } from "../utils/catalogAssistant";
+
+/*
+ * Catalogue-grounded shopping assistant.
+ * No unconfigured paid AI service, external prompts, or invented products.
+ * Product availability and prices come from the loaded BSP CART catalogue.
+ */
+const starters = ["Show headphones", "Grocery under ₹200", "Best rated in-stock products"];
+const INITIAL = { role: "assistant", text: "Hi! I can help you find BSP CART products by name, category, budget and rating. What are you shopping for?", matches: [] };
+export default function ShoppingAssistant() {
+  const [open, setOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([INITIAL]);
+  const logRef = useRef(null);
+  useEffect(() => {
+    if (open && logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+  }, [messages, open]);
+  const send = (text) => {
+    const query = String(text || "").trim().slice(0, 250);
+    if (!query) return;
+    setMessages(prev => [...prev.slice(-11), { role: "user", text: query }, { role: "assistant", ...assistantAnswer(query, PRODUCTS) }]);
+    setInput("");
+    setOpen(true);
+  };
+  return (
+    <aside aria-label="BSP CART shopping assistant" style={{ position: "fixed", right: 16, bottom: 16, zIndex: 1200, maxWidth: "calc(100vw - 32px)", fontFamily: "inherit" }}>
+      {open && (
+        <div id="shopping-assistant-panel" style={{ width: 355, maxWidth: "100%", height: "min(560px, calc(100vh - 110px))", background: "#fff", display: "flex", flexDirection: "column", borderRadius: 14, overflow: "hidden", border: "1px solid #d7d0c5", boxShadow: "0 10px 38px #202a4430", marginBottom: 8 }}>
+          <header style={{ background: "#202a44", color: "white", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div><strong>BSP CART Shopping Assistant</strong><div style={{ fontSize: 11, opacity: .85 }}>Catalogue-powered • no external AI model</div></div>
+            <button type="button" onClick={() => setOpen(false)} style={{ color: "white", border: "none", background: "transparent", fontSize: 23 }} aria-label="Close assistant">×</button>
+          </header>
+          <div ref={logRef} role="log" aria-live="polite" style={{ flex: 1, overflowY: "auto", padding: 12, background: "#faf8f4" }}>
+            {messages.map((message, i) => (
+              <div key={i} style={{ marginBottom: 12, textAlign: message.role === "user" ? "right" : "left" }}>
+                <div style={{ display: "inline-block", maxWidth: "95%", borderRadius: 10, padding: "9px 11px", background: message.role === "user" ? "#202a44" : "#fff", color: message.role === "user" ? "#fff" : "#243047", fontSize: 13, textAlign: "left" }}>
+                  {message.text}
+                  {message.href && <div style={{ marginTop: 7 }}><Link to={message.href} onClick={() => setOpen(false)}>{message.link}</Link></div>}
+                  {!!message.matches?.length && (
+                    <div style={{ marginTop: 9, display: "grid", gap: 7 }}>
+                      {message.matches.map(product => (
+                        <Link key={product.id} to={"/products/" + product.id} onClick={() => setOpen(false)}
+                          style={{ textDecoration: "none", display: "flex", gap: 8, alignItems: "center", border: "1px solid #eee", padding: 6, borderRadius: 8, color: "#202a44" }}>
+                          <img src={product.image || "/images/products/product-fallback.svg"} alt="" width="44" height="44" loading="lazy"
+                            style={{ objectFit: "cover", borderRadius: 6 }} onError={e => { e.currentTarget.onerror = null; e.currentTarget.src = "/images/products/product-fallback.svg"; }} />
+                          <span><strong style={{ fontSize: 12 }}>{product.name}</strong><br/><span style={{ fontSize: 12 }}>₹{Number(product.price).toLocaleString("en-IN")} • {product.stock > 0 ? "In stock" : "Out of stock"}</span></span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+            {messages.length === 1 && <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>{starters.map(q => <button type="button" key={q} onClick={() => send(q)} style={{ border: "1px solid #c9baab", background: "#fff", borderRadius: 16, padding: "6px 9px", fontSize: 12 }}>{q}</button>)}</div>}
+          </div>
+          <form onSubmit={e => { e.preventDefault(); send(input); }} style={{ display: "flex", gap: 6, padding: 9, borderTop: "1px solid #e7e1d8" }}>
+            <input aria-label="Ask shopping assistant" value={input} onChange={e => setInput(e.target.value)} maxLength={250} placeholder="Find products or set a budget…" style={{ minWidth: 0, flex: 1, border: "1px solid #d0c8bd", borderRadius: 7, padding: 8, fontSize: 13 }}/>
+            <button type="submit" disabled={!input.trim()} style={{ border: 0, color: "#fff", background: "#202a44", padding: "7px 12px", borderRadius: 7 }}>Send</button>
+          </form>
+        </div>
+      )}
+      <button type="button" onClick={() => setOpen(v => !v)} aria-expanded={open} aria-controls="shopping-assistant-panel"
+        style={{ float: "right", background: "#202a44", color: "#fff", border: "none", borderRadius: 28, padding: "12px 18px", boxShadow: "0 4px 15px #202a4455", fontWeight: 600 }}>
+        {open ? "Close assistant" : "Ask BSP CART"}
+      </button>
+    </aside>
+  );
+}
