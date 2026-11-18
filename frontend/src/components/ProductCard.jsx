@@ -22,7 +22,7 @@ function ProductCard({ product, onAddToCart, onView }) {
           className="text-decoration-none text-dark position-relative"
         >
           <img
-            src={product.imageUrl || product.image || fallbackImage}
+            src={product.image || product.images?.[0] || product.imageUrl || fallbackImage}
             alt={product.name}
             loading="lazy"
             decoding="async"
