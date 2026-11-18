@@ -14,7 +14,7 @@ export default function ProductsGate({ children }) {
     if (!isSupabaseConfigured) return;
     loadProducts()
       .then((products) => {
-        console.info(
+        console.log(
           "%c[BSP CART] You are connected to Supabase.",
           "color: #16a34a; font-weight: bold;",
           `Successfully loaded ${products.length} products.`
