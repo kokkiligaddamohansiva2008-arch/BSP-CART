@@ -95,6 +95,8 @@ export const ADDITIONAL_PRODUCTS = Object.entries(groups).flatMap(([category, ra
     // Use a downloaded, product-specific photo when present; otherwise retain
     // the deterministic offline thumbnail so the catalogue never has broken images.
     const photo = PRODUCT_PHOTOS[productId];
+    // Existing manually named rice/pulse SVG files are mislabeled apple art.
+    // Prefer the name-aware generator unless a reviewed photograph exists.
     const image = photo ? `/images/products/${photo}` : productThumbnail(name, category, groupIndex * 20 + index);
     return {
       id: productId, name, category: ids[category], price,
