@@ -1,3 +1,5 @@
+import { PRODUCT_PHOTOS } from "./productImages.js";
+
 // Lightweight supplementary catalogue. Prices are sample INR estimates.
 // Offline, product-specific SVG thumbnails: deterministic and independent of image CDNs.
 const escapeSvg = (value) => String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -55,11 +57,14 @@ export const ADDITIONAL_CATEGORIES = Object.entries(ids).map(([label, id], index
 export const ADDITIONAL_PRODUCTS = Object.entries(groups).flatMap(([category, raw], groupIndex) =>
   raw.split("|").slice(0, 20).map((name, index) => {
     const price = Math.round((bases[groupIndex] + ((index * 37) % (bases[groupIndex] * 2))) / 5) * 5;
-    // Local SVG thumbnails are unique to the product name and work offline.
-    const image = productThumbnail(name, category, groupIndex * 20 + index);
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const productId = `extra-${ids[category]}-${slug}`;
+    // Use a downloaded, product-specific photo when present; otherwise retain
+    // the deterministic offline thumbnail so the catalogue never has broken images.
+    const photo = PRODUCT_PHOTOS[productId];
+    const image = photo ? `/images/products/${photo}` : productThumbnail(name, category, groupIndex * 20 + index);
     return {
-      id: `extra-${ids[category]}-${slug}`, name, category: ids[category], price,
+      id: productId, name, category: ids[category], price,
       mrp: Math.round(price * 1.18 / 5) * 5, stock: 10 + (index % 31),
       seller: "BSP CART Marketplace", rating: Number((4 + (index % 10) / 10).toFixed(1)),
       ratingCount: 10 + ((index * 13) % 490), image, images: [image],
