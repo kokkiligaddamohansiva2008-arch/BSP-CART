@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "images": "node scripts/fetch-product-images.mjs",
-    "images:audit": "node scripts/audit-product-images.mjs"
+    "images:audit": "node scripts/audit-product-images.mjs",
+    "test:catalog": "node --test tests/catalogAssistant.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
