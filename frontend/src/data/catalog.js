@@ -13,6 +13,7 @@
 */
 import { supabase } from "../lib/supabase";
 import { ADDITIONAL_CATEGORIES, ADDITIONAL_PRODUCTS, productThumbnail } from "./additionalProducts";
+import { matchingProductVisual } from "./productVisuals";
 
 export const CATEGORIES = [
   { id: "all", label: "All Stalls" },
@@ -72,7 +73,7 @@ function fromRow(r) {
     home: "home",
   })[String(categoryName).trim().toLowerCase()]
     || String(categoryName).trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  const resolvedImages = images || [productThumbnail(r.name, categoryKey, r.id)];
+  const resolvedImages = images || [matchingProductVisual(r.name, categoryKey, r.id)];
 
   return {
     id: Number(r.id),
@@ -124,7 +125,7 @@ export async function loadProducts() {
   databaseProducts.forEach((product) => {
     if (product.isSellerAdded) return;
     if (imageCounts.get(product.image) > 1) {
-      const replacement = productThumbnail(product.name, product.category, product.id);
+      const replacement = matchingProductVisual(product.name, product.category, product.id);
       product.image = replacement;
       product.images = [replacement, ...(product.images || []).slice(1)];
     }
