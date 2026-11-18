@@ -12,7 +12,8 @@
 | (public URLs are saved in the product row — no more base64 in the browser).
 */
 import { supabase } from "../lib/supabase";
-import { ADDITIONAL_CATEGORIES, ADDITIONAL_PRODUCTS, productThumbnail } from "./additionalProducts";
+import { ADDITIONAL_CATEGORIES, ADDITIONAL_PRODUCTS } from "./additionalProducts";
+import { matchingProductVisual } from "./productVisuals";
 
 export const CATEGORIES = [
   { id: "all", label: "All Stalls" },
@@ -72,7 +73,7 @@ function fromRow(r) {
     home: "home",
   })[String(categoryName).trim().toLowerCase()]
     || String(categoryName).trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  const resolvedImages = images || [productThumbnail(r.name, categoryKey, r.id)];
+  const resolvedImages = images || [matchingProductVisual(r.name, categoryKey, r.id)];
 
   return {
     id: Number(r.id),
@@ -109,19 +110,23 @@ export async function loadProducts() {
   if (error) throw error;
 
   const databaseProducts = data.map(fromRow);
+  // A shared image URL is not evidence that the photo matches any product.
+  // Never overwrite seller-uploaded photos: sellers may intentionally reuse
+  // their own image across variants. For imported legacy rows with a shared
+  // generic image, use an explicitly named, product-specific illustration.
   const imageCounts = new Map();
   databaseProducts.forEach((product) => {
+    if (product.isSellerAdded) return;
     const image = product.image;
-    if (image && !String(image).startsWith("data:")) {
+    if (typeof image === "string" && /^https?:\/\//i.test(image)) {
       imageCounts.set(image, (imageCounts.get(image) || 0) + 1);
     }
   });
-
-  // If multiple database products point to one identical photo, give each
-  // product a name-specific image URL. Unique seller photos remain untouched.
   databaseProducts.forEach((product) => {
-    if (product.image && imageCounts.get(product.image) > 1) {
-      const replacement = productThumbnail(product.name, product.category, product.id);
+    if (product.isSellerAdded) return;
+    const oldArt = typeof product.image === "string" && (/^data:image\/svg\+xml/i.test(product.image) || /\/images\/products\/groceries-and-staples-[^/]+\.svg(?:\?|$)/i.test(product.image));
+    if (oldArt || imageCounts.get(product.image) > 1) {
+      const replacement = matchingProductVisual(product.name, product.category, product.id);
       product.image = replacement;
       product.images = [replacement, ...(product.images || []).slice(1)];
     }

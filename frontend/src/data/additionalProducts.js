@@ -1,46 +1,8 @@
-import { PRODUCT_PHOTOS } from "./productImages.js";
+import { matchingProductVisual } from "./productVisuals.js";
 
-// Lightweight supplementary catalogue. Prices are sample INR estimates.
-// Offline, product-specific SVG thumbnails: deterministic and independent of image CDNs.
-const escapeSvg = (value) => String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-export const productThumbnail = (name, category, seed = 0) => {
-  const palettes = [["#F2E6C9","#8A5B35","#D8A45B"],["#E4F0DA","#4D7D43","#9DC56C"],["#E7EFF8","#345A8A","#7AA8D9"],["#F8E7E9","#A34E69","#D98EA0"],["#F1EADF","#79634A","#B99B76"],["#E9E4F6","#66528B","#AA98D4"],["#E5F2EE","#3D806C","#82B8A4"],["#F5EBDD","#A36B28","#D9A85F"]];
-  const [bg, fg, accent] = palettes[Math.abs(Number(seed) || 0) % palettes.length];
-  const group = String(category || "").toLowerCase();
-  const item = String(name || "").toLowerCase();
-  const safeName = escapeSvg(name);
-  let art = '<rect x="175" y="112" width="130" height="145" rx="22" fill="' + accent + '"/><path d="M195 145 H285" stroke="' + bg + '" stroke-width="9" stroke-linecap="round"/>';
-  // Food and grocery illustrations are selected by the product name first,
-  // so dals no longer receive a generic apple illustration.
-  if (/dal|rajma|chana|beans|peas|lentil|moong|urad|masoor/.test(item)) {
-    const pulse = /rajma|kidney/.test(item) ? "#9B443B" : /masoor/.test(item) ? "#D97945" : /urad/.test(item) ? "#51483F" : /kabuli/.test(item) ? "#D8C49A" : "#B98A4B";
-    art = '<path d="M140 190 Q240 280 340 190 L320 250 Q240 305 160 250Z" fill="' + fg + '"/><ellipse cx="240" cy="190" rx="100" ry="38" fill="#E9D8BC" stroke="' + fg + '" stroke-width="9"/>' +
-      Array.from({length:18},(_,i)=>'<ellipse cx="' + (170+(i%6)*27) + '" cy="' + (177+Math.floor(i/6)*13) + '" rx="9" ry="6" transform="rotate(' + ((i*17)%50-25) + ' ' + (170+(i%6)*27) + ' ' + (177+Math.floor(i/6)*13) + ')" fill="' + pulse + '"/>').join("");
-  } else if (/rice|poha|flattened rice|rava|semolina|atta|flour|vermicelli|oats|wheat|millet/.test(item)) {
-    art = '<path d="M145 185 Q240 275 335 185 L315 245 Q240 295 165 245Z" fill="' + fg + '"/><ellipse cx="240" cy="185" rx="95" ry="35" fill="#F4E6C8" stroke="' + fg + '" stroke-width="8"/>' +
-      Array.from({length:28},(_,i)=>'<ellipse cx="' + (165+(i%7)*25) + '" cy="' + (174+Math.floor(i/7)*10) + '" rx="3" ry="8" transform="rotate(' + ((i*19)%60-30) + ' ' + (165+(i%7)*25) + ' ' + (174+Math.floor(i/7)*10) + ')" fill="' + accent + '"/>').join("");
-  } else if (/oil|ghee|syrup|juice|water|drink|milk|curd|yogurt/.test(item)) {
-    art = '<rect x="190" y="112" width="100" height="150" rx="18" fill="' + accent + '" stroke="' + fg + '" stroke-width="7"/><rect x="215" y="88" width="50" height="28" rx="6" fill="' + fg + '"/><rect x="202" y="155" width="76" height="55" rx="8" fill="' + bg + '"/><path d="M211 182 H269" stroke="' + fg + '" stroke-width="5"/>';
-  } else if (/spice|masala|turmeric|chilli|cumin|mustard|pepper|cardamom|clove|cinnamon|salt|sugar|jaggery|kumkum|hing|besan/.test(item)) {
-    art = '<path d="M165 150 H315 L300 252 Q240 278 180 252Z" fill="' + accent + '" stroke="' + fg + '" stroke-width="8"/><path d="M175 150 Q240 125 305 150" fill="none" stroke="' + fg + '" stroke-width="10"/><path d="M195 190 Q240 205 285 190" stroke="' + bg + '" stroke-width="8" fill="none"/>';
-  } else if (/apple|orange|mango|banana|grape|guava|papaya|watermelon|melon|fruit|lemon|pear|kiwi|pomegranate|strawberry|pineapple/.test(item)) {
-    const fruit = /banana/.test(item) ? '<path d="M170 215 Q195 105 300 125 Q285 210 170 215Z" fill="#E6C64D"/>' : /orange|lemon/.test(item) ? '<circle cx="240" cy="185" r="70" fill="#E99A32"/>' : '<path d="M240 125 C185 94 145 150 173 207 C192 246 228 252 240 241 C252 252 288 246 307 207 C335 150 295 94 240 125Z" fill="' + accent + '"/><path d="M240 126 Q235 101 260 92 Q270 118 240 126Z" fill="' + fg + '"/>';
-    art = fruit;
-  } else if (/electronic|phone|charger|cable|laptop|computer|mouse|keyboard|speaker|headphone|watch|camera|bulb|router|power bank|usb/.test(item+" "+group)) {
-    art = '<rect x="185" y="92" width="110" height="172" rx="20" fill="' + fg + '"/><rect x="195" y="105" width="90" height="135" rx="12" fill="' + accent + '"/><circle cx="240" cy="250" r="6" fill="' + bg + '"/>';
-  } else if (/shirt|t-shirt|jeans|trouser|dress|saree|kurti|kurta|shoe|sandal|jacket|hoodie|fashion|clothing/.test(item+" "+group)) {
-    art = '<path d="M198 112 L222 96 L258 96 L282 112 L322 145 L295 177 L278 159 L278 255 L202 255 L202 159 L185 177 L158 145Z" fill="' + accent + '" stroke="' + fg + '" stroke-width="7"/>';
-  } else if (/soap|shampoo|cream|lotion|shampoo|sanitizer|toothpaste|perfume|deodorant|personal care|health/.test(item+" "+group)) {
-    art = '<rect x="197" y="111" width="86" height="148" rx="18" fill="' + accent + '"/><rect x="215" y="91" width="50" height="24" rx="6" fill="' + fg + '"/><rect x="207" y="157" width="66" height="48" rx="6" fill="' + bg + '"/>';
-  } else if (/hammer|screwdriver|drill|plier|spanner|tool|hardware|wrench/.test(item+" "+group)) {
-    art = '<path d="M180 125 L220 165 L280 225" stroke="' + fg + '" stroke-width="24" stroke-linecap="round"/><path d="M165 112 L205 95 L240 130 L220 150Z" fill="' + accent + '" stroke="' + fg + '" stroke-width="7"/><path d="M265 210 L300 245" stroke="' + accent + '" stroke-width="32" stroke-linecap="round"/>';
-  } else if (/home|kitchen|furnishing|decor|pot|pan|cooker|bottle|plate|utensil/.test(item+" "+group)) {
-    art = '<path d="M145 183 L240 105 L335 183" fill="none" stroke="' + fg + '" stroke-width="16"/><rect x="169" y="177" width="142" height="90" rx="10" fill="' + accent + '"/>';
-  }
-  const parts = safeName.length > 27 ? [safeName.slice(0, 27), safeName.slice(27, 54)] : [safeName];
-  const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480"><rect width="480" height="480" rx="32" fill="' + bg + '"/><circle cx="410" cy="70" r="90" fill="' + accent + '" opacity=".12"/><rect x="142" y="82" width="196" height="196" rx="34" fill="' + accent + '" opacity=".15"/>' + art + '<text x="240" y="325" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="' + fg + '">' + escapeSvg(String(category || "BSP CART").toUpperCase()) + '</text><text x="240" y="365" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#243047">' + parts.map((part, i) => '<tspan x="240" dy="' + (i ? 27 : 0) + '">' + part + '</tspan>').join("") + '</text><text x="240" y="445" text-anchor="middle" font-family="Arial" font-size="12" letter-spacing="2" fill="' + fg + '">BSP CART</text></svg>';
-  return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
-};
+// Keep this function for existing components, but never generate AI-style artwork.
+// Matched genuine photos take precedence; missing photos show a neutral fallback.
+export const productThumbnail = () => "/images/products/product-fallback.svg";
 
 const groups = {
   "Groceries & Staples": "Basmati Rice|Sona Masoori Rice|Brown Rice|Poha (Flattened Rice)|Toor Dal|Moong Dal|Chana Dal|Urad Dal|Masoor Dal|Rajma|Kabuli Chana|Black Chana|Green Moong|Whole Wheat Atta|Multigrain Atta|Maida|Besan|Rice Flour|Ragi Flour|Rava (Semolina)|Vermicelli|Sugar|Jaggery|Rock Salt|Iodised Salt|Turmeric Powder|Red Chilli Powder|Coriander Powder|Cumin Seeds|Mustard Seeds|Black Pepper|Cardamom|Cloves|Cinnamon Sticks|Garam Masala|Sambar Powder|Biryani Masala|Tamarind|Dry Red Chillies|Bay Leaves|Fennel Seeds|Fenugreek Seeds|Sunflower Oil|Groundnut Oil|Mustard Oil|Coconut Oil|Pure Ghee|Cashew Nuts|Almonds|Raisins|Idli Rice|Parboiled Rice|Foxtail Millet|Jowar Flour|Bajra Flour|Cornmeal|Sesame Seeds|Poppy Seeds|Asafoetida (Hing)|Chaat Masala",
@@ -82,10 +44,8 @@ export const ADDITIONAL_PRODUCTS = Object.entries(groups).flatMap(([category, ra
     const price = Math.round((bases[groupIndex] + ((index * 37) % (bases[groupIndex] * 2))) / 5) * 5;
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     const productId = `extra-${ids[category]}-${slug}`;
-    // Use a downloaded, product-specific photo when present; otherwise retain
-    // the deterministic offline thumbnail so the catalogue never has broken images.
-    const photo = PRODUCT_PHOTOS[productId];
-    const image = photo ? `/images/products/${photo}` : productThumbnail(name, category, groupIndex * 20 + index);
+    // Use a reviewed real photograph or a neutral placeholder; no generated art.
+    const image = matchingProductVisual(name, ids[category], productId);
     return {
       id: productId, name, category: ids[category], price,
       mrp: Math.round(price * 1.18 / 5) * 5, stock: 10 + (index % 31),
