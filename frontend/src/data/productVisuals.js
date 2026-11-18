@@ -5,7 +5,6 @@
  * A real product photograph should be added to productImages.js after verification.
  */
 import { PRODUCT_PHOTOS } from "./productImages.js";
-import { productThumbnail } from "./additionalProducts.js";
 
 const RULES = [
   [/basmati|sona masoori|brown rice|idli rice|parboiled rice|rice flour/i, "🍚"],
@@ -65,9 +64,9 @@ export function matchingProductVisual(name, category, id) {
   const curated = PRODUCT_PHOTOS[key] || PRODUCT_PHOTOS[String(id)] || null;
   if (curated) return /^https?:\/\//i.test(curated) ? curated : `/images/products/${curated}`;
   const emoji = RULES.find(([pattern]) => pattern.test(nameText))?.[1];
-  if (!emoji) return productThumbnail(nameText, categoryText, id);
+  const symbol = emoji || "📦";
   const label = escapeXml(nameText.length > 34 ? nameText.slice(0, 33) + "…" : nameText);
   const categoryLabel = escapeXml(categoryLabels[categoryText] || categoryText.replace(/-/g, " ").slice(0, 28));
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480"><rect width="480" height="480" rx="28" fill="#f8f3eb"/><rect x="56" y="55" width="368" height="286" rx="24" fill="#efe5d7"/><text x="240" y="253" font-family="Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif" font-size="150" text-anchor="middle">${emoji}</text><text x="240" y="382" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#243047" text-anchor="middle">${label}</text><text x="240" y="415" font-family="Arial,sans-serif" font-size="15" fill="#80694f" text-anchor="middle">${categoryLabel}</text><text x="240" y="456" font-family="Arial,sans-serif" font-size="12" letter-spacing="2" fill="#8b6e49" text-anchor="middle">BSP CART · ILLUSTRATION</text></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480"><rect width="480" height="480" rx="28" fill="#f8f3eb"/><rect x="56" y="55" width="368" height="286" rx="24" fill="#efe5d7"/><text x="240" y="253" font-family="Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif" font-size="150" text-anchor="middle">${symbol}</text><text x="240" y="382" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#243047" text-anchor="middle">${label}</text><text x="240" y="415" font-family="Arial,sans-serif" font-size="15" fill="#80694f" text-anchor="middle">${categoryLabel}</text><text x="240" y="456" font-family="Arial,sans-serif" font-size="12" letter-spacing="2" fill="#8b6e49" text-anchor="middle">BSP CART · ILLUSTRATION</text></svg>`;
   return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
 }
