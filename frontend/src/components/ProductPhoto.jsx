@@ -88,7 +88,7 @@ async function searchCommons(product) {
           title: page.title,
         };
       })
-      .filter((p) => p.url && /\.(jpe?g|png|webp)(?:$|\?)/i.test(p.url.split("?")[0]))
+      .filter((p) => p.url && /\.(jpe?g|png|webp)(?:$|\?)/i.test(p.url.split("?")[0])
         && licenseIsUsable(p.license)
         && p.score >= Math.max(1, Math.ceil(words.length * 0.6)))
       .sort((a, b) => b.score - a.score);
