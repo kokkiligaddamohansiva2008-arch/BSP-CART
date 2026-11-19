@@ -1,7 +1,8 @@
 import { productIllustration } from "../data/imageFallback";
 import ProductPhoto from "../components/ProductPhoto";
 import { matchesCategory, countProductsInCategory } from "../data/categoryUtils";
-import { useMemo, useState } from "react";
+import { isProductVisible, onImageVisibilityChanged } from "../data/imageVisibility";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "../utils/centeredSwal";
 import { FiSearch, FiUser, FiShoppingCart, FiTruck, FiLock, FiRefreshCw, FiGrid, FiMessageCircle, FiTag, FiSmartphone, FiShoppingBag, FiHome, FiGift, FiMenu, FiCreditCard, FiBriefcase, FiDollarSign, FiStar, FiZap, FiAward, FiCoffee, FiFeather, FiDroplet, FiHeart, FiBook, FiTool } from "react-icons/fi";
@@ -9,6 +10,7 @@ import {
   CATEGORIES,
   PRODUCTS,
   getDealProducts,
+  onProductsChanged,
   formatINR,
   discountPercent,
 } from "../data/catalog";
@@ -88,13 +90,13 @@ const tryNextImage = (event, candidates) => {
 };
 
 const getCategoryProducts = (category) =>
-  PRODUCTS.filter((product) => matchesCategory(product, category));
+  PRODUCTS.filter((product) => isProductVisible(product) && matchesCategory(product, category));
 
 const getCategoryCount = (category) =>
-  countProductsInCategory(PRODUCTS, category.id);
+  countProductsInCategory(PRODUCTS.filter(isProductVisible), category.id);
 
 const getDiscountedProducts = () =>
-  PRODUCTS.filter((p) => Number(p.mrp) > Number(p.price))
+  PRODUCTS.filter((p) => isProductVisible(p) && Number(p.mrp) > Number(p.price))
     .sort(
       (a, b) =>
         discountPercent(b.price, b.mrp) -
@@ -102,13 +104,13 @@ const getDiscountedProducts = () =>
     );
 
 const getTopRatedProducts = () =>
-  [...PRODUCTS].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  PRODUCTS.filter(isProductVisible).sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
 const getNewestProducts = () =>
-  [...PRODUCTS].sort((a, b) => Number(b.id) - Number(a.id));
+  PRODUCTS.filter(isProductVisible).sort((a, b) => Number(b.id) - Number(a.id));
 
 const getLowPriceProducts = (limit) =>
-  [...PRODUCTS]
+  PRODUCTS.filter(isProductVisible)
     .sort((a, b) => Number(a.price) - Number(b.price))
     .slice(0, limit);
 
@@ -120,33 +122,38 @@ export default function Home() {
   const { items: cartCount } = useCartStore();
   const [wishlist, setWishlist] = useState(() => getWishlist());
   const [couponCopied, setCouponCopied] = useState("");
+  const [catalogVersion, setCatalogVersion] = useState(0);
+  useEffect(() => onProductsChanged(() => setCatalogVersion((v) => v + 1)), []);
+  useEffect(() => onImageVisibilityChanged(() => setCatalogVersion((v) => v + 1)), []);
 
-  const dealProducts = useMemo(() => getDealProducts(), []);
+
+  const dealProducts = useMemo(() => getDealProducts().filter(isProductVisible), [catalogVersion]);
 
   const discountedProducts = useMemo(
     () => getDiscountedProducts(),
-    []
+    [catalogVersion]
   );
 
   const topRatedProducts = useMemo(
     () => getTopRatedProducts(),
-    []
+    [catalogVersion]
   );
 
   const newestProducts = useMemo(
     () => getNewestProducts(),
-    []
+    [catalogVersion]
   );
 
   const lowPriceProducts = useMemo(
     () => getLowPriceProducts(12),
-    []
+    [catalogVersion]
   );
 
   const filtered = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
     return PRODUCTS.filter((p) => {
+      if (!isProductVisible(p)) return false;
       const matchesSelectedCategory = matchesCategory(p, activeCategory);
 
       const searchableText = [
@@ -172,7 +179,7 @@ export default function Home() {
 
       return matchesSelectedCategory && matchesQuery;
     });
-  }, [activeCategory, query]);
+  }, [activeCategory, query, catalogVersion]);
 
 const wishlistCount = wishlist.length;
 
@@ -389,9 +396,9 @@ const wishlistCount = wishlist.length;
         </div>
 
         <div className="top-links">
-          <span>24/7 Support</span>
-          <span>Become a Seller</span>
-          <span>Track Order</span>
+          <Link to="/help-center">24/7 Support</Link>
+          <Link to="/register?role=SELLER">Become a Seller</Link>
+          <Link to="/orders">Track Order</Link>
         </div>
       </div>
 
