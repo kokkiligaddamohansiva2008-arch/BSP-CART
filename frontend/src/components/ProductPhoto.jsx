@@ -9,48 +9,48 @@ const pending = new Map();
 const queued = [];
 let active = 0;
 const MAX_PARALLEL = 3;
-const CATEGORY_IMAGES = {
-  "groceries-and-staples": "photo-1542838132-92c53300491e",
-  "snacks-and-beverages": "photo-1621939514649-280e2aa7f1f9",
-  "dairy-and-bakery": "photo-1509440159596-0249088772ff",
-  "fruits-and-vegetables": "photo-1540420773420-3366772f4999",
-  "household-and-cleaning": "photo-1563453392212-326f5e854473",
-  "kitchen-and-dining": "photo-1556911220-bff31c812dba",
-  "personal-care": "photo-1608248543803-ba4f8c70ae0b",
-  "electronics-and-accessories": "photo-1498049794561-7780e7231661",
-  "men-s-fashion": "photo-1521572163474-6864f9cf17ab",
-  "women-s-fashion": "photo-1483985988355-763728e1935b",
-  "kids-and-baby": "photo-1519238263530-99bdd11df2ea",
-  "stationery-and-office": "photo-1455390582262-044cdead277a",
-  "home-decor-and-furnishing": "photo-1618221195710-dd6b41faaea6",
-  "health-and-wellness": "photo-1505751172876-fa1923c5c528",
-  "pet-and-garden": "photo-1450778869180-41d0601e046e",
-  "tools-and-hardware": "photo-1581147036324-c1c89c2c8a7d",
-  "auto-and-travel": "photo-1503376780353-7e6692767b70",
-  "gifts-and-festival": "photo-1513201099705-a9746e1e201f",
-  grocery: "photo-1542838132-92c53300491e",
-  electronics: "photo-1498049794561-7780e7231661",
-  fashion: "photo-1521572163474-6864f9cf17ab",
-  home: "photo-1600210492486-724fe5c67fb0",
+// Known category banners are NOT product photos. Never reuse them on listings.
+const SHARED_CATEGORY_PHOTOS = new Set([
+  "photo-1542838132-92c53300491e", "photo-1621939514649-280e2aa7f1f9",
+  "photo-1509440159596-0249088772ff", "photo-1540420773420-3366772f4999",
+  "photo-1563453392212-326f5e854473", "photo-1556911220-bff31c812dba",
+  "photo-1608248543803-ba4f8c70ae0b", "photo-1498049794561-7780e7231661",
+  "photo-1521572163474-6864f9cf17ab", "photo-1483985988355-763728e1935b",
+  "photo-1519238263530-99bdd11df2ea", "photo-1455390582262-044cdead277a",
+  "photo-1618221195710-dd6b41faaea6", "photo-1505751172876-fa1923c5c528",
+  "photo-1450778869180-41d0601e046e", "photo-1581147036324-c1c89c2c8a7d",
+  "photo-1503376780353-7e6692767b70", "photo-1513201099705-a9746e1e201f",
+  "photo-1600210492486-724fe5c67fb0", "photo-1604719312566-8912e9c8a213",
+  "photo-1526738549149-8e07eca6c147", "photo-1515886657613-9f3515b0c78f",
+  "photo-1441986300917-64674bd600d8",
+]);
+const isSharedCategoryImage = (url) => {
+  const match = String(url || "").match(/images\.unsplash\.com\/(photo-[a-z0-9-]+)/i);
+  return Boolean(match && SHARED_CATEGORY_PHOTOS.has(match[1]));
 };
-const genericPhoto = (category) =>
-  "https://images.unsplash.com/" +
-  (CATEGORY_IMAGES[String(category).toLowerCase()] || CATEGORY_IMAGES.grocery) +
-  "?auto=format&fit=crop&w=640&h=640&q=75";
+const isMissing = (url) =>
+  !url ||
+  url === NO_PRODUCT_PHOTO ||
+  /product-fallback\.svg(?:\?|$)/i.test(String(url)) ||
+  /^data:image\/svg\+xml/i.test(String(url)) ||
+  /via\.placeholder\.com|placehold\.co|\/placeholder(?:\.|\/)/i.test(String(url));
 
-const isMissing = (url) => !url || url === NO_PRODUCT_PHOTO || /product-fallback\.svg(?:\?|$)/.test(url);
+// Do not choose the same searched photo for different catalogue products.
+const claimedPhotoUrls = new Map();
 const normalized = (str) => String(str || "").toLowerCase()
   .replace(/\.[^.]+$/, "").replace(/[^a-z0-9]+/g, " ").trim();
 const licenseIsUsable = (value) =>
   /^(CC0|Public domain|CC BY(?:-SA)?(?: |$|-))/i.test(String(value || ""));
-const getKey = (product) => String(product.name || "").trim().toLowerCase();
+const getKey = (product) =>
+  String(product?.category || "") + ":" + String(product?.name || "").trim().toLowerCase();
 
 async function searchCommons(product) {
   const key = getKey(product);
   if (imageCache.has(key)) return imageCache.get(key);
   try {
-    const stored = JSON.parse(sessionStorage.getItem("bsp-photo:" + key) || "null");
-    if (stored?.url) {
+    const stored = JSON.parse(sessionStorage.getItem("bsp-photo-unique:" + key) || "null");
+    if (stored?.url && (!claimedPhotoUrls.has(stored.url) || claimedPhotoUrls.get(stored.url) === key)) {
+      claimedPhotoUrls.set(stored.url, key);
       imageCache.set(key, stored);
       return stored;
     }
@@ -91,12 +91,14 @@ async function searchCommons(product) {
       })
       .filter((p) => p.url && /\.(jpe?g|png|webp)(?:$|\?)/i.test(p.url.split("?")[0])
         && licenseIsUsable(p.license)
-        && p.score >= Math.max(1, Math.ceil(words.length * 0.6)))
+        && p.score >= Math.max(1, Math.ceil(words.length * 0.75)))
+      .filter((p) => !claimedPhotoUrls.has(p.url) || claimedPhotoUrls.get(p.url) === key)
       .sort((a, b) => b.score - a.score);
     const found = photos[0] || null;
     imageCache.set(key, found);
     if (found) {
-      try { sessionStorage.setItem("bsp-photo:" + key, JSON.stringify(found)); }
+      claimedPhotoUrls.set(found.url, key);
+      try { sessionStorage.setItem("bsp-photo-unique:" + key, JSON.stringify(found)); }
       catch { /* Quota or private mode */ }
     }
     return found;
@@ -133,20 +135,27 @@ function requestPhoto(product) {
 
 export default function ProductPhoto({ product, src, alt, onError, ...props }) {
   const ref = useRef(null);
+  const illustration = productIllustration(product?.name, product?.category);
   const explicit = src || product?.image || product?.images?.[0] || product?.imageUrl;
-  const initial = isMissing(explicit)
-    ? matchingProductVisual(product?.name, product?.category, product?.id)
-    : explicit;
-  const [photo, setPhoto] = useState(isMissing(initial) ? genericPhoto(product?.category) : initial);
+  const mapped = matchingProductVisual(product?.name, product?.category, product?.id);
+  const sellerOwned = Boolean(product?.isSellerAdded || product?.ownerId || product?.ownerUsername);
+  // Uploaded seller photos are preserved. Catalogue images must be product-specific,
+  // never reused category banners.
+  const initial = sellerOwned
+    ? (isMissing(explicit) ? illustration : explicit)
+    : !isMissing(mapped)
+      ? mapped
+      : (isMissing(explicit) || isSharedCategoryImage(explicit) ? illustration : explicit);
+  const [photo, setPhoto] = useState(initial);
   const [credit, setCredit] = useState(null);
 
   useEffect(() => {
     let alive = true;
-    setPhoto(isMissing(initial) ? genericPhoto(product?.category) : initial);
+    setPhoto(initial);
     setCredit(null);
-    // Never overwrite uploaded seller images.
-    if (!product?.isSampleCatalogProduct && !isMissing(initial)) return;
-    if (!isMissing(initial)) return;
+    // Search for a uniquely matched, openly licensed photo only when no
+    // genuine image is present. Never replace seller-uploaded photographs.
+    if (sellerOwned || !isMissing(initial)) return;
 
     const el = ref.current;
     if (!el) return;
@@ -156,7 +165,7 @@ export default function ProductPhoto({ product, src, alt, onError, ...props }) {
         setPhoto(result.url);
         setCredit(result);
       } else {
-        setPhoto(genericPhoto(product.category));
+        setPhoto(illustration);
       }
     });
     if (typeof IntersectionObserver === "undefined") {
@@ -172,7 +181,7 @@ export default function ProductPhoto({ product, src, alt, onError, ...props }) {
       return () => { alive = false; observer.disconnect(); };
     }
     return () => { alive = false; };
-  }, [product?.name, product?.category, product?.id, initial, product?.isSampleCatalogProduct]);
+  }, [product?.name, product?.category, product?.id, initial, sellerOwned]);
 
   const failed = useRef(new Set());
   useEffect(() => { failed.current.clear(); }, [product?.id]);
@@ -180,16 +189,11 @@ export default function ProductPhoto({ product, src, alt, onError, ...props }) {
   const handleError = (event) => {
     const url = event.currentTarget.currentSrc || event.currentTarget.src;
     failed.current.add(url);
-    const generic = genericPhoto(product?.category);
-    const localIllustration = productIllustration(product?.name, product?.category);
-
-    // Never use the old "Photo unavailable" asset: when an external image
-    // fails, try a category photo and finally an always-available local SVG.
-    if (!failed.current.has(generic)) {
-      setPhoto(generic);
-    } else if (photo !== localIllustration) {
+    // Broken external/local URLs fall back to this specific product's labelled
+    // illustration, not a different product or a shared category photograph.
+    if (photo !== illustration) {
+      setPhoto(illustration);
       setCredit(null);
-      setPhoto(localIllustration);
     } else {
       event.currentTarget.onerror = null;
     }
@@ -198,7 +202,7 @@ export default function ProductPhoto({ product, src, alt, onError, ...props }) {
 
   return <img
     ref={ref}
-    src={photo || productIllustration(product?.name, product?.category)}
+    src={photo || illustration}
     alt={alt || product?.name || "Product"}
     title={credit ? `Photo source: ${credit.source} · ${credit.license}` : undefined}
     onError={handleError}
