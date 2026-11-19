@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaUsers, FaBoxOpen, FaExclamationTriangle, FaRupeeSign } from "react-icons/fa";
-import Sidebar from "../components/layout/Sidebar";
+import AdminMenu from "../components/dashboard/AdminMenu";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import StatsGrid from "../components/dashboard/StatsGrid";
 import DashboardCard from "../components/dashboard/DashboardCard";
@@ -64,10 +64,12 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
+    <div className="dashboard-layout admin-page">
       <div className="dashboard-main">
-        <DashboardHeader title="Admin Dashboard" subtitle="Live overview of your marketplace" />
+        <div className="adm-page-heading">
+          <DashboardHeader title="Admin Dashboard" subtitle="Live overview of your marketplace" />
+          <AdminMenu />
+        </div>
         {error && <div className="adm-empty" role="alert">{error}</div>}
 
         <StatsGrid>
