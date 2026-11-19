@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Swal from "sweetalert2";
+import Swal from "../utils/centeredSwal";
 import CartItem from "../components/CartItem";
 import emptyCart from "../assets/emptycart.png";
 import {
