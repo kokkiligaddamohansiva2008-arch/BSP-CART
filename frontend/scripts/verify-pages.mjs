@@ -186,8 +186,10 @@ assert(read("src/pages/Checkout.jsx").includes("line.isDemo"),
   "Checkout blocks demo products even with five displayed stock");
 
 const { LOCAL_PRODUCT_IMAGES } = await import("../src/data/localImageInventory.js");
-assert(LOCAL_PRODUCT_IMAGES.size === 0,
-  "Missing local JPGs are not advertised as uploaded in this commit");
+for (const relative of LOCAL_PRODUCT_IMAGES) {
+  assert(existsSync(path.join(root, "public/images/products", relative)),
+    "Uploaded JPG exists on disk: " + relative);
+}
 const { PRODUCT_PHOTOS } = await import("../src/data/productImages.js");
 assert(Object.keys(PRODUCT_PHOTOS).length === new Set(Object.values(PRODUCT_PHOTOS)).size,
   "Curated photo URLs do not repeat across distinct product names");
