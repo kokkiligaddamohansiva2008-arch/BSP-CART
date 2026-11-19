@@ -267,6 +267,9 @@ function Footer() {
             <Link to="/register?role=SELLER">
               Become a Seller
             </Link>
+            <Link to="/seller/start">
+              Already registered? Start Selling
+            </Link>
 
             <Link to="/seller/dashboard">
               Seller Dashboard
