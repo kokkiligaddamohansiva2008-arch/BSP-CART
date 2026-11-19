@@ -23,6 +23,7 @@ function loadSavedAddress() {
 export default function Checkout() {
   const navigate = useNavigate();
   const { lines, items, subtotal, savings, shipping, total } = useCartStore();
+  const blockedLines = lines.filter((line) => Number(line.id) <= 0 || Number(line.stock) <= 0);
 
   const [form, setForm] = useState(() => {
     const saved = loadSavedAddress();
@@ -65,6 +66,16 @@ export default function Checkout() {
 
   const placeOrder = async (e) => {
     e.preventDefault();
+    if (blockedLines.length) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Some items cannot be ordered",
+        text: "Remove sample catalogue or out-of-stock items in your cart before checkout.",
+        confirmButtonText: "Review cart",
+      });
+      navigate("/cart");
+      return;
+    }
     if (!validate()) {
       Swal.fire({
         toast: true, position: "top-end", icon: "warning",
@@ -146,7 +157,14 @@ export default function Checkout() {
           </div>
 
           <p className="small text-muted mb-2">Online payments are not enabled yet. Cash on Delivery is the only available payment method.</p>
-          <button type="submit" className="co-submit" disabled={placing}>
+          {blockedLines.length > 0 && (
+            <div className="co-checkout-warning" role="alert">
+              {blockedLines.length} item(s) in your cart are demo listings or out of stock.
+              Please remove them before entering delivery details or placing an order.
+              <Link to="/cart"> Review cart</Link>
+            </div>
+          )}
+          <button type="submit" className="co-submit" disabled={placing || blockedLines.length > 0}>
             {placing ? "Placing order…" : `Place order · ₹${total.toLocaleString("en-IN")}`}
           </button>
         </form>
