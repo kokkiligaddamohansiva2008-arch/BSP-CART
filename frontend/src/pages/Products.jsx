@@ -58,6 +58,7 @@ const Products = () => {
 
   const [search, setSearch] = useState(urlSearch);
   const selectedCategory = searchParams.get("category") || "all";
+  const dealsOnly = searchParams.get("deals") === "1";
   const category = CATEGORIES.some((item) => item.id === selectedCategory)
     ? selectedCategory
     : "all";
@@ -115,6 +116,7 @@ const Products = () => {
     let list = PRODUCTS.filter((product) => {
       // Shared category logic matches Home and supports every subcategory.
       if (!matchesCategory(product, category)) return false;
+      if (dealsOnly && !(Number(product.mrp) > Number(product.price))) return false;
 
       // No search entered
       if (searchWords.length === 0) {
@@ -195,7 +197,7 @@ const Products = () => {
     }
 
     return list;
-  }, [search, category, sort, catalogVersion]);
+  }, [search, category, dealsOnly, sort, catalogVersion]);
 
   /*
    * Add product to cart.
@@ -206,7 +208,11 @@ const Products = () => {
     Swal.fire({
       icon: result.ok ? "success" : "warning",
       title: result.ok ? "Added to cart" : "Can't add this item",
-      text: result.ok ? `${result.product.name} added to your cart` : "This product is out of stock.",
+      text: result.ok
+        ? `${result.product.name} added to your cart`
+        : result.reason === "demo"
+          ? "This is a catalogue preview, not an orderable product."
+          : "This product is out of stock.",
       timer: 1400,
       showConfirmButton: false,
       toast: true,
@@ -276,7 +282,7 @@ const Products = () => {
       <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
 
         <div>
-          <h2 className="mb-1">{category === "all" ? "Products" : `${CATEGORIES.find((item) => item.id === category)?.label || "Category"} Products`}</h2>
+          <h2 className="mb-1">{category === "all" ? (dealsOnly ? "Deals & Offers" : "Products") : `${CATEGORIES.find((item) => item.id === category)?.label || "Category"} Products`}</h2>
 
           {search.trim() && (
             <div className="text-muted small">
@@ -373,6 +379,22 @@ const Products = () => {
         </select>
       </div>
 
+      <div className="d-flex flex-wrap gap-2 mb-3">
+        <button
+          type="button"
+          className={`btn btn-sm ${dealsOnly ? "btn-dark" : "btn-outline-dark"}`}
+          aria-pressed={dealsOnly}
+          onClick={() => {
+            const params = new URLSearchParams(searchParams);
+            if (dealsOnly) params.delete("deals");
+            else params.set("deals", "1");
+            setSearchParams(params);
+          }}
+        >
+          {dealsOnly ? "✓ Showing deals" : "Deals only"}
+        </button>
+      </div>
+
       {/* RESULT COUNT */}
       <div className="d-flex justify-content-between align-items-center mb-3">
 
@@ -384,7 +406,7 @@ const Products = () => {
           found
         </span>
 
-        {(search.trim() || category !== "all" || sort !== "relevance") && (
+        {(search.trim() || category !== "all" || dealsOnly || sort !== "relevance") && (
           <button
             type="button"
             className="btn btn-link btn-sm text-decoration-none"
