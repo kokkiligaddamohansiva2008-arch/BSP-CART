@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { matchingProductVisual, NO_PRODUCT_PHOTO } from "../data/productVisuals";
+import { productIllustration } from "../data/imageFallback";
 
 // Browse openly licensed Wikimedia Commons photographs without requiring sellers
 // to upload photos. Results are cached and requested only as cards enter view.
@@ -7,7 +8,7 @@ const imageCache = new Map();
 const pending = new Map();
 const queued = [];
 let active = 0;
-const MAX_PARALLEL = 1;
+const MAX_PARALLEL = 3;
 const CATEGORY_IMAGES = {
   "groceries-and-staples": "photo-1542838132-92c53300491e",
   "snacks-and-beverages": "photo-1621939514649-280e2aa7f1f9",
@@ -180,10 +181,15 @@ export default function ProductPhoto({ product, src, alt, onError, ...props }) {
     const url = event.currentTarget.currentSrc || event.currentTarget.src;
     failed.current.add(url);
     const generic = genericPhoto(product?.category);
+    const localIllustration = productIllustration(product?.name, product?.category);
+
+    // Never use the old "Photo unavailable" asset: when an external image
+    // fails, try a category photo and finally an always-available local SVG.
     if (!failed.current.has(generic)) {
       setPhoto(generic);
-    } else if (!failed.current.has(new URL(NO_PRODUCT_PHOTO, window.location.href).href)) {
-      setPhoto(NO_PRODUCT_PHOTO);
+    } else if (photo !== localIllustration) {
+      setCredit(null);
+      setPhoto(localIllustration);
     } else {
       event.currentTarget.onerror = null;
     }
@@ -192,7 +198,7 @@ export default function ProductPhoto({ product, src, alt, onError, ...props }) {
 
   return <img
     ref={ref}
-    src={photo || genericPhoto(product?.category)}
+    src={photo || productIllustration(product?.name, product?.category)}
     alt={alt || product?.name || "Product"}
     title={credit ? `Photo source: ${credit.source} · ${credit.license}` : undefined}
     onError={handleError}
