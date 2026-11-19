@@ -25,6 +25,7 @@ const BuyerDashboard = lazy(() => import("../pages/BuyerDashboard"));
 
 // Seller / Admin pages
 const SellerDashboard = lazy(() => import("../pages/SellerDashboard"));
+const SellerStart = lazy(() => import("../pages/SellerStart"));
 const AdminDashboard = lazy(() => import("../pages/AdminDashboard"));
 const AdminUsers = lazy(() => import("../pages/AdminUsers"));
 const AdminProducts = lazy(() => import("../pages/AdminProducts"));
@@ -85,6 +86,12 @@ function AppRoutes() {
             <BuyerDashboard />
           </ProtectedRoute>
         }
+      />
+
+      {/* Existing buyers can activate a seller profile without registering a second account. */}
+      <Route
+        path="/seller/start"
+        element={<ProtectedRoute><SellerStart /></ProtectedRoute>}
       />
 
       {/* Seller-protected routes */}
