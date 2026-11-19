@@ -43,8 +43,19 @@ const categoryVisuals = {
   "gifts-and-festival": "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=720&h=480&q=75",
 };
 
-// Keep working remote and seller photos; recover from missing URLs with a local asset.
+// Preserve seller-uploaded photos, then try a relevant category photo if missing.
 const IMAGE_FALLBACK = "/images/products/product-fallback.svg";
+
+const getSafeCategoryVisual = (category) => {
+  const key = String(category || "").toLowerCase();
+
+  if (categoryVisuals[key]) return categoryVisuals[key];
+  if (/grocery|snack|dairy|fruit|vegetable|household|personal/.test(key)) return categoryVisuals.grocery;
+  if (/electronic|accessor/.test(key)) return categoryVisuals.electronics;
+  if (/fashion|men|women|kids|baby/.test(key)) return categoryVisuals.fashion;
+  if (/home|kitchen|decor|furnishing/.test(key)) return categoryVisuals.home;
+  return categoryVisuals.all;
+};
 
 const productImageCandidates = (product) =>
   [...new Set([
@@ -52,17 +63,24 @@ const productImageCandidates = (product) =>
     ...(Array.isArray(product.images) ? product.images : []),
     product.imageUrl,
     productThumbnail(product.name, product.category, product.id),
+    getSafeCategoryVisual(product.category),
     IMAGE_FALLBACK,
   ].filter((url) => typeof url === "string" && url.trim()))];
 
 const tryNextImage = (event, candidates) => {
   const img = event.currentTarget;
-  const currentIndex = candidates.indexOf(img.getAttribute("src"));
-  const next = candidates.slice(Math.max(currentIndex + 1, 0)).find((url) => url !== img.getAttribute("src"));
+  const attempted = new Set(
+    String(img.dataset.tried || "").split("|").filter(Boolean)
+  );
+  attempted.add(img.getAttribute("src") || "");
+
+  const next = candidates.find((url) => !attempted.has(url));
   if (next) {
+    img.dataset.tried = [...attempted].join("|");
     img.src = next;
   } else {
-    img.onerror = null; // Prevent an infinite loop if even the fallback fails.
+    img.onerror = null; // Avoid an infinite error loop when every URL fails.
+    img.src = IMAGE_FALLBACK;
   }
 };
 
