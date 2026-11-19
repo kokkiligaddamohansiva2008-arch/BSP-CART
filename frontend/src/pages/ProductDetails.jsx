@@ -84,6 +84,8 @@ export default function ProductDetails() {
   }
 
   const fallbackImage = productThumbnail(product.name, product.category, product.id);
+  const previewOnly = product.isSampleCatalogProduct || Number(product.id) <= 0;
+  const purchasable = !previewOnly && Number(product.stock ?? 0) > 0;
   const effectivePrice = product.deal ? product.deal.price : product.price;
   const pct = discountPercent(effectivePrice, product.mrp);
   const related = getRelatedProducts(product);
@@ -103,7 +105,7 @@ export default function ProductDetails() {
     Swal.fire({
       icon: result.ok ? "success" : "warning",
       title: result.ok ? "Added to cart" : "Can't add this item",
-      text: result.ok ? `${quantity} × ${product.name}` : "This product is out of stock.",
+      text: result.ok ? `${quantity} × ${product.name}` : result.reason === "demo" ? "This is a sample catalogue preview, not an orderable product." : "This product is out of stock.",
       timer: 1400,
       showConfirmButton: false,
     });
@@ -112,6 +114,7 @@ export default function ProductDetails() {
   const handleBuyNow = () => {
     const result = addToStoredCart(product.id, quantity);
     if (result.ok) navigate("/checkout");
+    else Swal.fire({ icon: "warning", title: "Cannot buy this product", text: result.reason === "demo" ? "This is a preview listing. Choose a real available product." : "This item is out of stock." });
   };
 
   return (
@@ -207,10 +210,10 @@ export default function ProductDetails() {
           </div>
 
           <div className="pd-actions">
-            <button className="pd-btn pd-btn-primary" disabled={product.stock === 0} onClick={handleAddToCart}>
-              Add to Cart
+            <button className="pd-btn pd-btn-primary" disabled={!purchasable} onClick={handleAddToCart}>
+              {previewOnly ? "Preview only" : purchasable ? "Add to Cart" : "Out of stock"}
             </button>
-            <button className="pd-btn pd-btn-buy" disabled={product.stock === 0} onClick={handleBuyNow}>
+            <button className="pd-btn pd-btn-buy" disabled={!purchasable} onClick={handleBuyNow}>
               Buy Now
             </button>
             <button
