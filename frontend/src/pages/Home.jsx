@@ -251,6 +251,8 @@ const wishlistCount = wishlist.length;
 
   const renderProductCard = (product, compact = false) => {
     const pct = discountPercent(product.price, product.mrp);
+    const previewOnly = product.isSampleCatalogProduct || Number(product.id) <= 0;
+    const available = !previewOnly && Number(product.stock ?? 0) > 0;
 
     return (
       <article
@@ -335,16 +337,23 @@ const wishlistCount = wishlist.length;
               product.stock < 10 ? "low-stock" : ""
             }`}
           >
-            {product.stock < 10
-              ? `Only ${product.stock} left`
-              : `${product.stock || 0} in stock`}
+            {previewOnly
+              ? "Catalogue preview — not for purchase"
+              : !available
+                ? "Out of stock"
+                : product.stock < 10
+                  ? `Only ${product.stock} left`
+                  : `${product.stock} in stock`}
           </div>
 
           <button
             className="market-add-btn"
+            type="button"
             onClick={() => addToCart(product)}
+            disabled={!available}
+            title={previewOnly ? "Preview listing only" : !available ? "Out of stock" : "Add to cart"}
           >
-            Add to Cart
+            {previewOnly ? "Preview only" : available ? "Add to Cart" : "Out of stock"}
           </button>
         </div>
       </article>
