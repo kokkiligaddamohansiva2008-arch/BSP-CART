@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import Swal from "sweetalert2";
+import Swal from "../utils/centeredSwal";
 import { FaBoxOpen, FaHeart, FaEye, FaTrashAlt } from "react-icons/fa";
 import { getSellerProducts, deleteSellerProduct, formatINR } from "../data/catalog";
 import { getWishlist, getRecentlyViewed } from "../utils/bspStorage";
