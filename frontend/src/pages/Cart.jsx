@@ -14,7 +14,7 @@ const FREE_SHIPPING_AT = 499;
 
 export default function Cart() {
   const { lines, items, subtotal, savings, shipping, total } = useCartStore();
-  const blocked = lines.filter((line) => Number(line.id) <= 0 || Number(line.stock) <= 0);
+  const blocked = lines.filter((line) => line.isDemo || Number(line.id) <= 0 || Number(line.stock) <= 0);
 
   const handleRemove = async (id) => {
     const line = lines.find((l) => l.id === id);
