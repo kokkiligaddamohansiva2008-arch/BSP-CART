@@ -73,4 +73,4 @@ export function parseComparison(text) {
 }
 
 export const productIsOrderable = (p) => Number(p?.id) > 0
-  && !p?.isSampleCatalogProduct && Number(p?.stock) > 0;
+  && !p?.isDemo && !p?.isSampleCatalogProduct && Number(p?.stock) > 0;
