@@ -56,7 +56,17 @@ function Footer() {
   };
 
   return (
-    <footer className="bsp-footer">
+    <footer
+      className="bsp-footer"
+      onClickCapture={(event) => {
+        // Also scroll when the destination is the current route, in which
+        // case React Router won't emit a location change for ScrollToTop.
+        const link = event.target.closest?.("a[href]");
+        if (link?.getAttribute("href")?.startsWith("/")) {
+          requestAnimationFrame(() => window.scrollTo(0, 0));
+        }
+      }}
+    >
 
       {/* =========================================
           MAIN FOOTER
