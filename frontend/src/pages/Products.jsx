@@ -5,6 +5,7 @@ import Swal from "../utils/centeredSwal";
 import ProductCard from "../components/ProductCard";
 import { CATEGORIES, PRODUCTS, onProductsChanged } from "../data/catalog";
 import { matchesCategory, countProductsInCategory } from "../data/categoryUtils";
+import { isProductVisible, onImageVisibilityChanged } from "../data/imageVisibility";
 import { addRecentlyViewed } from "../utils/bspStorage";
 import { addToCart as addToStoredCart } from "../utils/cartStore";
 
@@ -67,6 +68,7 @@ const Products = () => {
 
   // Keep the list current when a seller adds, edits, or removes a product.
   useEffect(() => onProductsChanged(() => setCatalogVersion((version) => version + 1)), []);
+  useEffect(() => onImageVisibilityChanged(() => setCatalogVersion((version) => version + 1)), []);
 
   const selectCategory = (id) => {
     const params = new URLSearchParams(searchParams);
@@ -114,6 +116,8 @@ const Products = () => {
       .filter(Boolean);
 
     let list = PRODUCTS.filter((product) => {
+      // Broken network photo? Keep the original record but hide the listing.
+      if (!isProductVisible(product)) return false;
       // Shared category logic matches Home and supports every subcategory.
       if (!matchesCategory(product, category)) return false;
       if (dealsOnly && !(Number(product.mrp) > Number(product.price))) return false;
