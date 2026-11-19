@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getProductById, formatINR } from "../data/catalog";
 import { getBuyAgainProductIds } from "../utils/bspStorage";
+import { isProductVisible, onImageVisibilityChanged } from "../data/imageVisibility";
 import { productThumbnail } from "../data/additionalProducts";
 import "./Personalization.css";
 
@@ -25,10 +26,12 @@ export default function BuyItAgain({ limit = 6 }) {
     return () => window.removeEventListener("bsp-orders-changed", bump);
   }, []);
 
+  useEffect(() => onImageVisibilityChanged(() => setVersion((v) => v + 1)), []);
+
   const products = useMemo(() => {
     return getBuyAgainProductIds(limit)
       .map(getProductById)
-      .filter(Boolean);
+      .filter((p) => p && isProductVisible(p));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit, version]);
 
