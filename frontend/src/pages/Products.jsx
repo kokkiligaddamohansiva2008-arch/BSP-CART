@@ -3,7 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import { FiGrid, FiShoppingBag, FiSmartphone, FiTag, FiHome, FiPackage, FiCoffee, FiFeather, FiDroplet, FiHeart, FiHeadphones, FiUser, FiSmile, FiBook, FiActivity, FiGitBranch, FiTool, FiTruck, FiGift } from "react-icons/fi";
 import Swal from "sweetalert2";
 import ProductCard from "../components/ProductCard";
-import { CATEGORIES, PRODUCTS } from "../data/catalog";
+import { CATEGORIES, PRODUCTS, onProductsChanged } from "../data/catalog";
+import { matchesCategory, countProductsInCategory } from "../data/categoryUtils";
 import { addRecentlyViewed } from "../utils/bspStorage";
 import { addToCart as addToStoredCart } from "../utils/cartStore";
 
@@ -14,14 +15,6 @@ const SORT_OPTIONS = [
   { id: "rating", label: "Avg. Customer Rating" },
   { id: "newest", label: "Newest First" },
 ];
-
-// Parent filters include their matching subcategories in the catalogue.
-const CATEGORY_GROUPS = {
-  grocery: ["grocery", "groceries-and-staples", "snacks-and-beverages", "dairy-and-bakery", "fruits-and-vegetables", "household-and-cleaning", "kitchen-and-dining", "personal-care"],
-  electronics: ["electronics", "electronics-and-accessories"],
-  fashion: ["fashion", "men-s-fashion", "women-s-fashion"],
-  home: ["home", "home-decor-and-furnishing", "kitchen-and-dining"],
-};
 
 const categoryIcon = (category) => {
   const label = String(category.label || "").toLowerCase();
@@ -64,8 +57,22 @@ const Products = () => {
   const urlSearch = searchParams.get("search") || "";
 
   const [search, setSearch] = useState(urlSearch);
-  const [category, setCategory] = useState("all");
+  const selectedCategory = searchParams.get("category") || "all";
+  const category = CATEGORIES.some((item) => item.id === selectedCategory)
+    ? selectedCategory
+    : "all";
   const [sort, setSort] = useState("relevance");
+  const [catalogVersion, setCatalogVersion] = useState(0);
+
+  // Keep the list current when a seller adds, edits, or removes a product.
+  useEffect(() => onProductsChanged(() => setCatalogVersion((version) => version + 1)), []);
+
+  const selectCategory = (id) => {
+    const params = new URLSearchParams(searchParams);
+    if (id === "all") params.delete("category");
+    else params.set("category", id);
+    setSearchParams(params);
+  };
 
   /*
    * Keep local search synchronized with the URL.
@@ -76,32 +83,6 @@ const Products = () => {
   useEffect(() => {
     setSearch(urlSearch);
   }, [urlSearch]);
-
-  /*
-   * Update URL whenever the search text changes.
-   *
-   * This allows Navbar search and Products page search
-   * to work together.
-   */
-  useEffect(() => {
-    const trimmedSearch = search.trim();
-
-    const currentUrlSearch = searchParams.get("search") || "";
-
-    if (trimmedSearch === currentUrlSearch) {
-      return;
-    }
-
-    const params = new URLSearchParams(searchParams);
-
-    if (trimmedSearch) {
-      params.set("search", trimmedSearch);
-    } else {
-      params.delete("search");
-    }
-
-    setSearchParams(params, { replace: true });
-  }, [search]);
 
   /*
    * Efficient product filtering.
@@ -132,17 +113,8 @@ const Products = () => {
       .filter(Boolean);
 
     let list = PRODUCTS.filter((product) => {
-      // Category filtering
-      const selectedCategory = String(category || "").toLowerCase();
-      const productCategory = String(product.category || "").toLowerCase();
-      const includedCategories = CATEGORY_GROUPS[selectedCategory] || [selectedCategory];
-      const matchesCategory =
-        selectedCategory === "all" ||
-        includedCategories.includes(productCategory);
-
-      if (!matchesCategory) {
-        return false;
-      }
+      // Shared category logic matches Home and supports every subcategory.
+      if (!matchesCategory(product, category)) return false;
 
       // No search entered
       if (searchWords.length === 0) {
@@ -223,7 +195,7 @@ const Products = () => {
     }
 
     return list;
-  }, [search, category, sort]);
+  }, [search, category, sort, catalogVersion]);
 
   /*
    * Add product to cart.
@@ -259,7 +231,6 @@ const Products = () => {
    */
   const clearFilters = () => {
     setSearch("");
-    setCategory("all");
     setSort("relevance");
 
     setSearchParams({}, { replace: true });
@@ -269,7 +240,12 @@ const Products = () => {
    * Handle search input.
    */
   const handleSearchChange = (e) => {
-    setSearch(e.target.value);
+    const value = e.target.value;
+    setSearch(value);
+    const params = new URLSearchParams(searchParams);
+    if (value.trim()) params.set("search", value.trim());
+    else params.delete("search");
+    setSearchParams(params, { replace: true });
   };
 
   /*
@@ -300,7 +276,7 @@ const Products = () => {
       <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
 
         <div>
-          <h2 className="mb-1">Products</h2>
+          <h2 className="mb-1">{category === "all" ? "Products" : `${CATEGORIES.find((item) => item.id === category)?.label || "Category"} Products`}</h2>
 
           {search.trim() && (
             <div className="text-muted small">
@@ -364,7 +340,7 @@ const Products = () => {
                 ? "btn-dark"
                 : "btn-outline-dark"
             }`}
-            onClick={() => setCategory(c.id)}
+            onClick={() => selectCategory(c.id)}
             aria-pressed={category === c.id}
           >
             {(() => {
@@ -372,6 +348,9 @@ const Products = () => {
               return <Icon aria-hidden="true" size={16} strokeWidth={2.1} />;
             })()}
             <span>{c.label}</span>
+            <span className="badge rounded-pill text-bg-light">
+              {countProductsInCategory(PRODUCTS, c.id)}
+            </span>
           </button>
         ))}
 
