@@ -8,8 +8,8 @@ import "./Checkout.css";
 
 const PAYMENT_METHODS = [
   { id: "COD", label: "Cash on Delivery", hint: "Pay when your order arrives" },
-  { id: "UPI", label: "UPI", hint: "GPay, PhonePe, Paytm" },
-  { id: "CARD", label: "Credit / Debit Card", hint: "Visa, Mastercard, RuPay" },
+  { id: "UPI", label: "UPI", hint: "Coming soon", disabled: true },
+  { id: "CARD", label: "Credit / Debit Card", hint: "Coming soon", disabled: true },
 ];
 
 function loadSavedAddress() {
@@ -139,12 +139,13 @@ export default function Checkout() {
             {PAYMENT_METHODS.map((m) => (
               <label key={m.id} className={form.paymentMethod === m.id ? "selected" : ""}>
                 <input id={`pay-${m.id}`} type="radio" name="paymentMethod" value={m.id}
-                  checked={form.paymentMethod === m.id} onChange={update} />
+                  checked={form.paymentMethod === m.id} disabled={Boolean(m.disabled)} onChange={update} />
                 <span><strong>{m.label}</strong><small>{m.hint}</small></span>
               </label>
             ))}
           </div>
 
+          <p className="small text-muted mb-2">Online payments are not enabled yet. Cash on Delivery is the only available payment method.</p>
           <button type="submit" className="co-submit" disabled={placing}>
             {placing ? "Placing order…" : `Place order · ₹${total.toLocaleString("en-IN")}`}
           </button>
