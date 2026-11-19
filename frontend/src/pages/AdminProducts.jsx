@@ -1,6 +1,6 @@
 import ProductPhoto from "../components/ProductPhoto";
 import { useEffect, useMemo, useState } from "react";
-import Swal from "sweetalert2";
+import Swal from "../utils/centeredSwal";
 import Sidebar from "../components/layout/Sidebar";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import { getProducts, setProductStock, removeProduct, errMsg, LOW_STOCK } from "../services/adminService";
