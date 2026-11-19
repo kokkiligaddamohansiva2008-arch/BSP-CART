@@ -209,19 +209,19 @@ assert(read("src/components/ProductPhoto.jsx").includes("reportUnavailableProduc
 // Regression coverage: missing local Vite credentials must NOT cause
 // authService.initAuth to access a null .auth client.
 const supabaseSource = read("src/lib/supabase.js");
-const authSource = read("src/services/authService.js");
+const authInitSource = read("src/services/authService.js");
 const contextSource = read("src/context/AuthContext.jsx");
 const htmlSource = read("index.html");
 assert(supabaseSource.includes("export function requireSupabase()"),
   "Supabase client exposes clear local configuration errors");
-assert(authSource.includes("export async function initAuth() {") &&
-  authSource.includes("if (!supabase) {") && authSource.includes("clearSession();"),
+assert(authInitSource.includes("export async function initAuth() {") &&
+  authInitSource.includes("if (!supabase) {") && authInitSource.includes("clearSession();"),
   "Missing Supabase environment cannot crash auth initialization");
-assert(authSource.includes("const { data, error } = await supabase.auth.getSession()"),
+assert(authInitSource.includes("const { data, error } = await supabase.auth.getSession()"),
   "Configured Supabase auth restores sessions as before");
 assert(contextSource.includes("initAuth()") && contextSource.includes(".catch((error) =>"),
   "React auth context handles initialization promise failures");
-assert(!/<link[^>]*rel=["']preload["'][^>]*href=["']\\/logo\\.png["']/i.test(htmlSource),
+assert(!htmlSource.includes('rel="preload" as="image" href="/logo.png"'),
   "Vite HTML no longer preloads logo before navbar mounts");
 assert(read("src/components/layout/Navbar.jsx").includes('src="/logo.png"'),
   "Navbar still displays the original logo");
