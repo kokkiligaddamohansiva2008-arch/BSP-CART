@@ -95,9 +95,10 @@ color:#B91C1C;
 .dashboard-layout {
   display: grid;
   grid-template-columns: var(--sidebar-width, 260px) minmax(0, 1fr);
-  align-items: stretch;
-  min-height: calc(100vh - var(--navbar-height, 70px));
+  align-items: start;
+  min-height: calc(100dvh - var(--navbar-height, 70px));
   width: 100%;
+  overflow: clip;
 }
 
 .dashboard-layout .sidebar {
@@ -113,8 +114,11 @@ color:#B91C1C;
 }
 
 .dashboard-layout .dashboard-main {
+  box-sizing: border-box;
   min-width: 0;
   width: 100%;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: 32px clamp(16px, 3vw, 40px) 48px;
 }
 
@@ -129,7 +133,13 @@ color:#B91C1C;
   }
 
   .dashboard-layout .sidebar {
-    display: none;
+    position: relative;
+    top: auto;
+    display: flex;
+    height: auto;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
   }
 
   .dashboard-layout .dashboard-main {
