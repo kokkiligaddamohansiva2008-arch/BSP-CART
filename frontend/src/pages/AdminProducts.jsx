@@ -1,7 +1,7 @@
 import ProductPhoto from "../components/ProductPhoto";
 import { useEffect, useMemo, useState } from "react";
 import Swal from "../utils/centeredSwal";
-import Sidebar from "../components/layout/Sidebar";
+import AdminMenu from "../components/dashboard/AdminMenu";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import { getProducts, setProductStock, removeProduct, errMsg, LOW_STOCK } from "../services/adminService";
 import "../styles/dashboard.css";
@@ -60,10 +60,12 @@ export default function AdminProducts() {
   };
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
+    <div className="dashboard-layout admin-page">
       <div className="dashboard-main">
-        <DashboardHeader title="Products" subtitle="Monitor inventory and remove seller listings" />
+        <div className="adm-page-heading">
+          <DashboardHeader title="Products" subtitle="Monitor inventory and remove seller listings" />
+          <AdminMenu />
+        </div>
         <div className="adm-bar">
           <input id="admprod-product-search" name="product-search" placeholder="Search products" value={q} onChange={(e) => setQ(e.target.value)} />
           <select id="admprod-category-filter" name="category-filter" value={cat} onChange={(e) => setCat(e.target.value)}>
