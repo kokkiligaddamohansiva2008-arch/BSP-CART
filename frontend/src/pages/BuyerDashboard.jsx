@@ -1,3 +1,4 @@
+import ProductPhoto from "../components/ProductPhoto";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -1077,13 +1078,7 @@ const BuyerDashboard = () => {
 
                         <div className="card bd-item-card h-100">
 
-                          <img
-                            src={
-                              item.imageUrl ||
-                              item.image ||
-                              "https://via.placeholder.com/300x200?text=No+Image"
-                            }
-                            alt={item.name}
+                          <ProductPhoto product={item} src={item.imageUrl || item.image} alt={item.name}
                             style={{
                               width: "100%",
                               aspectRatio: "4 / 3",
