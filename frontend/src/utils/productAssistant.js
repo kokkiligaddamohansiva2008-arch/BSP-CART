@@ -1,4 +1,4 @@
-import { matchesCategory } from "../data/categoryUtils";
+import { matchesCategory } from "../data/categoryUtils.js";
 
 export const normalizeWords = (value) => String(value || "")
   .toLowerCase()
