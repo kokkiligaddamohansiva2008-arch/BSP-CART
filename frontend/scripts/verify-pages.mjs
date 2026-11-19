@@ -87,4 +87,52 @@ assert(ADDITIONAL_PRODUCTS.length === 360, "360 sample products have image mappi
 assert(!read("src/components/ProductPhoto.jsx").includes("genericPhoto("),
   "Product photos never fall back to reused category banners");
 
+
+// Footer link navigation and floating shopping assistant regression checks.
+assert(read("src/App.jsx").includes("<ScrollToTop />"),
+  "Internal routes automatically scroll to the top");
+assert(read("src/components/layout/Footer.jsx").includes("onClickCapture"),
+  "Same-page footer links also move up to the page header");
+assert(read("src/App.jsx").includes("<ProductChatbot />"),
+  "Product chatbot is available across BSP CART pages");
+assert(read("src/components/ProductPhoto.jsx").includes("No AI key") === false,
+  "Product images are handled locally without unrelated AI lookups");
+assert(!read("src/components/ProductPhoto.jsx").includes("commons.wikimedia.org/w/api.php"),
+  "Product photos are not fetched using unreliable fuzzy image searches");
+
+// Validate all actual sample catalogue category slugs and deep-link targets.
+const { ADDITIONAL_CATEGORIES } = await import("../src/data/additionalProducts.js");
+const { matchesCategory, CATEGORY_GROUPS } = await import("../src/data/categoryUtils.js");
+const { findProducts, parseComparison, findBestProduct } =
+  await import("../src/utils/productAssistant.js");
+const leaves = new Set(ADDITIONAL_CATEGORIES.map((c) => c.id));
+assert(leaves.size === 18, "18 unique product subcategories");
+assert(ADDITIONAL_PRODUCTS.every((p) => leaves.has(p.category)),
+  "Every catalogue product belongs to a linked subcategory");
+let incorrectMatches = 0;
+for (const product of ADDITIONAL_PRODUCTS) {
+  for (const id of leaves) {
+    if (id !== product.category && matchesCategory(product, id)) incorrectMatches++;
+  }
+}
+assert(incorrectMatches === 0, "Product category links do not show unrelated products");
+const searchSamples = [
+  ["Cars", "auto-and-travel"], ["Tools", "tools-and-hardware"],
+  ["Fashion", "fashion"], ["Groceries", "grocery"],
+  ["Floor cleaners", "household-and-cleaning"],
+  ["Stationery", "stationery-and-office"],
+  ["Personal care", "personal-care"],
+  ["Electronics", "electronics"], ["Accessories", "electronics-and-accessories"],
+];
+for (const [question, selected] of searchSamples) {
+  const results = findProducts(question, ADDITIONAL_PRODUCTS, 5);
+  assert(results.length > 0, "Chatbot finds " + question);
+  assert(results.every((p) => matchesCategory(p, selected)),
+    "Chatbot finds matching " + question + " category products");
+}
+assert(Boolean(parseComparison("compare basmati rice vs brown rice")),
+  "Chatbot understands product comparison questions");
+assert(findBestProduct("basmati rice", ADDITIONAL_PRODUCTS)?.name === "Basmati Rice",
+  "Chatbot comparison resolves an exact matching product name");
+
 console.log("\nBSP CART route and UI static checks completed.");
