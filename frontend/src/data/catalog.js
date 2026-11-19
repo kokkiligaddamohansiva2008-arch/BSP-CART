@@ -14,6 +14,7 @@
 import { supabase } from "../lib/supabase";
 import { ADDITIONAL_CATEGORIES, ADDITIONAL_PRODUCTS } from "./additionalProducts";
 import { matchingProductVisual } from "./productVisuals";
+import { productIllustration } from "./imageFallback";
 
 export const CATEGORIES = [
   { id: "all", label: "All Stalls" },
@@ -93,6 +94,10 @@ function fromRow(r) {
     highlights: r.highlights || [],
     priceHistory: (r.price_history || []).map(Number),
     deal: r.deal || undefined,
+    // Seeded records are demonstrations, not real stock for sale.
+    // The database separately blocks all purchases of demo products.
+    isDemo: Boolean(r.is_demo),
+    isSampleCatalogProduct: Boolean(r.is_demo),
     isSellerAdded: !!r.owner_id,
     ownerId: r.owner_id,
     ownerUsername: r.owner_username,
@@ -110,27 +115,21 @@ export async function loadProducts() {
   if (error) throw error;
 
   const databaseProducts = data.map(fromRow);
-  // A shared image URL is not evidence that the photo matches any product.
-  // Never overwrite seller-uploaded photos: sellers may intentionally reuse
-  // their own image across variants. For imported legacy rows with a shared
-  // generic image, use an explicitly named, product-specific illustration.
-  const imageCounts = new Map();
-  databaseProducts.forEach((product) => {
-    if (product.isSellerAdded) return;
-    const image = product.image;
-    if (typeof image === "string" && /^https?:\/\//i.test(image)) {
-      imageCounts.set(image, (imageCounts.get(image) || 0) + 1);
+  // Display each real image URL for one distinct product only, regardless
+  // of category or seller. Leave the database source URL unchanged.
+  const imageOwners = new Map();
+  for (const product of [...databaseProducts, ...SAMPLE_PRODUCTS]) {
+    const image = String(product.image || "");
+    if (!image || image.startsWith("data:")) continue;
+    const first = imageOwners.get(image);
+    if (first && first !== String(product.id)) {
+      const unique = productIllustration(product.name, product.category);
+      product.image = unique;
+      product.images = [unique, ...(product.images || []).slice(1)];
+      continue;
     }
-  });
-  databaseProducts.forEach((product) => {
-    if (product.isSellerAdded) return;
-    const oldArt = typeof product.image === "string" && (/^data:image\/svg\+xml/i.test(product.image) || /\/images\/products\/groceries-and-staples-[^/]+\.svg(?:\?|$)/i.test(product.image));
-    if (oldArt || imageCounts.get(product.image) > 1) {
-      const replacement = matchingProductVisual(product.name, product.category, product.id);
-      product.image = replacement;
-      product.images = [replacement, ...(product.images || []).slice(1)];
-    }
-  });
+    imageOwners.set(image, String(product.id));
+  }
 
   PRODUCTS.splice(0, PRODUCTS.length, ...databaseProducts, ...SAMPLE_PRODUCTS);
   notify();
