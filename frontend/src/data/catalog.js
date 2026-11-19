@@ -15,6 +15,7 @@ import { supabase } from "../lib/supabase";
 import { ADDITIONAL_CATEGORIES, ADDITIONAL_PRODUCTS } from "./additionalProducts";
 import { matchingProductVisual } from "./productVisuals";
 import { productIllustration } from "./imageFallback";
+import { isProductVisible } from "./imageVisibility";
 
 export const CATEGORIES = [
   { id: "all", label: "All Stalls" },
@@ -308,11 +309,11 @@ export function getProductById(id) {
 
 export function getRelatedProducts(product, limit = 4) {
   if (!product) return [];
-  return PRODUCTS.filter((p) => p.category === product.category && p.id !== product.id).slice(0, limit);
+  return PRODUCTS.filter((p) => isProductVisible(p) && p.category === product.category && p.id !== product.id).slice(0, limit);
 }
 
 export function getDealProducts() {
-  return PRODUCTS.filter((p) => p.deal);
+  return PRODUCTS.filter((p) => p.deal && isProductVisible(p));
 }
 
 export function formatINR(amount) {
