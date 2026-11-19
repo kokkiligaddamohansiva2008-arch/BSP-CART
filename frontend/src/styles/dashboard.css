@@ -90,3 +90,49 @@ color:#92400E;
 background:#FEE2E2;
 color:#B91C1C;
 }
+/* Admin pages share a two-column shell. Reserve the sidebar width in
+   document flow instead of allowing a fixed overlay over page content. */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width, 260px) minmax(0, 1fr);
+  align-items: stretch;
+  min-height: calc(100vh - var(--navbar-height, 70px));
+  width: 100%;
+}
+
+.dashboard-layout .sidebar {
+  position: sticky;
+  top: var(--navbar-height, 70px);
+  left: auto;
+  width: 100%;
+  height: calc(100vh - var(--navbar-height, 70px));
+  min-height: 0;
+  align-self: start;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.dashboard-layout .dashboard-main {
+  min-width: 0;
+  width: 100%;
+  padding: 32px clamp(16px, 3vw, 40px) 48px;
+}
+
+.dashboard-layout .adm-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 992px) {
+  .dashboard-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-layout .sidebar {
+    display: none;
+  }
+
+  .dashboard-layout .dashboard-main {
+    padding: 20px 16px 36px;
+  }
+}
