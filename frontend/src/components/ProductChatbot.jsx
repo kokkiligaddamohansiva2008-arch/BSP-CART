@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FiMessageCircle, FiX, FiSend, FiColumns, FiSearch } from "react-icons/fi";
 import { PRODUCTS, onProductsChanged } from "../data/catalog";
 import { findProducts, findBestProduct, parseComparison, productIsOrderable } from "../utils/productAssistant";
+import { isProductVisible } from "../data/imageVisibility";
 import "./ProductChatbot.css";
 
 const rupees = (amount) => "₹" + Number(amount || 0).toLocaleString("en-IN");
@@ -86,7 +87,7 @@ export default function ProductChatbot() {
   const ask = (input) => {
     const text = String(input || "").trim();
     if (!text) return;
-    const catalog = [...PRODUCTS];
+    const catalog = PRODUCTS.filter(isProductVisible);
     const comparison = parseComparison(text);
     let answer;
     if (comparison) {
