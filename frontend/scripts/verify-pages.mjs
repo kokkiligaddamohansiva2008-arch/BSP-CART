@@ -14,7 +14,7 @@ const expected = [
   "/", "/login", "/register", "/products", "/products/:id",
   "/help-center", "/privacy-policy", "/terms", "/return-policy", "/faqs",
   "/cart", "/checkout", "/orders", "/profile", "/buyer/dashboard",
-  "/seller/dashboard", "/admin/dashboard", "/admin/users", "/admin/products", "*",
+  "/seller/dashboard", "/seller/start", "/admin/dashboard", "/admin/users", "/admin/products", "*",
 ];
 const routes = [...router.matchAll(/<Route\b[^>]*?path="([^"]+)"/g)].map((m) => m[1]);
 for (const route of expected) assert(routes.includes(route), "Route exists: " + route);
@@ -134,5 +134,33 @@ assert(Boolean(parseComparison("compare basmati rice vs brown rice")),
   "Chatbot understands product comparison questions");
 assert(findBestProduct("basmati rice", ADDITIONAL_PRODUCTS)?.name === "Basmati Rice",
   "Chatbot comparison resolves an exact matching product name");
+
+
+// Seller account and exact product-image regression checks.
+const authSource = read("src/services/authService.js");
+const sellerPage = read("src/pages/SellerStart.jsx");
+assert(authSource.includes('rpc("activate_seller_account")'),
+  "Verified buyers can securely activate seller account via RPC");
+assert(authSource.includes("refreshSession()"),
+  "Seller role changes refresh the authenticated JWT");
+assert(sellerPage.includes("Activate Seller Account"),
+  "Existing buyers have a visible seller onboarding button");
+assert(read("src/pages/Register.jsx").includes('role === "seller"'),
+  "Registration form honours the chosen seller role");
+assert(read("src/pages/SellerDashboard.jsx").includes("onProductsChanged(loadProducts)"),
+  "Seller dashboard refreshes after product loading");
+
+const { UPLOADED_PRODUCT_PHOTOS } = await import("../src/data/uploadedProductImages.js");
+const essentialImages = [
+  "name:toor-dal", "name:moong-dal", "name:chana-dal", "name:masoor-dal",
+  "name:urad-dal", "name:whole-wheat-atta", "name:maida",
+  "name:cucumber", "name:ladies-finger", "name:french-beans",
+  "name:toordal", "name:fresh-beans", "name:beans",
+];
+for (const key of essentialImages) {
+  assert(Boolean(UPLOADED_PRODUCT_PHOTOS[key]), "Specific image mapping exists: " + key);
+}
+assert(!UPLOADED_PRODUCT_PHOTOS["name:dal"],
+  "Ambiguous generic Dal is not mislabelled with another type of dal");
 
 console.log("\nBSP CART route and UI static checks completed.");
