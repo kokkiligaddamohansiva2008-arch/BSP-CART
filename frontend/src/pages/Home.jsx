@@ -184,7 +184,9 @@ const wishlistCount = wishlist.length;
       title: result.ok ? "Added to cart" : "Can't add this item",
       text: result.ok
         ? `${product.name} added successfully`
-        : "This product is currently out of stock.",
+        : result.reason === "demo"
+          ? "This is a preview listing. Only real Supabase products can be purchased."
+          : "This product is currently out of stock.",
       timer: 1400,
       showConfirmButton: false,
       position: "top-end",
