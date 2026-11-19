@@ -17,7 +17,7 @@ export const placeOrder = async ({ form, lines }) => {
   if (!lines?.length) throw new Error("Your cart is empty.");
   // Sample cards currently have negative, frontend-only IDs. Block them
   // before RPC until they are imported into the Supabase products table.
-  if (lines.some((line) => !Number.isSafeInteger(Number(line.id)) || Number(line.id) <= 0)) {
+  if (lines.some((line) => line.isDemo || !Number.isSafeInteger(Number(line.id)) || Number(line.id) <= 0)) {
     throw new Error("Some products in your cart are sample listings and are not yet available for checkout. Only products saved in Supabase can be ordered.");
   }
   if (form.paymentMethod !== "COD") {
