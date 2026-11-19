@@ -34,7 +34,7 @@ const EMPTY_FORM = {
   category: PRODUCT_CATEGORIES[0]?.id || "grocery",
   price: "",
   mrp: "",
-  stock: "",
+  stock: "5",
   description: "",
 };
 
@@ -46,7 +46,7 @@ let rowCounter = 0;
 const newRow = () => ({ key: `row-${++rowCounter}`, ...EMPTY_FORM, images: [] });
 
 const isRowEmpty = (r) =>
-  !r.name.trim() && r.price === "" && r.stock === "" && !r.description.trim() && r.images.length === 0;
+  !r.name.trim() && r.price === "" && !r.description.trim() && r.images.length === 0;
 
 // NOTE: never pass fileToDataUrl straight to Array.map — map also passes
 // (index, array) which would land in the maxDim / quality parameters and
@@ -209,8 +209,8 @@ const SellerDashboard = () => {
       return;
     }
 
-    if (Number(form.price) <= 0 || Number(form.stock) < 0) {
-      Swal.fire("Invalid values", "Price must be positive and stock cannot be negative.", "warning");
+    if (Number(form.price) <= 0 || Number(form.stock) < 5) {
+      Swal.fire("Invalid values", "Price must be positive and stock must be at least 5.", "warning");
       return;
     }
 
@@ -322,10 +322,10 @@ const SellerDashboard = () => {
         Swal.fire("Product image required", `Product ${number}: upload at least one image.`, "warning");
         return;
       }
-      if (Number(row.price) <= 0 || Number(row.stock) < 0) {
+      if (Number(row.price) <= 0 || Number(row.stock) < 5) {
         Swal.fire(
           "Invalid values",
-          `Product ${number}: price must be positive and stock cannot be negative.`,
+          `Product ${number}: price must be positive and stock must be at least 5.`,
           "warning"
         );
         return;
@@ -558,7 +558,7 @@ const SellerDashboard = () => {
               <label className="form-label">Stock</label>
               <input id="sd-stock"
                 type="number"
-                min="0"
+                min="5"
                 className="form-control"
                 name="stock"
                 value={form.stock}
@@ -728,7 +728,7 @@ const SellerDashboard = () => {
 
                   <input id={`bulk-stock-${row.key}`} name={`bulk-stock-${row.key}`}
                     type="number"
-                    min="0"
+                    min="5"
                     className="form-control"
                     placeholder="Stock"
                     value={row.stock}
