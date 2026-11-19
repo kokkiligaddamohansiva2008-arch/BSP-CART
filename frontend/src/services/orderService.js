@@ -13,8 +13,17 @@ const unwrap = ({ data, error }) => {
 };
 
 /** Place an order. Returns the new order id (e.g. "BSP10000001"). */
-export const placeOrder = async ({ form, lines }) =>
-  unwrap(
+export const placeOrder = async ({ form, lines }) => {
+  if (!lines?.length) throw new Error("Your cart is empty.");
+  // Sample cards currently have negative, frontend-only IDs. Block them
+  // before RPC until they are imported into the Supabase products table.
+  if (lines.some((line) => !Number.isSafeInteger(Number(line.id)) || Number(line.id) <= 0)) {
+    throw new Error("Some products in your cart are sample listings and are not yet available for checkout. Only products saved in Supabase can be ordered.");
+  }
+  if (form.paymentMethod !== "COD") {
+    throw new Error("Only Cash on Delivery is available until online payments are verified.");
+  }
+  return unwrap(
     await supabase.rpc("place_order", {
       p_items: lines.map((l) => ({ product_id: l.id, quantity: l.quantity })),
       p_payment_method: form.paymentMethod,
@@ -27,15 +36,21 @@ export const placeOrder = async ({ form, lines }) =>
       p_pincode: form.pincode.trim(),
     })
   );
+};
 
 const flat = (o) => ({
   id: o.id,
   status: o.status,
-  total: Number(o.total),
+  total: Number(o.total_amount ?? 0),
   date: o.created_at,
   paymentMethod: o.payment_method,
-  productName: (o.order_items || []).map((i) => `${i.name} × ${i.quantity}`).join(", "),
-  items: o.order_items || [],
+  productName: (o.order_items || []).map((i) => `${i.products?.name || "Product"} × ${i.quantity}`).join(", "),
+  items: (o.order_items || []).map((i) => ({
+    ...i,
+    name: i.products?.name || "Product",
+    image: i.products?.image_url || "",
+    price: Number(i.unit_price ?? 0),
+  })),
 });
 
 /** Logged-in buyer's orders, newest first. */
@@ -44,14 +59,14 @@ export const getMyOrders = async () => {
   return unwrap(
     await supabase
       .from("orders")
-      .select("*, order_items(*)")
+      .select("*, order_items(*, products(name, image_url))")
       .eq("user_id", u.user.id)
       .order("created_at", { ascending: false })
   ).map(flat);
 };
 
 export const getOrderById = async (orderId) =>
-  flat(unwrap(await supabase.from("orders").select("*, order_items(*)").eq("id", orderId).single()));
+  flat(unwrap(await supabase.from("orders").select("*, order_items(*, products(name, image_url))").eq("id", orderId).single()));
 
 /** Cancel (only while Processing) — restocks the items. */
 export const cancelOrder = async (orderId) => {
