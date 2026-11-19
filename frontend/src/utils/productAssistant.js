@@ -16,7 +16,7 @@ const CATEGORY_HINTS = [
   { words: /\b(tools?|hardware|drills?|hammers?|screwdrivers?)\b/, id: "tools-and-hardware" },
   { words: /\b(stationary|stationery|school supplies|office supplies)\b/, id: "stationery-and-office" },
   { words: /\b(personal care|skin care|shampoo|soap|toothpaste)\b/, id: "personal-care" },
-  { words: /\b(floor cleaner|floor items|mops?|brooms?|household cleaning)\b/, id: "household-and-cleaning" },
+  { words: /\b(floor cleaners?|floor items|mops?|brooms?|household cleaning)\b/, id: "household-and-cleaning" },
   { words: /\b(electronics?|mobile accessories|earphones|headphones|chargers?)\b/, id: "electronics" },
   { words: /\b(fashion|clothes|clothing|dresses?|shirts?|sarees?)\b/, id: "fashion" },
   { words: /\b(groceries|grocery|food staples)\b/, id: "grocery" },
