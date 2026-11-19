@@ -1,8 +1,10 @@
 import { matchingProductVisual } from "./productVisuals.js";
 
-// Keep this function for existing components, but never generate AI-style artwork.
-// Matched genuine photos take precedence; missing photos show a neutral fallback.
-export const productThumbnail = () => "/images/products/product-fallback.svg";
+// Product-specific image resolution shared by carts, orders and catalogue cards.
+// When no licensed/photo asset exists, return an illustration labelled with the
+// exact product name instead of the same generic category image for every item.
+export const productThumbnail = (name, category, id) =>
+  matchingProductVisual(name, category, id);
 
 const groups = {
   "Groceries & Staples": "Basmati Rice|Sona Masoori Rice|Brown Rice|Poha (Flattened Rice)|Toor Dal|Moong Dal|Chana Dal|Urad Dal|Masoor Dal|Rajma|Kabuli Chana|Black Chana|Green Moong|Whole Wheat Atta|Multigrain Atta|Maida|Besan|Rice Flour|Ragi Flour|Rava (Semolina)|Vermicelli|Sugar|Jaggery|Rock Salt|Iodised Salt|Turmeric Powder|Red Chilli Powder|Coriander Powder|Cumin Seeds|Mustard Seeds|Black Pepper|Cardamom|Cloves|Cinnamon Sticks|Garam Masala|Sambar Powder|Biryani Masala|Tamarind|Dry Red Chillies|Bay Leaves|Fennel Seeds|Fenugreek Seeds|Sunflower Oil|Groundnut Oil|Mustard Oil|Coconut Oil|Pure Ghee|Cashew Nuts|Almonds|Raisins|Idli Rice|Parboiled Rice|Foxtail Millet|Jowar Flour|Bajra Flour|Cornmeal|Sesame Seeds|Poppy Seeds|Asafoetida (Hing)|Chaat Masala",
