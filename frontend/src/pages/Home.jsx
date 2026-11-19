@@ -1,4 +1,5 @@
 import ProductPhoto from "../components/ProductPhoto";
+import { matchesCategory, countProductsInCategory } from "../data/categoryUtils";
 import { useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -85,26 +86,11 @@ const tryNextImage = (event, candidates) => {
   }
 };
 
-const CATEGORY_COUNT_GROUPS = {
-  grocery: ["grocery", "groceries-and-staples", "snacks-and-beverages", "dairy-and-bakery", "fruits-and-vegetables", "household-and-cleaning", "kitchen-and-dining", "personal-care"],
-  home: ["home", "home-decor-and-furnishing", "kitchen-and-dining"],
-  electronics: ["electronics", "electronics-and-accessories"],
-  fashion: ["fashion", "men-s-fashion", "women-s-fashion"],
-};
-
 const getCategoryProducts = (category) =>
-  PRODUCTS.filter(
-    (p) => String(p.category).toLowerCase() === String(category).toLowerCase()
-  );
+  PRODUCTS.filter((product) => matchesCategory(product, category));
 
-const getCategoryCount = (category) => {
-  const id = String(category.id || "").toLowerCase();
-  if (id === "all") return PRODUCTS.length;
-  const included = CATEGORY_COUNT_GROUPS[id] || [id];
-  return PRODUCTS.filter((product) =>
-    included.includes(String(product.category || "").toLowerCase())
-  ).length;
-};
+const getCategoryCount = (category) =>
+  countProductsInCategory(PRODUCTS, category.id);
 
 const getDiscountedProducts = () =>
   PRODUCTS.filter((p) => Number(p.mrp) > Number(p.price))
@@ -160,9 +146,7 @@ export default function Home() {
     const normalizedQuery = query.trim().toLowerCase();
 
     return PRODUCTS.filter((p) => {
-      const matchesCategory =
-        activeCategory === "all" ||
-        p.category === activeCategory;
+      const matchesSelectedCategory = matchesCategory(p, activeCategory);
 
       const searchableText = [
         p.name,
@@ -185,7 +169,7 @@ export default function Home() {
           searchableText.includes(word)
         );
 
-      return matchesCategory && matchesQuery;
+      return matchesSelectedCategory && matchesQuery;
     });
   }, [activeCategory, query]);
 
@@ -228,14 +212,11 @@ const wishlistCount = wishlist.length;
   };
 
   const browseCategory = (category) => {
-    setActiveCategory(category);
-    setQuery("");
-
-    setTimeout(() => {
-      document
-        .getElementById("products")
-        ?.scrollIntoView({ behavior: "smooth" });
-    }, 50);
+    // Open the selected category directly on the Products page so all
+    // category buttons lead to the same fully filtered catalogue.
+    const params = new URLSearchParams();
+    if (category && category !== "all") params.set("category", category);
+    navigate(`/products${params.size ? `?${params.toString()}` : ""}`);
   };
 
   const copyCoupon = async (coupon) => {
@@ -494,11 +475,12 @@ const wishlistCount = wishlist.length;
           CATEGORY NAVIGATION
       ====================================================== */}
       <div className="mega-category-bar">
-        <div className="category-menu-item all-menu">
+        <button type="button" className="category-menu-item all-menu"
+          onClick={() => browseCategory("all")}>
           <FiMenu aria-hidden="true" /> All Categories
-        </div>
+        </button>
 
-        {CATEGORIES.slice(0, 8).map((category) => (
+        {CATEGORIES.filter((category) => category.id !== "all").slice(0, 8).map((category) => (
           <button
             key={category.id}
             onClick={() => browseCategory(category.id)}
