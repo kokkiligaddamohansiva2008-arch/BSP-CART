@@ -20,7 +20,7 @@ import {
   FaClipboardList,
   FaInbox,
 } from "react-icons/fa";
-import Swal from "sweetalert2";
+import Swal from "../utils/centeredSwal";
 import { getMyOrders, cancelOrder } from "../services/orderService";
 import { getProfile } from "../services/userService";
 import { getProductById } from "../data/catalog";
