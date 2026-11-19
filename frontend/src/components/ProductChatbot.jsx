@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { FiMessageCircle, FiX, FiSend, FiGitCompare, FiSearch } from "react-icons/fi";
+import { FiMessageCircle, FiX, FiSend, FiColumns, FiSearch } from "react-icons/fi";
 import { PRODUCTS, onProductsChanged } from "../data/catalog";
 import { findProducts, findBestProduct, parseComparison, productIsOrderable } from "../utils/productAssistant";
 import "./ProductChatbot.css";
@@ -16,7 +16,7 @@ function SummaryProduct({ item, addCompare, close }) {
         <span>{rupees(item.price)} · {productIsOrderable(item) ? "Available" : "Preview / unavailable"}</span>
       </div>
       <button type="button" onClick={() => addCompare(item)} aria-label={`Select ${item.name} for comparison`}>
-        <FiGitCompare aria-hidden="true" /> Compare
+        <FiColumns aria-hidden="true" /> Compare
       </button>
     </div>
   );
