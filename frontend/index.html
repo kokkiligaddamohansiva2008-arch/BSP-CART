@@ -161,7 +161,8 @@
 
     </style>
 
-    <link rel="preload" as="image" href="/logo.png" fetchpriority="high" />
+    <!-- The navbar img loads /logo.png eagerly with high priority; a separate
+         HTML preload can trigger an unused-preload warning before React mounts. -->
 
 </head>
 
