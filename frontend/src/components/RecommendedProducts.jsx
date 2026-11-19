@@ -1,7 +1,8 @@
 import ProductPhoto from "./ProductPhoto";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { PRODUCTS, formatINR, discountPercent, getProductById } from "../data/catalog";
+import { PRODUCTS, formatINR, discountPercent, getProductById, onProductsChanged } from "../data/catalog";
+import { isProductVisible, onImageVisibilityChanged } from "../data/imageVisibility";
 import { getRecentlyViewed } from "../utils/bspStorage";
 import { productThumbnail } from "../data/additionalProducts";
 import "./Personalization.css";
@@ -17,6 +18,9 @@ import "./Personalization.css";
 */
 
 export default function RecommendedProducts({ excludeId, limit = 8, title = "Recommended for you" }) {
+  const [version, setVersion] = useState(0);
+  useEffect(() => onProductsChanged(() => setVersion((v) => v + 1)), []);
+  useEffect(() => onImageVisibilityChanged(() => setVersion((v) => v + 1)), []);
   const recommendations = useMemo(() => {
     const viewedIds = getRecentlyViewed();
     const viewedProducts = viewedIds.map(getProductById).filter(Boolean);
@@ -28,7 +32,7 @@ export default function RecommendedProducts({ excludeId, limit = 8, title = "Rec
       categoryWeight[p.category] = (categoryWeight[p.category] || 0) + weight;
     });
 
-    const pool = PRODUCTS.filter((p) => p.id !== excludeId);
+    const pool = PRODUCTS.filter((p) => p.id !== excludeId && isProductVisible(p));
 
     const hasHistory = Object.keys(categoryWeight).length > 0;
 
@@ -42,7 +46,7 @@ export default function RecommendedProducts({ excludeId, limit = 8, title = "Rec
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
       .map((s) => s.product);
-  }, [excludeId, limit]);
+  }, [excludeId, limit, version]);
 
   if (recommendations.length === 0) return null;
 
