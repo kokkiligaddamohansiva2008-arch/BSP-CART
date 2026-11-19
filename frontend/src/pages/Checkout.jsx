@@ -23,7 +23,7 @@ function loadSavedAddress() {
 export default function Checkout() {
   const navigate = useNavigate();
   const { lines, items, subtotal, savings, shipping, total } = useCartStore();
-  const blockedLines = lines.filter((line) => Number(line.id) <= 0 || Number(line.stock) <= 0);
+  const blockedLines = lines.filter((line) => line.isDemo || Number(line.id) <= 0 || Number(line.stock) <= 0);
 
   const [form, setForm] = useState(() => {
     const saved = loadSavedAddress();
