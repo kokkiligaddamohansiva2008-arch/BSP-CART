@@ -16,3 +16,15 @@ export function matchingProductVisual(name, category, id) {
   if (!photo) return productIllustration(name, category);
   return /^https?:\/\//i.test(photo) ? photo : `/images/products/${photo}`;
 }
+
+/**
+ * Use this only when a mapped local image has not been imported into the
+ * public images directory yet. A reviewed name-specific public photo may
+ * still be available. Never use a generic category image.
+ */
+export function backupProductVisual(name, category, id) {
+  const key = `name:${slug(name)}`;
+  const photo = PRODUCT_PHOTOS[String(id)] || PRODUCT_PHOTOS[key];
+  if (!photo) return productIllustration(name, category);
+  return /^https?:\/\//i.test(photo) ? photo : `/images/products/${photo}`;
+}
