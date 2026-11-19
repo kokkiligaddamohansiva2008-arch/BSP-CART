@@ -43,6 +43,29 @@ const categoryVisuals = {
   "gifts-and-festival": "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=720&h=480&q=75",
 };
 
+// Keep working remote and seller photos; recover from missing URLs with a local asset.
+const IMAGE_FALLBACK = "/images/products/product-fallback.svg";
+
+const productImageCandidates = (product) =>
+  [...new Set([
+    product.image,
+    ...(Array.isArray(product.images) ? product.images : []),
+    product.imageUrl,
+    productThumbnail(product.name, product.category, product.id),
+    IMAGE_FALLBACK,
+  ].filter((url) => typeof url === "string" && url.trim()))];
+
+const tryNextImage = (event, candidates) => {
+  const img = event.currentTarget;
+  const currentIndex = candidates.indexOf(img.getAttribute("src"));
+  const next = candidates.slice(Math.max(currentIndex + 1, 0)).find((url) => url !== img.getAttribute("src"));
+  if (next) {
+    img.src = next;
+  } else {
+    img.onerror = null; // Prevent an infinite loop if even the fallback fails.
+  }
+};
+
 const CATEGORY_COUNT_GROUPS = {
   grocery: ["grocery", "groceries-and-staples", "snacks-and-beverages", "dairy-and-bakery", "fruits-and-vegetables", "household-and-cleaning", "kitchen-and-dining", "personal-care"],
   home: ["home", "home-decor-and-furnishing", "kitchen-and-dining"],
@@ -239,16 +262,13 @@ const wishlistCount = wishlist.length;
             onClick={() => handleProductClick(product.id)}
           >
             <img
-              src={product.image || product.images?.[0] || product.imageUrl || productThumbnail(product.name, product.category, product.id)}
+              src={productImageCandidates(product)[0]}
               alt={product.name}
               loading="lazy"
               decoding="async"
               width="480"
               height="480"
-              onError={(event) => {
-                event.currentTarget.onerror = null;
-                event.currentTarget.src = productThumbnail(product.name, product.category, product.id);
-              }}
+              onError={(event) => tryNextImage(event, productImageCandidates(product))}
             />
           </Link>
 
@@ -661,16 +681,13 @@ const wishlistCount = wishlist.length;
                 >
                   <div className="mega-deal-image">
                     <img
-                      src={product.image || product.images?.[0] || product.imageUrl || productThumbnail(product.name, product.category, product.id)}
+                      src={productImageCandidates(product)[0]}
                       alt={product.name}
                       loading="lazy"
                       decoding="async"
                       width="480"
                       height="480"
-              onError={(event) => {
-                event.currentTarget.onerror = null;
-                event.currentTarget.src = productThumbnail(product.name, product.category, product.id);
-              }}
+              onError={(event) => tryNextImage(event, productImageCandidates(product))}
                     />
 
                     {pct > 0 && (
@@ -743,7 +760,7 @@ const wishlistCount = wishlist.length;
                     src={category.image || categoryVisuals[category.id] || categoryVisuals.grocery}
                     onError={(event) => {
                       event.currentTarget.onerror = null;
-                      event.currentTarget.src = "/images/products/product-fallback.svg";
+                      event.currentTarget.src = IMAGE_FALLBACK;
                     }}
                     alt={category.label}
                     loading="lazy"
