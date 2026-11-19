@@ -1,3 +1,4 @@
+import ProductPhoto from "../components/ProductPhoto";
 import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import Sidebar from "../components/layout/Sidebar";
@@ -85,7 +86,7 @@ export default function AdminProducts() {
                   const dirty = edits[p.id] !== undefined && String(edits[p.id]) !== String(p.stock);
                   return (
                     <tr key={p.id}>
-                      <td><img className="adm-thumb" src={p.image} alt="" loading="lazy" /></td>
+                      <td><ProductPhoto product={p} className="adm-thumb" src={p.image} alt={p.name} loading="lazy" /></td>
                       <td>{p.name}</td>
                       <td style={{ textTransform: "capitalize" }}>{p.category || "—"}</td>
                       <td>{inr(p.price)}</td>
