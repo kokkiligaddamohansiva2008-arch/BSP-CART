@@ -21,7 +21,7 @@ function Footer() {
     if (submitting) return;
 
     const value = email.trim().toLowerCase();
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(value)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
       await Swal.fire({ title: "Invalid email", text: "Please enter a valid email address.", icon: "warning" });
       return;
     }
