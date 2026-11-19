@@ -1,3 +1,4 @@
+import ProductPhoto from "../components/ProductPhoto";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
@@ -123,7 +124,7 @@ export default function ProductDetails() {
         {/* Gallery */}
         <div className="pd-gallery">
           <div className="pd-gallery-main">
-            <img src={product.images?.[activeImage] || product.image || fallbackImage} alt={product.name} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage; }} />
+            <ProductPhoto product={product} src={product.images?.[activeImage] || product.image || fallbackImage} alt={product.name} />
             {product.deal && <span className="pd-deal-ribbon">Limited-time deal</span>}
           </div>
           {product.images && product.images.length > 1 && (
@@ -135,7 +136,7 @@ export default function ProductDetails() {
                   onClick={() => setActiveImage(idx)}
                   aria-label={`View image ${idx + 1}`}
                 >
-                  <img src={src} alt={`${product.name} ${idx + 1}`} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackImage; }} />
+                  <ProductPhoto product={product} src={src} alt={`${product.name} ${idx + 1}`} />
                 </button>
               ))}
             </div>
@@ -275,15 +276,11 @@ export default function ProductDetails() {
               const relPct = discountPercent(p.price, p.mrp);
               return (
                 <Link className="pd-related-card" to={`/products/${p.id}`} key={p.id}>
-                  <img
+                  <ProductPhoto product={p}
                     src={p.image}
                     alt={p.name}
                     loading="lazy"
                     decoding="async"
-                    onError={(event) => {
-                      event.currentTarget.onerror = null;
-                      event.currentTarget.src = productThumbnail(p.name, p.category, p.id);
-                    }}
                   />
                   <p className="pd-related-name">{p.name}</p>
                   <div className="pd-related-price-row">
