@@ -71,8 +71,8 @@ export async function getProducts() {
 }
 
 export async function setProductStock(id, stock) {
-  if (!Number.isInteger(stock) || stock < 0) {
-    throw new Error("Enter a valid stock number");
+  if (!Number.isInteger(stock) || stock < 5) {
+    throw new Error("Enter a stock quantity of at least 5");
   }
   const { data, error } = await supabase
     .from("products")
