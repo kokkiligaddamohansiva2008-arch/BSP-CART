@@ -1,70 +1,100 @@
-.sidebar{
-    width:260px;
-    min-height:100vh;
-    background:#111827;
-    color:white;
-    position:fixed;
-    left:0;
-    top:70px;
-    padding:25px 15px;
-    overflow-y:auto;
+/* Shared dashboard navigation. Never fixed: the dashboard grid reserves its space. */
+.sidebar {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: calc(100dvh - var(--navbar-height, 70px));
+  position: sticky;
+  top: var(--navbar-height, 70px);
+  left: auto;
+  z-index: 20;
+  background: #111827;
+  color: white;
+  padding: 25px 15px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-self: start;
 }
 
-.sidebar-logo{
-    text-align:center;
-    font-size:28px;
-    font-weight:700;
-    margin-bottom:35px;
-    color:white;
+.sidebar-logo {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 35px;
+  color: white;
 }
 
-.sidebar-logo span{
-    color:#b5533c;
+.sidebar-logo span { color: #b5533c; }
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  margin-bottom: 10px;
+  color: #d1d5db;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: background-color .2s, color .2s;
 }
 
-.sidebar a{
-    display:flex;
-    align-items:center;
-    gap:15px;
-    padding:15px;
-    margin-bottom:10px;
-    color:#d1d5db;
-    text-decoration:none;
-    border-radius:10px;
-    transition:.3s;
+.sidebar a:hover,
+.sidebar a.active {
+  background: #202a44;
+  color: #fff;
 }
 
-.sidebar a:hover{
-    background:#202a44;
-    color:white;
+.sidebar-logout {
+  width: 100%;
+  margin-top: 40px;
+  padding: 14px;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
 }
 
-.sidebar a.active{
-    background:#202a44;
-    color:white;
-}
+.sidebar-logout:hover { background: #dc2626; }
 
-.sidebar-logout{
-    width:100%;
-    margin-top:40px;
-    padding:14px;
-    background:#EF4444;
-    color:white;
-    border:none;
-    border-radius:10px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:10px;
-    cursor:pointer;
-}
+/* On tablets and mobiles, show the dashboard menu as a horizontal
+   navigation row above the content instead of hiding or overlapping it. */
+@media (max-width: 992px) {
+  .dashboard-layout .sidebar {
+    position: relative;
+    top: auto;
+    left: auto;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: auto;
+    min-height: 0;
+    width: 100%;
+    padding: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    border-radius: 0;
+  }
 
-.sidebar-logout:hover{
-    background:#dc2626;
-}
-
-@media(max-width:992px){
-    .sidebar{
-        display:none;
-    }
+  .dashboard-layout .sidebar-logo { display: none; }
+  .dashboard-layout .sidebar a {
+    margin: 0;
+    padding: 10px 13px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: 8px;
+  }
+  .dashboard-layout .sidebar-logout {
+    width: auto;
+    margin: 0 0 0 auto;
+    padding: 10px 13px;
+    flex: 0 0 auto;
+  }
 }
