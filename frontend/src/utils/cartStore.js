@@ -114,7 +114,8 @@ export function getCartLines() {
         image: product.images?.[0] || product.image || product.imageUrl,
         price: unitPrice(product),
         mrp: Number(product.mrp || 0),
-        stock: Number(product.stock ?? 99),
+        stock: Number(product.stock ?? 0),
+        isDemo: Boolean(product.isDemo || product.isSampleCatalogProduct || /^BSP DEMO - /i.test(product.name)),
         quantity: qty,
       };
     })
@@ -126,7 +127,7 @@ export function addToCart(productId, qty = 1) {
   if (!product) return { ok: false, reason: "not-found" };
   // Local catalogue previews have negative IDs and cannot exist in the
   // orders/order_items database. Never add them to a payable cart.
-  if (product.isSampleCatalogProduct || Number(product.id) <= 0) {
+  if (product.isDemo || product.isSampleCatalogProduct || /^BSP DEMO - /i.test(product.name) || Number(product.id) <= 0) {
     return { ok: false, reason: "demo" };
   }
   const max = Number(product.stock ?? 0);
