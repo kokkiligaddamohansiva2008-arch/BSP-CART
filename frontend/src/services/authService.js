@@ -1,4 +1,4 @@
-import { supabase } from "../lib/supabase";
+import { supabase, requireSupabase } from "../lib/supabase";
 import { applySession, clearSession, getSession } from "../utils/session";
 
 /*
@@ -8,6 +8,7 @@ import { applySession, clearSession, getSession } from "../utils/session";
 */
 
 async function fetchProfile(userId) {
+  requireSupabase();
   const { data, error } = await supabase
     .from("profiles")
     .select("id, username, name, email, role")
@@ -23,6 +24,7 @@ export const getProfileById = fetchProfile;
  * The database RPC only upgrades the caller, verifies their email and never
  * accepts a user id or privileged role from the browser. */
 export async function activateSellerAccount() {
+  requireSupabase();
   const { data: current, error: sessionError } = await supabase.auth.getSession();
   if (sessionError) throw sessionError;
   if (!current.session?.user) throw new Error("Please sign in before opening a seller account.");
@@ -57,6 +59,7 @@ const OAUTH_PROVIDERS = {
 const PENDING_ROLE_KEY = "bsp-pending-role";
 
 export async function loginWithProvider(key, { role } = {}) {
+  requireSupabase();
   const cfg = OAUTH_PROVIDERS[key];
   if (!cfg) throw new Error("Unknown sign-in provider.");
 
@@ -106,6 +109,7 @@ async function loadProfile(user) {
 }
 
 export async function register({ name, username, email, password, role }) {
+  requireSupabase();
   const { data, error } = await supabase.auth.signUp({
     email: email.trim(),
     password,
@@ -128,6 +132,7 @@ export async function register({ name, username, email, password, role }) {
 }
 
 export async function login(email, password) {
+  requireSupabase();
   const { data, error } = await supabase.auth.signInWithPassword({
     email: email.trim(),
     password,
@@ -144,8 +149,17 @@ export async function login(email, password) {
 }
 
 export async function logout() {
-  await supabase.auth.signOut();
-  clearSession();
+  // Local development may run without the two Vite Supabase variables.
+  // Clear the UI session mirror without dereferencing a missing client.
+  if (!supabase) {
+    clearSession();
+    return;
+  }
+  try {
+    await supabase.auth.signOut();
+  } finally {
+    clearSession();
+  }
 }
 
 /*
@@ -154,7 +168,22 @@ export async function logout() {
 */
 let started = false;
 export async function initAuth() {
-  const { data } = await supabase.auth.getSession();
+  // No credentials in the LOCAL Vite build means no Supabase client.
+  // Keep the app responsive and let ProductsGate show the setup message.
+  // With configured Vercel credentials the original auth flow is unchanged.
+  if (!supabase) {
+    clearSession();
+    if (import.meta.env.DEV) {
+      console.warn(
+        "[BSP CART] Supabase is not configured locally. Copy " +
+        "frontend/.env.example to frontend/.env.local and restart Vite."
+      );
+    }
+    return;
+  }
+
+  const { data, error } = await supabase.auth.getSession();
+  if (error) throw error;
   if (data.session) {
     applySession(data.session, await loadProfile(data.session.user));
   } else {
