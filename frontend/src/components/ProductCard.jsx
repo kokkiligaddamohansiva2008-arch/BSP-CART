@@ -1,3 +1,4 @@
+import ProductPhoto from "./ProductPhoto";
 import React from "react";
 import { Link } from "react-router-dom";
 import { discountPercent } from "../data/catalog";
@@ -21,15 +22,11 @@ function ProductCard({ product, onAddToCart, onView }) {
           onClick={() => onView && onView(product.id)}
           className="text-decoration-none text-dark position-relative"
         >
-          <img
+          <ProductPhoto product={product}
             src={product.image || product.images?.[0] || product.imageUrl || fallbackImage}
             alt={product.name}
             loading="lazy"
             decoding="async"
-            onError={(event) => {
-              event.currentTarget.onerror = null;
-              event.currentTarget.src = fallbackImage;
-            }}
             width="300"
             height="300"
             style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", borderRadius: "10px" }}
