@@ -68,7 +68,7 @@ function fromRow(r) {
     accessories: "electronics",
     grocery: "grocery",
     groceries: "grocery",
-    "groceries & staples": "grocery",
+    "groceries & staples": "groceries-and-staples",
     "home & kitchen": "home",
     home: "home",
   })[String(categoryName).trim().toLowerCase()]
