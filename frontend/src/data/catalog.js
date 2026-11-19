@@ -209,6 +209,9 @@ export async function addSellerProducts(ownerUsername, ownerName, list) {
       const { urls, paths } = await uploadImages(userId, productImages);
       allPaths.push(...paths);
       const price = Number(data.price) || 0;
+      if (!Number.isInteger(Number(data.stock)) || Number(data.stock) < 5) {
+        throw new Error(`Enter at least 5 units for "${data.name}".`);
+      }
       rows.push({
         owner_id: userId,
         owner_username: ownerUsername,
@@ -246,7 +249,12 @@ export async function updateSellerProduct(id, data) {
   if (data.category !== undefined) patch.category = data.category;
   if (data.price !== undefined) patch.price = Number(data.price);
   if (data.mrp !== undefined) patch.mrp = Number(data.mrp);
-  if (data.stock !== undefined) patch.stock = Number(data.stock);
+  if (data.stock !== undefined) {
+    if (!Number.isInteger(Number(data.stock)) || Number(data.stock) < 5) {
+      throw new Error("Please enter at least 5 units of stock.");
+    }
+    patch.stock = Number(data.stock);
+  }
   if (data.description !== undefined) patch.description = data.description;
 
   let newPaths = [];
