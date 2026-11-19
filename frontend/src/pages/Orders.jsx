@@ -1,7 +1,7 @@
 import ProductPhoto from "../components/ProductPhoto";
 import { productThumbnail } from "../data/additionalProducts";
 import { useEffect, useMemo, useState } from "react";
-import Swal from "sweetalert2";
+import Swal from "../utils/centeredSwal";
 import {
   FaBoxOpen,
   FaCheckCircle,
