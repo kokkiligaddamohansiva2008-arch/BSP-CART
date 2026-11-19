@@ -1,3 +1,4 @@
+import ProductPhoto from "./ProductPhoto";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getProductById, formatINR } from "../data/catalog";
@@ -42,16 +43,7 @@ export default function BuyItAgain({ limit = 6 }) {
       <div className="bsp-scroll-row">
         {products.map((p) => (
           <Link className="bsp-mini-card" to={`/products/${p.id}`} key={p.id}>
-            <img
-              src={p.image}
-              alt={p.name}
-              loading="lazy"
-              decoding="async"
-              onError={(event) => {
-                event.currentTarget.onerror = null;
-                event.currentTarget.src = productThumbnail(p.name, p.category, p.id);
-              }}
-            />
+            <ProductPhoto product={p} src={p.image} alt={p.name} loading="lazy" decoding="async" />
             <p className="bsp-mini-name">{p.name}</p>
             <div className="bsp-mini-price-row">
               <span className="bsp-mini-price">{formatINR(p.price)}</span>
