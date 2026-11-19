@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FiGrid, FiShoppingBag, FiSmartphone, FiTag, FiHome, FiPackage, FiCoffee, FiFeather, FiDroplet, FiHeart, FiHeadphones, FiUser, FiSmile, FiBook, FiActivity, FiGitBranch, FiTool, FiTruck, FiGift } from "react-icons/fi";
-import Swal from "sweetalert2";
+import Swal from "../utils/centeredSwal";
 import ProductCard from "../components/ProductCard";
 import { CATEGORIES, PRODUCTS, onProductsChanged } from "../data/catalog";
 import { matchesCategory, countProductsInCategory } from "../data/categoryUtils";
