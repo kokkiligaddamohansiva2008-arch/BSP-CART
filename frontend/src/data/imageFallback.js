@@ -47,6 +47,14 @@ export function productIllustration(name, category) {
   const theme = categoryTheme(category);
   const [background, foreground] = THEMES[theme];
   const title = String(name || "Product").replace(/[\x00-\x1F]/g, " ").trim().slice(0, 52);
+  // Distinct initials, accent and decoration per product, not per category.
+  const seed = Array.from((title + "|" + category).toLowerCase())
+    .reduce((hash, character) => (Math.imul(hash, 31) + character.charCodeAt(0)) >>> 0, 7);
+  const accent = `hsl(${seed % 360} 43% 38%)`;
+  const initials = title.split(/\s+/).filter(Boolean).slice(0, 2)
+    .map((word) => word[0]).join("").toUpperCase();
+  const orbitX = 145 + (seed % 185);
+  const orbitY = 150 + ((seed >>> 8) % 120);
   const parts = title.split(/\s+/);
   const lines = [""];
   for (const word of parts) {
@@ -60,7 +68,10 @@ export function productIllustration(name, category) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" width="480" height="480" role="img" aria-label="Illustration of ${escapeXml(title)}">
 <rect width="480" height="480" rx="22" fill="${background}"/>
 <circle cx="240" cy="216" r="165" fill="#fff" opacity=".6"/>
-<g color="${foreground}">${ICONS[theme]}</g>
+<g color="${foreground}" opacity=".14">${ICONS[theme]}</g>
+<circle cx="240" cy="216" r="80" fill="#fff" stroke="${accent}" stroke-width="9"/>
+<circle cx="${orbitX}" cy="${orbitY}" r="13" fill="${accent}" opacity=".32"/>
+<text x="240" y="244" text-anchor="middle" font-size="76" font-weight="800" fill="${accent}" font-family="Arial, sans-serif">${escapeXml(initials)}</text>
 ${label}
 <text x="240" y="464" text-anchor="middle" font-size="12" fill="#667085" font-family="Arial, sans-serif">BSP CART · Catalogue illustration</text>
 </svg>`;
