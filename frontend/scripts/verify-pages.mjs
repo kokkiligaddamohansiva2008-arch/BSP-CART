@@ -44,6 +44,33 @@ assert(read("src/styles/theme.css").includes("body .swal2-container"), "Popups a
 assert(read("src/pages/Products.jsx").includes("matchesCategory(product, category)"), "Product category filtering");
 assert(read("src/pages/Home.jsx").includes('params.set("category", category)'), "Homepage category routing");
 
+// Regression guards for the production bugs reported in Admin / Checkout / Footer.
+for (const page of ["AdminDashboard", "AdminUsers", "AdminProducts"]) {
+  const body = read(`src/pages/${page}.jsx`);
+  assert(body.includes("<AdminMenu />"), page + " uses the three-dot admin menu");
+  assert(!body.includes("<Sidebar />"), page + " cannot overlap fixed sidebar");
+}
+assert(read("src/styles/admin.css").includes(".dashboard-layout.admin-page"),
+  "Admin pages span full width without a fixed sidebar column");
+assert(read("src/services/adminService.js").includes("total_amount"),
+  "Admin order totals use actual database column");
+assert(read("src/services/adminService.js").includes('.from("products")'),
+  "Admin product and inventory metrics use database records only");
+assert(read("src/components/layout/Footer.jsx").includes('functions.invoke("newsletter"'),
+  "Footer subscribe calls the secure newsletter Edge Function");
+assert(!read("src/components/layout/Footer.jsx").includes('.from("newsletter_subscribers")'),
+  "Footer does not write into the RLS-protected newsletter table");
+assert(read("src/components/layout/Footer.jsx").includes('from "../../utils/centeredSwal"'),
+  "Footer alerts use centered popups above the navbar");
+assert(read("src/pages/Products.jsx").includes('searchParams.get("deals")'),
+  "Footer Deals link has a functioning product filter");
+assert(read("src/utils/cartStore.js").includes('reason: "demo"'),
+  "Demo listings never enter live checkout");
+assert(read("src/pages/Cart.jsx").includes("Checkout unavailable"),
+  "Unavailable carts cannot proceed to checkout");
+assert(read("src/pages/Checkout.jsx").includes("blockedLines"),
+  "Checkout warns about preview items before collecting details");
+
 // The sample catalogue must never map two different product names to the
 // same category banner or fallback image. Verified uploaded images still win.
 const { ADDITIONAL_PRODUCTS } = await import("../src/data/additionalProducts.js");
