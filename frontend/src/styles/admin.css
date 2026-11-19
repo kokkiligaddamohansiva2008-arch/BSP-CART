@@ -29,3 +29,106 @@
 .adm-list{list-style:none;padding:0;margin:0}
 .adm-list li{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--border-color);font-size:14px}
 .adm-list li:first-child{border-top:0}
+
+/* Admin screens use a full-width layout and an Options (three-dot) menu.
+   The former sidebar must not obscure the heading, filters or first column. */
+.dashboard-layout.admin-page {
+  display: block;
+  grid-template-columns: none;
+  overflow: visible;
+  min-width: 0;
+}
+.dashboard-layout.admin-page > .dashboard-main {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 28px clamp(16px, 3vw, 48px) 48px;
+}
+.adm-page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 25px;
+  position: relative;
+}
+.adm-page-heading .dashboard-header {
+  min-width: 0;
+  margin-bottom: 0;
+}
+.adm-options {
+  position: relative;
+  flex: 0 0 auto;
+  z-index: 200;
+}
+.adm-options-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #d6d9e2;
+  background: #fff;
+  color: #202a44;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(32, 42, 68, .08);
+}
+.adm-options-trigger[aria-expanded="true"],
+.adm-options-trigger:hover {
+  background: #202a44;
+  color: #fff;
+}
+.adm-options-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 220px;
+  max-width: calc(100vw - 24px);
+  background: #fff;
+  padding: 8px;
+  border: 1px solid #e8e1d2;
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(32,42,68,.17);
+}
+.adm-options-menu a,
+.adm-options-menu button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 12px;
+  border: none;
+  border-radius: 9px;
+  padding: 11px 12px;
+  background: transparent;
+  color: #202a44;
+  text-decoration: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.adm-options-menu a:hover,
+.adm-options-menu button:hover,
+.adm-options-menu a.active {
+  color: #fff;
+  background: #202a44;
+}
+.adm-options-menu button:last-child { color: #b91c1c; }
+.adm-options-menu button:last-child:hover { color: #fff; background: #b91c1c; }
+.admin-page .stats-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+.admin-page .dashboard-card { min-width: 0; }
+.admin-page .dashboard-icon { flex: 0 0 60px; width: 60px; height: 60px; }
+.admin-page .dashboard-card h2 { overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.admin-page .adm-table-wrap { max-width: 100%; overflow-x: auto; }
+.admin-page .adm-table { min-width: 620px; }
+.admin-page .adm-bar input, .admin-page .adm-bar select { min-width: 0; max-width: 100%; }
+@media (max-width: 700px) {
+  .adm-page-heading .dashboard-header h1 { font-size: clamp(24px, 6vw, 34px); }
+  .dashboard-layout.admin-page > .dashboard-main { padding: 18px 14px 32px; }
+  .adm-options-trigger { padding: 11px 13px; }
+  .adm-options-trigger span { display: none; }
+  .admin-page .adm-grid { grid-template-columns: minmax(0, 1fr); }
+}
