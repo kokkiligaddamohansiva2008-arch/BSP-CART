@@ -57,3 +57,18 @@
   .cart-line-img { width: 72px; height: 72px; }
   .cart-line-qty, .cart-line-sub { grid-column: 2; justify-self: start; text-align: left; }
 }
+
+.cart-checkout-warning {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e8ba70;
+  background: #fff7e7;
+  color: #78520e;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.cart-btn-disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
