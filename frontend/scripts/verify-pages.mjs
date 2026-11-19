@@ -163,4 +163,44 @@ for (const key of essentialImages) {
 assert(!UPLOADED_PRODUCT_PHOTOS["name:dal"],
   "Ambiguous generic Dal is not mislabelled with another type of dal");
 
+
+// Minimum-stock input, navigation and unavailable-image regression checks.
+const topNavigation = read("src/components/ScrollToTop.jsx");
+assert(topNavigation.includes("key, pathname, search, hash"),
+  "Scroll handler also resets same-path navigation");
+assert(topNavigation.includes("bsp-back-to-top") && topNavigation.includes('href="#page-top"'),
+  "Accessible back-to-top hyperlink is available when scrolling");
+assert(read("src/components/ScrollToTop.css").includes(".bsp-back-to-top"),
+  "Floating return-to-top link is visible on mobile and desktop");
+assert(read("src/pages/SellerDashboard.jsx").includes('stock: "5"'),
+  "New seller products default to five stock");
+assert(read("src/services/adminService.js").includes("stock < 5"),
+  "Manual admin stock edits require five or more units");
+assert(read("src/data/catalog.js").includes("isDemo: Boolean(r.is_demo)"),
+  "Database demo stock cannot be mistaken for sellable inventory");
+assert(read("src/utils/cartStore.js").includes("product.isDemo"),
+  "Demo product cannot be added to checkout");
+assert(read("src/pages/Cart.jsx").includes("line.isDemo"),
+  "Cart blocks demo products even with five displayed stock");
+assert(read("src/pages/Checkout.jsx").includes("line.isDemo"),
+  "Checkout blocks demo products even with five displayed stock");
+
+const { LOCAL_PRODUCT_IMAGES } = await import("../src/data/localImageInventory.js");
+assert(LOCAL_PRODUCT_IMAGES.size === 0,
+  "Missing local JPGs are not advertised as uploaded in this commit");
+const { PRODUCT_PHOTOS } = await import("../src/data/productImages.js");
+assert(Object.keys(PRODUCT_PHOTOS).length === new Set(Object.values(PRODUCT_PHOTOS)).size,
+  "Curated photo URLs do not repeat across distinct product names");
+const { isProductVisible, reportUnavailableProductImage } = await import("../src/data/imageVisibility.js");
+const failedImageProduct = { id: "verification-broken-image" };
+assert(isProductVisible(failedImageProduct), "Healthy product is visible in catalogue");
+reportUnavailableProductImage(failedImageProduct, "https://invalid.example/broken.jpg");
+assert(!isProductVisible(failedImageProduct), "Browser-reported broken photo hides that product without DB deletion");
+assert(read("src/pages/Products.jsx").includes("isProductVisible(product)"),
+  "All category search results exclude browser-inaccessible images");
+assert(read("src/pages/Home.jsx").includes("isProductVisible(p)"),
+  "Home product lists exclude browser-inaccessible images");
+assert(read("src/components/ProductPhoto.jsx").includes("reportUnavailableProductImage(product, url)"),
+  "Network image failures are reported centrally");
+
 console.log("\nBSP CART route and UI static checks completed.");
