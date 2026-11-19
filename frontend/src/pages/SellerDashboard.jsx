@@ -1,3 +1,4 @@
+import ProductPhoto from "../components/ProductPhoto";
 import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import {
@@ -481,7 +482,7 @@ const SellerDashboard = () => {
           {filteredProducts.map((product) => (
             <div className="sd-product-card" key={product.id}>
               <div className="sd-product-thumb">
-                <img src={product.image} alt={product.name} />
+                <ProductPhoto product={product} src={product.image} alt={product.name} />
                 <span className="sd-category-badge">{product.category}</span>
                 <span
                   className={`sd-stock-badge ${product.stock <= LOW_STOCK_THRESHOLD ? "low" : "ok"}`}
