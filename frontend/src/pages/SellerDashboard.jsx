@@ -22,6 +22,7 @@ import {
   addSellerProducts,
   updateSellerProduct,
   deleteSellerProduct,
+  onProductsChanged,
   formatINR,
 } from "../data/catalog";
 import "./SellerDashboard.css";
@@ -127,8 +128,11 @@ const SellerDashboard = () => {
 
   useEffect(() => {
     loadProducts();
+    // Seller listings arrive asynchronously from Supabase after sign-in.
+    // Refresh when the shared catalogue is loaded or modified.
+    return onProductsChanged(loadProducts);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sellerUsername]);
 
   const inventoryValue = useMemo(
     () => products.reduce((sum, p) => sum + p.price * p.stock, 0),
