@@ -1,6 +1,7 @@
+import { getSession } from "../utils/session";
 import { useEffect, useMemo, useState } from "react";
 import Swal from "../utils/centeredSwal";
-import Sidebar from "../components/layout/Sidebar";
+import AdminMenu from "../components/dashboard/AdminMenu";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import { getUsers, setUserRole, deleteUser, errMsg, ROLE_LIST } from "../services/adminService";
 import "../styles/dashboard.css";
@@ -13,13 +14,14 @@ export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [q, setQ] = useState("");
   const [role, setRole] = useState("");
+  const currentUserId = getSession().userId;
 
   const rows = useMemo(() => {
     const s = q.trim().toLowerCase();
     return users.filter(
       (u) =>
         (!role || u.role === role) &&
-        (!s || u.username.toLowerCase().includes(s) || u.name.toLowerCase().includes(s))
+        (!s || String(u.username || "").toLowerCase().includes(s) || String(u.name || "").toLowerCase().includes(s))
     );
   }, [users, q, role]);
 
@@ -42,17 +44,19 @@ export default function AdminUsers() {
   const del = async (u) => {
     const { isConfirmed } = await Swal.fire({
       title: `Delete ${u.name}?`,
-      text: u.products ? `Their ${u.products} product(s) will be removed too.` : "This cannot be undone.",
+      text: "This permanently removes the account. Accounts with order history cannot be deleted.",
       icon: "warning", showCancelButton: true, confirmButtonColor: "#EF4444", confirmButtonText: "Delete",
     });
     if (isConfirmed) run(() => deleteUser(u.id), "User deleted");
   };
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
+    <div className="dashboard-layout admin-page">
       <div className="dashboard-main">
-        <DashboardHeader title="Users" subtitle="Search, change roles, remove accounts" />
+        <div className="adm-page-heading">
+          <DashboardHeader title="Users" subtitle="Search, change roles, remove accounts" />
+          <AdminMenu />
+        </div>
         <div className="adm-bar">
           <input id="admusers-user-search" name="user-search" placeholder="Search username or name" value={q} onChange={(e) => setQ(e.target.value)} />
           <select id="admusers-role-filter" name="role-filter" value={role} onChange={(e) => setRole(e.target.value)}>
@@ -74,14 +78,14 @@ export default function AdminUsers() {
                     <td>{u.name}</td>
                     <td>
                       <select id={`role-${u.id}`} name={`role-${u.id}`}
-                        className="adm-select" value={u.role}
+                        className="adm-select" value={u.role} disabled={u.id === currentUserId}
                         onChange={(e) => run(() => setUserRole(u.id, e.target.value), `${u.name} is now ${e.target.value}`)}
                       >
                         {ROLE_LIST.map((r) => <option key={r}>{r}</option>)}
                       </select>
                     </td>
-                    <td>{u.products}</td>
-                    <td><button className="adm-btn" onClick={() => del(u)}>Delete</button></td>
+                    <td>{u.products ?? "—"}</td>
+                    <td><button className="adm-btn" type="button" disabled={u.id === currentUserId} onClick={() => del(u)}>Delete</button></td>
                   </tr>
                 ))}
               </tbody>
