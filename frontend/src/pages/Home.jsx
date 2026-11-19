@@ -1,3 +1,4 @@
+import ProductPhoto from "../components/ProductPhoto";
 import { useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -279,14 +280,13 @@ const wishlistCount = wishlist.length;
             to={`/products/${product.id}`}
             onClick={() => handleProductClick(product.id)}
           >
-            <img
+            <ProductPhoto product={product}
               src={productImageCandidates(product)[0]}
               alt={product.name}
               loading="lazy"
               decoding="async"
               width="480"
               height="480"
-              onError={(event) => tryNextImage(event, productImageCandidates(product))}
             />
           </Link>
 
@@ -698,14 +698,13 @@ const wishlistCount = wishlist.length;
                   }
                 >
                   <div className="mega-deal-image">
-                    <img
+                    <ProductPhoto product={product}
                       src={productImageCandidates(product)[0]}
                       alt={product.name}
                       loading="lazy"
                       decoding="async"
                       width="480"
                       height="480"
-              onError={(event) => tryNextImage(event, productImageCandidates(product))}
                     />
 
                     {pct > 0 && (
