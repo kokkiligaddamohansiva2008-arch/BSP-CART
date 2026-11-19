@@ -124,7 +124,12 @@ export function getCartLines() {
 export function addToCart(productId, qty = 1) {
   const product = getProductById(productId);
   if (!product) return { ok: false, reason: "not-found" };
-  const max = Number(product.stock ?? 99);
+  // Local catalogue previews have negative IDs and cannot exist in the
+  // orders/order_items database. Never add them to a payable cart.
+  if (product.isSampleCatalogProduct || Number(product.id) <= 0) {
+    return { ok: false, reason: "demo" };
+  }
+  const max = Number(product.stock ?? 0);
   if (max <= 0) return { ok: false, reason: "out-of-stock" };
 
   const list = read();
