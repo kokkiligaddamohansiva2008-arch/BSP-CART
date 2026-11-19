@@ -6,6 +6,8 @@ import { productThumbnail } from "../data/additionalProducts";
 
 function ProductCard({ product, onAddToCart, onView }) {
   const pct = discountPercent(product.price, product.mrp);
+  const previewOnly = product.isSampleCatalogProduct || Number(product.id) <= 0;
+  const outOfStock = Number(product.stock ?? 0) <= 0;
   const fallbackImage = productThumbnail(product.name, product.category, product.id);
 
   const handleAddToCart = (e) => {
@@ -53,8 +55,14 @@ function ProductCard({ product, onAddToCart, onView }) {
           )}
         </div>
 
-        <button className="btn btn-dark btn-sm mt-auto" onClick={handleAddToCart}>
-          Add to Cart
+        <button
+          type="button"
+          className="btn btn-dark btn-sm mt-auto"
+          onClick={handleAddToCart}
+          disabled={previewOnly || outOfStock}
+          title={previewOnly ? "Catalogue sample only — not available for purchase" : outOfStock ? "Out of stock" : "Add to cart"}
+        >
+          {previewOnly ? "Preview only" : outOfStock ? "Out of stock" : "Add to Cart"}
         </button>
       </div>
     </div>
