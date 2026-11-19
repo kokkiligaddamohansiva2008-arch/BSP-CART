@@ -96,7 +96,7 @@ export default function AdminProducts() {
                         {p.editable ? (
                           <>
                             <input id={`stock-${p.id}`} name={`stock-${p.id}`}
-                              className="adm-stock" type="number" min="0"
+                              className="adm-stock" type="number" min="5"
                               value={edits[p.id] ?? p.stock}
                               onChange={(e) => setEdits((s) => ({ ...s, [p.id]: e.target.value }))}
                             />{" "}
