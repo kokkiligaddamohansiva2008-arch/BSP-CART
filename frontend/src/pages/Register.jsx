@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "../utils/centeredSwal";
 import { register } from "../services/authService";
 import { isSupabaseConfigured } from "../lib/supabase";
@@ -53,16 +53,18 @@ export default function Register() {
 
     setBusy(true);
     try {
-      const { needsConfirmation } = await register({ name, username: user, email, password, role });
+      const { needsConfirmation, profile } = await register({ name, username: user, email, password, role });
       await Swal.fire({
         icon: "success",
-        title: "Account created!",
+        title: needsConfirmation ? "Check your email" : "Registration complete",
         text: needsConfirmation
-          ? "We sent a confirmation link to your email. Confirm it, then sign in."
-          : "Please sign in to continue.",
-        confirmButtonText: "Go to sign in",
+          ? "If this email is eligible for a new account, follow the verification link. If you already registered, sign in and choose Become a Seller instead of creating a second account."
+          : role === "seller"
+            ? "Your seller profile is ready."
+            : "Your buyer account is ready.",
+        confirmButtonText: needsConfirmation ? "Go to sign in" : "Continue",
       });
-      navigate("/login");
+      navigate(profile?.role === "SELLER" ? "/seller/dashboard" : needsConfirmation ? "/login" : "/buyer/dashboard");
     } catch (err) {
       setError(/already registered/i.test(err.message) ? "That email is already registered." : err.message || "Could not create account.");
     } finally {
@@ -136,6 +138,12 @@ export default function Register() {
             <button type="submit" disabled={busy}>{busy ? "Creating…" : "Create account"}</button>
           </form>
 
+          {role === "seller" && (
+            <p className="signup-prompt">
+              Already shop with us? <Link to="/seller/start">Activate selling on your existing account</Link>.
+              You don't need another email address.
+            </p>
+          )}
           <p className="signup-prompt">
             Already have an account?{" "}
             <button type="button" className="link-btn" onClick={() => navigate("/login")}>Sign in</button>
