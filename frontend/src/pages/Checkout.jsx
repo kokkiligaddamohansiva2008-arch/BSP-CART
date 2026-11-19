@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import Swal from "../utils/centeredSwal";
 import { useCartStore, clearLocalCart } from "../utils/cartStore";
 import { placeOrder as placeOrderRpc } from "../services/orderService";
 import { refreshOrders } from "../utils/bspStorage";
