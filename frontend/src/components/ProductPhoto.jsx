@@ -7,7 +7,7 @@ const imageCache = new Map();
 const pending = new Map();
 const queued = [];
 let active = 0;
-const MAX_PARALLEL = 3;
+const MAX_PARALLEL = 1;
 const CATEGORY_IMAGES = {
   "groceries-and-staples": "photo-1542838132-92c53300491e",
   "snacks-and-beverages": "photo-1621939514649-280e2aa7f1f9",
@@ -67,6 +67,7 @@ async function searchCommons(product) {
     prop: "imageinfo",
     iiprop: "url|extmetadata",
     iiurlwidth: "640",
+    iiextmetadatafilter: "LicenseShortName|Artist",
   });
 
   try {
@@ -135,12 +136,12 @@ export default function ProductPhoto({ product, src, alt, onError, ...props }) {
   const initial = isMissing(explicit)
     ? matchingProductVisual(product?.name, product?.category, product?.id)
     : explicit;
-  const [photo, setPhoto] = useState(initial);
+  const [photo, setPhoto] = useState(isMissing(initial) ? genericPhoto(product?.category) : initial);
   const [credit, setCredit] = useState(null);
 
   useEffect(() => {
     let alive = true;
-    setPhoto(initial);
+    setPhoto(isMissing(initial) ? genericPhoto(product?.category) : initial);
     setCredit(null);
     // Never overwrite uploaded seller images.
     if (!product?.isSampleCatalogProduct && !isMissing(initial)) return;
