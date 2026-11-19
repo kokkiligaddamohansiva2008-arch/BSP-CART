@@ -9,7 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import Swal from "sweetalert2";
+import Swal from "../utils/centeredSwal";
 import {
   getProductById,
   getRelatedProducts,
