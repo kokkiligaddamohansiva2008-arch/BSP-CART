@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+"""Safely import owner-supplied catalogue image ZIPs committed to frontend/image-import/.
+
+The ZIP package uses paths relative to repository root:
+- frontend/public/images/products/<category>/<product-name>.jpg
+- frontend/src/data/uploadedProductImages.js
+
+Files are never overwritten. Existing photo mappings are preserved unless a
+mapping in the newly uploaded archive intentionally identifies a photo path.
+"""
+import json
+import re
+import zipfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+INBOX = ROOT / "frontend" / "image-import"
+PRODUCTS_DIR = ROOT / "frontend" / "public" / "images" / "products"
+MANIFEST_FILE = ROOT / "frontend" / "src" / "data" / "uploadedProductImages.js"
+IMAGE_PREFIX = "frontend/public/images/products/"
+MANIFEST_PATH = "frontend/src/data/uploadedProductImages.js"
+SAFE_IMAGE = re.compile(r"^frontend/public/images/products/[a-z0-9-]+/[a-z0-9-]+\.jpg$")
+MAP_PATTERN = re.compile(r"export const UPLOADED_PRODUCT_PHOTOS\s*=\s*(\{.*?\})\s*;", re.S)
+
+
+def read_manifest(text):
+    match = MAP_PATTERN.search(text)
+    if not match:
+        raise ValueError("Invalid photo map: missing UPLOADED_PRODUCT_PHOTOS export")
+    value = json.loads(match.group(1))
+    if not isinstance(value, dict):
+        raise ValueError("Photo map must contain a JSON object")
+    return value
+
+
+def current_manifest():
+    return read_manifest(MANIFEST_FILE.read_text(encoding="utf-8"))
+
+
+def main():
+    archives = sorted(INBOX.glob("*.zip"))
+    if not archives:
+        print("No ZIPs found in frontend/image-import/")
+        return
+
+    entries = current_manifest()
+    count = 0
+    for archive in archives:
+        with zipfile.ZipFile(archive) as z:
+            new_entries = None
+            photos = []
+            for member in z.infolist():
+                name = member.filename.replace("\\", "/")
+                if member.is_dir() or name == "CATALOGUE_IMAGE_PACKAGE.txt":
+                    continue
+                if name == MANIFEST_PATH:
+                    new_entries = read_manifest(z.read(member).decode("utf-8"))
+                    continue
+                if not SAFE_IMAGE.fullmatch(name):
+                    raise ValueError(f"Unexpected path in {archive.name}: {name}")
+                if member.file_size > 15 * 1024 * 1024:
+                    raise ValueError(f"Image too large: {name}")
+                photos.append((name, member))
+
+            if new_entries is None:
+                raise ValueError(f"{archive.name} is missing the image mapping file")
+
+            for value in new_entries.values():
+                if not isinstance(value, str) or not SAFE_IMAGE.fullmatch(IMAGE_PREFIX + value):
+                    raise ValueError(f"Invalid photo path in mapping: {value!r}")
+
+            with zipfile.ZipFile(archive) as z2:
+                for name, member in photos:
+                    dst = ROOT / name
+                    if dst.exists():
+                        continue
+                    data = z2.read(member)
+                    if not data.startswith(b"\xff\xd8\xff"):
+                        raise ValueError(f"Not a JPEG: {name}")
+                    dst.parent.mkdir(parents=True, exist_ok=True)
+                    dst.write_bytes(data)
+                    count += 1
+
+            entries.update(new_entries)
+        archive.unlink()
+        print(f"Imported and removed {archive.name}")
+
+    MANIFEST_FILE.write_text(
+        "// Owner-supplied local product photos. Relative to /images/products/.\n"
+        + "export const UPLOADED_PRODUCT_PHOTOS = "
+        + json.dumps(dict(sorted(entries.items())), indent=2, ensure_ascii=True)
+        + ";\n",
+        encoding="utf-8",
+    )
+    print(f"Added {count} new JPEGs. Product mappings: {len(entries)}.")
+
+
+if __name__ == "__main__":
+    main()
