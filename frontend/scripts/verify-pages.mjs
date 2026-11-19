@@ -205,4 +205,25 @@ assert(read("src/pages/Home.jsx").includes("isProductVisible(p)"),
 assert(read("src/components/ProductPhoto.jsx").includes("reportUnavailableProductImage(product, url)"),
   "Network image failures are reported centrally");
 
+
+// Regression coverage: missing local Vite credentials must NOT cause
+// authService.initAuth to access a null .auth client.
+const supabaseSource = read("src/lib/supabase.js");
+const authSource = read("src/services/authService.js");
+const contextSource = read("src/context/AuthContext.jsx");
+const htmlSource = read("index.html");
+assert(supabaseSource.includes("export function requireSupabase()"),
+  "Supabase client exposes clear local configuration errors");
+assert(authSource.includes("export async function initAuth() {") &&
+  authSource.includes("if (!supabase) {") && authSource.includes("clearSession();"),
+  "Missing Supabase environment cannot crash auth initialization");
+assert(authSource.includes("const { data, error } = await supabase.auth.getSession()"),
+  "Configured Supabase auth restores sessions as before");
+assert(contextSource.includes("initAuth()") && contextSource.includes(".catch((error) =>"),
+  "React auth context handles initialization promise failures");
+assert(!/<link[^>]*rel=["']preload["'][^>]*href=["']\\/logo\\.png["']/i.test(htmlSource),
+  "Vite HTML no longer preloads logo before navbar mounts");
+assert(read("src/components/layout/Navbar.jsx").includes('src="/logo.png"'),
+  "Navbar still displays the original logo");
+
 console.log("\nBSP CART route and UI static checks completed.");
