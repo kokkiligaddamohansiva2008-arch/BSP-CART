@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import Swal from "sweetalert2";
+import Swal from "../utils/centeredSwal";
 import Sidebar from "../components/layout/Sidebar";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import { getUsers, setUserRole, deleteUser, errMsg, ROLE_LIST } from "../services/adminService";
