@@ -1,3 +1,4 @@
+import { productIllustration } from "../data/imageFallback";
 import ProductPhoto from "../components/ProductPhoto";
 import { matchesCategory, countProductsInCategory } from "../data/categoryUtils";
 import { useMemo, useState } from "react";
@@ -759,7 +760,7 @@ const wishlistCount = wishlist.length;
                     src={category.image || categoryVisuals[category.id] || categoryVisuals.grocery}
                     onError={(event) => {
                       event.currentTarget.onerror = null;
-                      event.currentTarget.src = IMAGE_FALLBACK;
+                      event.currentTarget.src = productIllustration(category.label, category.id);
                     }}
                     alt={category.label}
                     loading="lazy"
