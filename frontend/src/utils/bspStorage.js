@@ -73,19 +73,23 @@ let wishlistFor = null;
 let ordersFor = null;
 
 function mapOrder(o) {
+  const statuses = {
+    pending: "Pending", paid: "Processing", processing: "Processing",
+    shipped: "Shipped", delivered: "Delivered", cancelled: "Cancelled",
+  };
   return {
     id: o.id,
     date: o.created_at,
-    total: Number(o.total),
-    status: o.status,
-    paymentMethod: o.payment_method,
-    address: `${o.full_name}, ${o.address}, ${o.city}, ${o.state} - ${o.pincode}`,
+    total: Number(o.total_amount ?? 0),
+    status: statuses[String(o.status || "").toLowerCase()] || o.status,
+    paymentMethod: o.payment_method || "COD",
+    address: o.shipping_address || "",
     items: (o.order_items || []).map((i) => ({
       productId: i.product_id,
-      name: i.name,
-      image: i.image,
+      name: i.products?.name || "Product",
+      image: i.products?.image_url || "",
       qty: i.quantity,
-      price: Number(i.price),
+      price: Number(i.unit_price ?? 0),
     })),
   };
 }
@@ -99,7 +103,7 @@ export async function refreshOrders() {
   }
   const { data, error } = await supabase
     .from("orders")
-    .select("*, order_items(*)")
+    .select("*, order_items(*, products(name, image_url))")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
   if (error) throw error;
