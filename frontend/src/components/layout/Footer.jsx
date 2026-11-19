@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import Swal from "sweetalert2";
+import Swal from "../../utils/centeredSwal";
 import { supabase } from "../../lib/supabase";
 import {
   FaFacebookF,
@@ -14,30 +14,45 @@ import "../../styles/footer.css";
 function Footer() {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
+    if (submitting) return;
 
     const value = email.trim().toLowerCase();
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)) {
-      Swal.fire("Invalid email", "Please enter a valid email address.", "warning");
+    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(value)) {
+      await Swal.fire({ title: "Invalid email", text: "Please enter a valid email address.", icon: "warning" });
       return;
     }
-
-    const { error } = await supabase.from("newsletter_subscribers").insert({ email: value });
-
-    if (error?.code === "23505") {
-      Swal.fire("Already subscribed", "This email is already on our list.", "info");
-      return;
+    setSubmitting(true);
+    try {
+      // The public, rate-limited newsletter Edge Function handles inserts,
+      // duplicate subscriptions and optional confirmation emails securely.
+      // Direct browser writes are blocked by the table's RLS policies.
+      const { data, error } = await supabase.functions.invoke("newsletter", {
+        body: { email: value },
+      });
+      if (error) throw error;
+      if (!data?.subscribed) throw new Error(data?.error || "Subscription could not be saved.");
+      setEmail("");
+      await Swal.fire({
+        icon: "success",
+        title: "Subscription saved!",
+        text: data.emailSent
+          ? "Check your inbox for your BSP CART confirmation."
+          : "You're on the updates list. Email confirmations may not be configured yet.",
+      });
+    } catch (error) {
+      console.error("Newsletter request failed", error);
+      await Swal.fire({
+        icon: "error",
+        title: "Couldn't subscribe",
+        text: "Please try again shortly. If it continues, contact customer support.",
+      });
+    } finally {
+      setSubmitting(false);
     }
-    if (error) {
-      Swal.fire("Couldn't subscribe", "Please try again.", "error");
-      return;
-    }
-
-    setEmail("");
-    Swal.fire("Subscribed!", "Thanks for subscribing to BSP CART updates.", "success");
   };
 
   return (
@@ -123,7 +138,7 @@ function Footer() {
               All Products
             </Link>
 
-            <Link to="/products">
+            <Link to="/products?deals=1">
               Deals
             </Link>
 
@@ -290,12 +305,14 @@ function Footer() {
                 aria-label="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={submitting}
+                autoComplete="email"
                 required
               />
 
-              <button type="submit">
+              <button type="submit" disabled={submitting}>
                 <FaEnvelope />
-                Subscribe
+                {submitting ? "Subscribing…" : "Subscribe"}
               </button>
 
             </form>
