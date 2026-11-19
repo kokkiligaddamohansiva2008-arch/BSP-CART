@@ -43,4 +43,21 @@ assert(read("src/styles/dashboard.css").includes("grid-template-columns"), "Dash
 assert(read("src/styles/theme.css").includes("body .swal2-container"), "Popups appear above navbar");
 assert(read("src/pages/Products.jsx").includes("matchesCategory(product, category)"), "Product category filtering");
 assert(read("src/pages/Home.jsx").includes('params.set("category", category)'), "Homepage category routing");
+
+// The sample catalogue must never map two different product names to the
+// same category banner or fallback image. Verified uploaded images still win.
+const { ADDITIONAL_PRODUCTS } = await import("../src/data/additionalProducts.js");
+const { matchingProductVisual } = await import("../src/data/productVisuals.js");
+const uniqueUrls = new Map();
+for (const product of ADDITIONAL_PRODUCTS) {
+  const url = matchingProductVisual(product.name, product.category, product.id);
+  const key = String(product.category) + "/" + String(product.name);
+  const previous = uniqueUrls.get(url);
+  assert(!previous || previous === key, "Unique catalogue image: " + key);
+  uniqueUrls.set(url, key);
+}
+assert(ADDITIONAL_PRODUCTS.length === 360, "360 sample products have image mappings");
+assert(!read("src/components/ProductPhoto.jsx").includes("genericPhoto("),
+  "Product photos never fall back to reused category banners");
+
 console.log("\nBSP CART route and UI static checks completed.");
