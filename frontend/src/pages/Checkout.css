@@ -45,3 +45,15 @@
   .co-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 520px) { .co-grid { grid-template-columns: 1fr; } .co-field { grid-column: 1 / -1 !important; } }
+
+.co-checkout-warning {
+  margin: 14px 0;
+  padding: 14px 16px;
+  border: 1px solid #e8ba70;
+  border-radius: 12px;
+  background: #fff7e7;
+  color: #78520e;
+  line-height: 1.5;
+}
+.co-checkout-warning a { color: #202a44; font-weight: 700; margin-left: 4px; }
+.co-submit:disabled { opacity: .65; cursor: not-allowed; }
