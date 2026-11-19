@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
-import { matchingProductVisual, backupProductVisual, NO_PRODUCT_PHOTO } from "../data/productVisuals";
+import { matchingProductVisual, NO_PRODUCT_PHOTO } from "../data/productVisuals";
 import { productIllustration } from "../data/imageFallback";
+import { reportUnavailableProductImage } from "../data/imageVisibility";
 
 // One shared photograph must not be used to misrepresent different products.
 // Preserve authenticated seller uploads and curated exact-name photo matches.
@@ -56,21 +57,16 @@ export default function ProductPhoto({ product, src, alt, onError, ...props }) {
   }, [src, product?.image, product?.images, product?.imageUrl, product?.id,
       product?.ownerId, product?.ownerUsername, product?.isSellerAdded, label, category, illustration, key]);
 
-  const sellerUploaded = Boolean(product?.isSellerAdded || product?.ownerId || product?.ownerUsername);
-  const backup = sellerUploaded ? illustration : backupProductVisual(label, category, product?.id);
   const [photo, setPhoto] = useState(chosen);
   useEffect(() => setPhoto(chosen), [chosen]);
 
   const handleError = (event) => {
-    if (photo !== backup && backup !== illustration) {
-      // If the user's new JPG is not committed yet, use an existing
-      // hand-reviewed matching photo rather than a wrong shared banner.
-      setPhoto(backup);
-    } else if (photo !== illustration) {
-      setPhoto(illustration);
-    } else {
-      event.currentTarget.onerror = null;
-    }
+    const url = event.currentTarget.currentSrc || photo;
+    // Browser-reported 404/offline product imagery is removed from public
+    // discovery lists for this session, but seller database rows are intact.
+    reportUnavailableProductImage(product, url);
+    if (photo !== illustration) setPhoto(illustration);
+    else event.currentTarget.onerror = null;
     onError?.(event);
   };
 
