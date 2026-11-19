@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import ProductPhoto from "../components/ProductPhoto";
 import { productThumbnail } from "../data/additionalProducts";
 import { useEffect, useMemo, useState } from "react";
@@ -787,7 +788,7 @@ const Orders = () => {
           DETAILS MODAL
       ===================================================== */}
 
-      {selectedOrder && (
+      {selectedOrder && createPortal(
         <div
           className="order-modal-overlay"
           onClick={() =>
@@ -797,6 +798,9 @@ const Orders = () => {
 
           <div
             className="order-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Order details ${selectedOrder.id}`}
             onClick={(e) =>
               e.stopPropagation()
             }
@@ -981,7 +985,8 @@ const Orders = () => {
 
           </div>
 
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>
