@@ -1,3 +1,4 @@
+import ProductPhoto from "../components/ProductPhoto";
 import { productThumbnail } from "../data/additionalProducts";
 import { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
@@ -600,14 +601,7 @@ const Orders = () => {
                         >
 
                           <div className="order-product-image">
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              onError={(event) => {
-                                event.currentTarget.onerror = null;
-                                event.currentTarget.src = productThumbnail(item.name, item.category, item.id);
-                              }}
-                            />
+                            <ProductPhoto product={item} src={item.image} alt={item.name} />
                           </div>
 
                           <div className="order-product-info">
@@ -901,14 +895,7 @@ const Orders = () => {
                       key={index}
                     >
 
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        onError={(event) => {
-                          event.currentTarget.onerror = null;
-                          event.currentTarget.src = productThumbnail(item.name, item.category, item.id);
-                        }}
-                      />
+                      <ProductPhoto product={item} src={item.image} alt={item.name} />
 
                       <div>
                         <strong>
