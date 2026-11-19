@@ -19,6 +19,29 @@ async function fetchProfile(userId) {
 
 export const getProfileById = fetchProfile;
 
+/** Activate seller access for an existing signed-in buyer or new seller.
+ * The database RPC only upgrades the caller, verifies their email and never
+ * accepts a user id or privileged role from the browser. */
+export async function activateSellerAccount() {
+  const { data: current, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError) throw sessionError;
+  if (!current.session?.user) throw new Error("Please sign in before opening a seller account.");
+  const { error } = await supabase.rpc("activate_seller_account");
+  if (error) throw new Error(error.message || "Could not activate seller access.");
+
+  // app_metadata.role is part of the signed JWT, so refresh it after the RPC.
+  const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+  if (refreshError || !refreshed.session) {
+    throw new Error("Seller activated. Sign out and sign in again to refresh your permissions.");
+  }
+  const profile = await fetchProfile(refreshed.session.user.id);
+  if (!profile || profile.role !== "SELLER") throw new Error("Seller profile was not saved.");
+  applySession(refreshed.session, profile);
+  return profile;
+}
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Social sign-in (Google / Microsoft / GitHub via Supabase OAuth)
@@ -58,27 +81,18 @@ export async function loginWithProvider(key, { role } = {}) {
 */
 async function ensureProfile(user) {
   let profile = await fetchProfile(user.id);
-
   if (!profile) {
-    const meta = user.user_metadata || {};
-    const base =
-      String(meta.user_name || meta.preferred_username || (user.email || "user").split("@")[0])
-        .toLowerCase()
-        .replace(/[^a-z0-9_]/g, "")
-        .slice(0, 20) || "user";
-    const { data } = await supabase
-      .from("profiles")
-      .insert({
-        id: user.id,
-        email: user.email,
-        name: meta.full_name || meta.name || base,
-        username: `${base}${Math.random().toString(36).slice(2, 6)}`,
-      })
-      .select("id, username, name, email, role")
-      .maybeSingle();
-    profile = data || (await fetchProfile(user.id));
+    // A Supabase Auth trigger creates the profile, including the requested
+    // SELLER role. Avoid unauthorised client-side inserts (RLS denies them).
+    throw new Error("Profile missing after sign-in. Contact support to restore your account.");
   }
 
+  const pendingSeller = localStorage.getItem(PENDING_ROLE_KEY) === "SELLER";
+  if (profile.role !== "ADMIN" &&
+      (pendingSeller || profile.role === "SELLER") &&
+      user.app_metadata?.role !== "SELLER") {
+    profile = await activateSellerAccount();
+  }
   localStorage.removeItem(PENDING_ROLE_KEY);
   return profile;
 }
@@ -104,8 +118,13 @@ export async function register({ name, username, email, password, role }) {
     },
   });
   if (error) throw error;
-  // If "Confirm email" is ON in Supabase, there is no session until the link is clicked.
-  return { needsConfirmation: !data.session, user: data.user };
+  // Supabase deliberately returns non-identifying responses when an email
+  // already has an account. We never claim it created a second account.
+  let profile = null;
+  if (data.session && String(role).toUpperCase() === "SELLER") {
+    profile = await activateSellerAccount();
+  }
+  return { needsConfirmation: !data.session, user: data.user, profile };
 }
 
 export async function login(email, password) {
@@ -115,8 +134,12 @@ export async function login(email, password) {
   });
   if (error) throw error;
 
-  const profile = await fetchProfile(data.user.id);
-  applySession(data.session, profile);
+  let profile = await fetchProfile(data.user.id);
+  if (!profile) throw new Error("Your account profile is missing. Contact support.");
+  if (profile.role === "SELLER" && data.user.app_metadata?.role !== "SELLER") {
+    profile = await activateSellerAccount();
+  }
+  applySession((await supabase.auth.getSession()).data.session || data.session, profile);
   return { session: data.session, profile };
 }
 
