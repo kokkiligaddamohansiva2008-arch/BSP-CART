@@ -14,6 +14,7 @@ const FREE_SHIPPING_AT = 499;
 
 export default function Cart() {
   const { lines, items, subtotal, savings, shipping, total } = useCartStore();
+  const blocked = lines.filter((line) => Number(line.id) <= 0 || Number(line.stock) <= 0);
 
   const handleRemove = async (id) => {
     const line = lines.find((l) => l.id === id);
@@ -111,9 +112,22 @@ export default function Cart() {
             <span>₹{total.toLocaleString("en-IN")}</span>
           </div>
 
-          <Link to="/checkout" className="cart-btn cart-btn-primary">
-            Proceed to checkout
-          </Link>
+          {blocked.length > 0 && (
+            <p role="alert" className="cart-checkout-warning">
+              {blocked.length} item(s) are catalogue previews or out of stock.
+              Remove them from the cart before checkout. Demo listings cannot
+              be ordered from Supabase.
+            </p>
+          )}
+          {blocked.length === 0 ? (
+            <Link to="/checkout" className="cart-btn cart-btn-primary">
+              Proceed to checkout
+            </Link>
+          ) : (
+            <span className="cart-btn cart-btn-primary cart-btn-disabled" aria-disabled="true">
+              Checkout unavailable
+            </span>
+          )}
           <Link to="/products" className="cart-btn cart-btn-ghost">
             Continue shopping
           </Link>
