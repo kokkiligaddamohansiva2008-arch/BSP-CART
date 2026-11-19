@@ -25,6 +25,8 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
         working-directory: frontend
+      - name: Validate the product-image ZIP importer
+        run: python3 -m py_compile frontend/scripts/import_product_image_archive.py
       - name: Check page routes, centered popups and sidebar layout
         run: npm run test:pages
         working-directory: frontend
