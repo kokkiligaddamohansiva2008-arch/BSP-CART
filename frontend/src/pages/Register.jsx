@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import Swal from "sweetalert2";
+import Swal from "../utils/centeredSwal";
 import { register } from "../services/authService";
 import { isSupabaseConfigured } from "../lib/supabase";
 import SocialButtons from "../components/auth/SocialButtons";
