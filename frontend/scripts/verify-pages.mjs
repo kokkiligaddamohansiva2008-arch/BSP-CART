@@ -197,11 +197,11 @@ const { isProductVisible, reportUnavailableProductImage } = await import("../src
 const failedImageProduct = { id: "verification-broken-image" };
 assert(isProductVisible(failedImageProduct), "Healthy product is visible in catalogue");
 reportUnavailableProductImage(failedImageProduct, "https://invalid.example/broken.jpg");
-assert(!isProductVisible(failedImageProduct), "Browser-reported broken photo hides that product without DB deletion");
+assert(isProductVisible(failedImageProduct), "Broken image must not hide an otherwise available product");
 assert(read("src/pages/Products.jsx").includes("isProductVisible(product)"),
-  "All category search results exclude browser-inaccessible images");
+  "All category search results use the safe visibility predicate");
 assert(read("src/pages/Home.jsx").includes("isProductVisible(p)"),
-  "Home product lists exclude browser-inaccessible images");
+  "Home product lists use the safe visibility predicate");
 assert(read("src/components/ProductPhoto.jsx").includes("reportUnavailableProductImage(product, url)"),
   "Network image failures are reported centrally");
 
