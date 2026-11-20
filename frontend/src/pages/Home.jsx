@@ -89,14 +89,17 @@ const tryNextImage = (event, candidates) => {
   }
 };
 
+const isRealListing = (p) => !p.isDemo && !p.isSampleCatalogProduct && Number(p.id) > 0;
+const isShopListing = (p) => isRealListing(p) && isProductVisible(p);
+
 const getCategoryProducts = (category) =>
-  PRODUCTS.filter((product) => isProductVisible(product) && matchesCategory(product, category));
+  PRODUCTS.filter((product) => isShopListing(product) && matchesCategory(product, category));
 
 const getCategoryCount = (category) =>
-  countProductsInCategory(PRODUCTS.filter(isProductVisible), category.id);
+  countProductsInCategory(PRODUCTS.filter(isShopListing), category.id);
 
 const getDiscountedProducts = () =>
-  PRODUCTS.filter((p) => isProductVisible(p) && Number(p.mrp) > Number(p.price))
+  PRODUCTS.filter((p) => isShopListing(p) && Number(p.mrp) > Number(p.price))
     .sort(
       (a, b) =>
         discountPercent(b.price, b.mrp) -
@@ -127,7 +130,7 @@ export default function Home() {
   useEffect(() => onImageVisibilityChanged(() => setCatalogVersion((v) => v + 1)), []);
 
 
-  const dealProducts = useMemo(() => getDealProducts().filter(isProductVisible), [catalogVersion]);
+  const dealProducts = useMemo(() => getDealProducts().filter(isShopListing), [catalogVersion]);
 
   const discountedProducts = useMemo(
     () => getDiscountedProducts(),
@@ -153,7 +156,7 @@ export default function Home() {
     const normalizedQuery = query.trim().toLowerCase();
 
     return PRODUCTS.filter((p) => {
-      if (!isProductVisible(p)) return false;
+      if (!isShopListing(p)) return false;
       const matchesSelectedCategory = matchesCategory(p, activeCategory);
 
       const searchableText = [
@@ -258,8 +261,7 @@ const wishlistCount = wishlist.length;
 
   const renderProductCard = (product, compact = false) => {
     const pct = discountPercent(product.price, product.mrp);
-    const previewOnly = product.isSampleCatalogProduct || Number(product.id) <= 0;
-    const available = !previewOnly && Number(product.stock ?? 0) > 0;
+    const available = isRealListing(product) && Number(product.stock ?? 0) > 0;
 
     return (
       <article
@@ -344,13 +346,11 @@ const wishlistCount = wishlist.length;
               product.stock < 10 ? "low-stock" : ""
             }`}
           >
-            {previewOnly
-              ? "Catalogue preview — not for purchase"
-              : !available
-                ? "Out of stock"
-                : product.stock < 10
-                  ? `Only ${product.stock} left`
-                  : `${product.stock} in stock`}
+            {!available
+              ? "Out of stock"
+              : product.stock < 10
+                ? `Only ${product.stock} left`
+                : `${product.stock} in stock`}
           </div>
 
           <button
@@ -358,9 +358,17 @@ const wishlistCount = wishlist.length;
             type="button"
             onClick={() => addToCart(product)}
             disabled={!available}
-            title={previewOnly ? "Preview listing only" : !available ? "Out of stock" : "Add to cart"}
+            title={!available ? "Out of stock" : "Add to cart"}
           >
-            {previewOnly ? "Preview only" : available ? "Add to Cart" : "Out of stock"}
+            Add to Cart
+          </button>
+          <button className="market-add-btn" type="button" disabled={!available}
+            onClick={() => {
+              const result = addToStoredCart(product.id, 1);
+              if (result.ok) navigate("/checkout");
+              else Swal.fire({ icon: "warning", title: "Cannot buy product", text: "This item is unavailable." });
+            }}>
+            Buy Now
           </button>
         </div>
       </article>
