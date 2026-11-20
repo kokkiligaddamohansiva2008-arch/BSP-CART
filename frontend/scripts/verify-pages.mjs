@@ -194,10 +194,12 @@ const { PRODUCT_PHOTOS } = await import("../src/data/productImages.js");
 assert(Object.keys(PRODUCT_PHOTOS).length === new Set(Object.values(PRODUCT_PHOTOS)).size,
   "Curated photo URLs do not repeat across distinct product names");
 const { isProductVisible, reportUnavailableProductImage } = await import("../src/data/imageVisibility.js");
-const failedImageProduct = { id: "verification-broken-image" };
-assert(isProductVisible(failedImageProduct), "Healthy product is visible in catalogue");
+const failedImageProduct = { id: "verification-broken-image", image: "https://invalid.example/broken.jpg" };
+assert(isProductVisible(failedImageProduct), "Product with a URL is visible until the browser confirms failure");
+assert(!isProductVisible({ id: "verification-missing-photo", image: "data:image/svg+xml,placeholder" }),
+  "Products with only an illustration are excluded from the storefront");
 reportUnavailableProductImage(failedImageProduct, "https://invalid.example/broken.jpg");
-assert(isProductVisible(failedImageProduct), "Broken image must not hide an otherwise available product");
+assert(!isProductVisible(failedImageProduct), "Browser-confirmed broken image hides the product for this session");
 assert(read("src/pages/Products.jsx").includes("isProductVisible(product)"),
   "All category search results use the safe visibility predicate");
 assert(read("src/pages/Home.jsx").includes("isProductVisible(p)"),
