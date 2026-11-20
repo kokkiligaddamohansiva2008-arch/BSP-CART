@@ -1,12 +1,15 @@
 import ProductPhoto from "./ProductPhoto";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { addToCart as addToStoredCart } from "../utils/cartStore";
+import Swal from "../utils/centeredSwal";
 import { discountPercent } from "../data/catalog";
 import { productThumbnail } from "../data/additionalProducts";
 
 function ProductCard({ product, onAddToCart, onView }) {
   const pct = discountPercent(product.price, product.mrp);
-  const previewOnly = product.isSampleCatalogProduct || Number(product.id) <= 0;
+  const navigate = useNavigate();
+  const isOrderable = !product.isDemo && !product.isSampleCatalogProduct && Number(product.id) > 0;
   const outOfStock = Number(product.stock ?? 0) <= 0;
   const fallbackImage = productThumbnail(product.name, product.category, product.id);
 
@@ -15,6 +18,21 @@ function ProductCard({ product, onAddToCart, onView }) {
     e.stopPropagation();
     if (onAddToCart) onAddToCart(product.id);
   };
+
+  const handleBuyNow = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const result = addToStoredCart(product.id, 1);
+    if (result.ok) {
+      navigate("/checkout");
+      return;
+    }
+    Swal.fire({ icon: "warning", title: "Cannot buy this product",
+      text: result.reason === "out-of-stock" ? "This product is out of stock." : "This product is not available for purchase." });
+  };
+
+  // The catalogue must never offer fake checkout for frontend-only demos.
+  if (!isOrderable) return null;
 
   return (
     <div className="col-6 col-md-4 col-lg-3">
@@ -55,15 +73,16 @@ function ProductCard({ product, onAddToCart, onView }) {
           )}
         </div>
 
-        <button
-          type="button"
-          className="btn btn-dark btn-sm mt-auto"
-          onClick={handleAddToCart}
-          disabled={previewOnly || outOfStock}
-          title={previewOnly ? "Catalogue sample only — not available for purchase" : outOfStock ? "Out of stock" : "Add to cart"}
-        >
-          {previewOnly ? "Preview only" : outOfStock ? "Out of stock" : "Add to Cart"}
-        </button>
+        <div className="d-flex gap-2 mt-auto">
+          <button type="button" className="btn btn-dark btn-sm flex-fill"
+            onClick={handleAddToCart} disabled={outOfStock} title={outOfStock ? "Out of stock" : "Add to cart"}>
+            Add to Cart
+          </button>
+          <button type="button" className="btn btn-outline-dark btn-sm flex-fill"
+            onClick={handleBuyNow} disabled={outOfStock} title={outOfStock ? "Out of stock" : "Buy now"}>
+            Buy Now
+          </button>
+        </div>
       </div>
     </div>
   );
