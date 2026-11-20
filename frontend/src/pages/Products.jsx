@@ -64,7 +64,6 @@ const Products = () => {
     ? selectedCategory
     : "all";
   const [sort, setSort] = useState("relevance");
-  const [showPreviews, setShowPreviews] = useState(false);
   const [catalogVersion, setCatalogVersion] = useState(0);
 
   // Keep the list current when a seller adds, edits, or removes a product.
@@ -119,8 +118,8 @@ const Products = () => {
     let list = PRODUCTS.filter((product) => {
       // Broken network photo? Keep the original record but hide the listing.
       if (!isProductVisible(product)) return false;
-      // Show real orderable inventory by default; catalogue examples remain browsable on request.
-      if (!showPreviews && (product.isDemo || product.isSampleCatalogProduct || Number(product.id) <= 0)) return false;
+      // Never advertise mock/demo inventory as an orderable listing.
+      if (product.isDemo || product.isSampleCatalogProduct || Number(product.id) <= 0) return false;
       // Shared category logic matches Home and supports every subcategory.
       if (!matchesCategory(product, category)) return false;
       if (dealsOnly && !(Number(product.mrp) > Number(product.price))) return false;
@@ -204,7 +203,7 @@ const Products = () => {
     }
 
     return list;
-  }, [search, category, dealsOnly, sort, catalogVersion, showPreviews]);
+  }, [search, category, dealsOnly, sort, catalogVersion]);
 
   /*
    * Add product to cart.
@@ -245,7 +244,6 @@ const Products = () => {
   const clearFilters = () => {
     setSearch("");
     setSort("relevance");
-    setShowPreviews(false);
 
     setSearchParams({}, { replace: true });
   };
@@ -403,17 +401,6 @@ const Products = () => {
         </button>
       </div>
 
-      <div className="d-flex flex-wrap gap-3 align-items-center mb-3" role="group" aria-label="Product availability">
-        <label className="form-check-label d-inline-flex align-items-center gap-2">
-          <input className="form-check-input mt-0" type="checkbox"
-            checked={showPreviews} onChange={(event) => setShowPreviews(event.target.checked)} />
-          Show catalogue previews (not orderable)
-        </label>
-        {!showPreviews && (
-          <span className="small text-muted">Showing real inventory only. Catalogue previews can be viewed but require a seller to list stock before purchase.</span>
-        )}
-      </div>
-
       {/* RESULT COUNT */}
       <div className="d-flex justify-content-between align-items-center mb-3">
 
@@ -425,7 +412,7 @@ const Products = () => {
           found
         </span>
 
-        {(search.trim() || category !== "all" || dealsOnly || sort !== "relevance" || showPreviews) && (
+        {(search.trim() || category !== "all" || dealsOnly || sort !== "relevance") && (
           <button
             type="button"
             className="btn btn-link btn-sm text-decoration-none"
@@ -455,7 +442,7 @@ const Products = () => {
           <p className="mb-3">
             {search.trim()
               ? `No products match "${search.trim()}".`
-              : "No purchasable products match these filters. Turn on catalogue previews to browse examples."}
+              : "No available products match these filters. Please check again when sellers add stock."}
           </p>
 
           <button
