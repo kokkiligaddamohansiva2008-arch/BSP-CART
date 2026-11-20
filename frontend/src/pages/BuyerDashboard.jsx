@@ -23,7 +23,8 @@ import {
 import Swal from "../utils/centeredSwal";
 import { getMyOrders, cancelOrder } from "../services/orderService";
 import { getProfile } from "../services/userService";
-import { getProductById } from "../data/catalog";
+import { getProductById, onProductsChanged } from "../data/catalog";
+import { addToCart as addToStoredCart } from "../utils/cartStore";
 import { getWishlist, toggleWishlist } from "../utils/bspStorage";
 import Modal from "../components/common/Modal";
 import "./BuyerDashboard.css";
@@ -67,6 +68,7 @@ const BuyerDashboard = () => {
 
   useEffect(() => {
     loadWishlist();
+    return onProductsChanged(loadWishlist);
   }, []);
 
   const removeFromWishlist = (id) => {
@@ -75,11 +77,30 @@ const BuyerDashboard = () => {
   };
 
   const addWishlistItemToCart = (item) => {
-    Swal.fire(
-      "Added to Cart",
-      `${item.name} added to your cart.`,
-      "success"
-    );
+    const result = addToStoredCart(item.id, 1);
+    if (!result.ok) {
+      const messages = {
+        demo: "This is a catalogue preview, not a purchasable product. Choose a seller-listed product.",
+        "out-of-stock": "This product is currently out of stock.",
+        "not-found": "This product is no longer available. Refresh your wishlist.",
+      };
+      Swal.fire({
+        icon: "warning",
+        title: "Cannot add to cart",
+        text: messages[result.reason] || "Please try again.",
+      });
+      return;
+    }
+    Swal.fire({
+      icon: "success",
+      title: "Added to Cart",
+      text: `${item.name} was added to your cart.`,
+      showCancelButton: true,
+      confirmButtonText: "Go to Cart",
+      cancelButtonText: "Keep Shopping",
+    }).then(({ isConfirmed }) => {
+      if (isConfirmed) window.location.assign("/cart");
+    });
   };
 
   // ---------------- Addresses ----------------
@@ -1121,8 +1142,11 @@ const BuyerDashboard = () => {
                                   item
                                 )
                               }
+                              disabled={item.isDemo || item.isSampleCatalogProduct || Number(item.id) <= 0 || Number(item.stock ?? 0) <= 0}
                             >
-                              Add to Cart
+                              {item.isDemo || item.isSampleCatalogProduct || Number(item.id) <= 0
+                                ? "Preview only"
+                                : Number(item.stock ?? 0) <= 0 ? "Out of stock" : "Add to Cart"}
                             </button>
 
                           </div>
