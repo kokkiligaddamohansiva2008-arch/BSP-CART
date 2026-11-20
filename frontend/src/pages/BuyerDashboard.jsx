@@ -24,6 +24,7 @@ import Swal from "../utils/centeredSwal";
 import { getMyOrders, cancelOrder } from "../services/orderService";
 import { getProfile, updateProfile } from "../services/userService";
 import { getProductById, onProductsChanged } from "../data/catalog";
+import { isProductVisible, onImageVisibilityChanged } from "../data/imageVisibility";
 import { addToCart as addToStoredCart } from "../utils/cartStore";
 import { getWishlist, toggleWishlist } from "../utils/bspStorage";
 import Modal from "../components/common/Modal";
@@ -70,14 +71,16 @@ const BuyerDashboard = () => {
   const loadWishlist = () => {
     const items = getWishlist()
       .map((productId) => getProductById(productId))
-      .filter(Boolean); // drop any ID whose product no longer exists
+      .filter((product) => product && isProductVisible(product)); // exclude missing/broken product photos
 
     setWishlist(items);
   };
 
   useEffect(() => {
     loadWishlist();
-    return onProductsChanged(loadWishlist);
+    const stopCatalog = onProductsChanged(loadWishlist);
+    const stopImages = onImageVisibilityChanged(loadWishlist);
+    return () => { stopCatalog(); stopImages(); };
   }, []);
 
   const removeFromWishlist = (id) => {
