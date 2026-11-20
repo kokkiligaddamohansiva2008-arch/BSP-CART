@@ -1,36 +1,24 @@
 /**
- * Browser-only visibility quarantine for product images that actually fail.
- * Do not delete seller/database records because of a transient browser error.
- * Unavailable listings are excluded from the public catalogue for this session.
+ * A product remains visible when its photograph fails to load.
+ * Images are presentation assets, not proof that a product can be sold.
+ * ProductPhoto displays an accessible, product-labelled fallback independently.
+ *
+ * Older versions persisted failed product IDs in sessionStorage and hid them
+ * across catalogue and home pages. Never reuse that blacklist.
  */
-const KEY = "bsp-unavailable-product-images-v1";
-const EVENT = "bsp-image-visibility-changed";
-const failed = new Set();
+export const isProductVisible = (product) => product?.id != null;
 
-if (typeof sessionStorage !== "undefined") {
-  try {
-    const stored = JSON.parse(sessionStorage.getItem(KEY) || "[]");
-    if (Array.isArray(stored)) stored.slice(-200).forEach((key) => failed.add(String(key)));
-  } catch { /* Storage can be blocked by browser privacy settings. */ }
-}
-
-export const isProductVisible = (product) =>
-  product?.id != null && !failed.has(String(product.id));
-
+// Keep the existing API for components importing this module.
+// Image errors must NOT change product visibility, inventory, or purchase state.
 export const reportUnavailableProductImage = (product, url) => {
   if (product?.id == null || !url) return;
-  const src = String(url);
-  // Only hide listings with genuine remote/local image-load failures.
-  // Locally generated product-specific SVG illustrations never go offline.
-  if (/^data:/i.test(src)) return;
-  const key = String(product.id);
-  if (failed.has(key)) return;
-  failed.add(key);
-  try { sessionStorage.setItem(KEY, JSON.stringify([...failed].slice(-200))); } catch {}
-  if (typeof window !== "undefined") window.dispatchEvent(new Event(EVENT));
+  if (typeof console !== "undefined") {
+    console.warn("[BSP CART] Product image unavailable; keeping listing visible", {
+      productId: product.id,
+      imageUrl: String(url).slice(0, 250),
+    });
+  }
 };
 
-export const onImageVisibilityChanged = (listener) => {
-  window.addEventListener(EVENT, listener);
-  return () => window.removeEventListener(EVENT, listener);
-};
+// The catalogue no longer needs to re-filter products on image errors.
+export const onImageVisibilityChanged = () => () => {};
