@@ -22,7 +22,7 @@ import {
 } from "react-icons/fa";
 import Swal from "../utils/centeredSwal";
 import { getMyOrders, cancelOrder } from "../services/orderService";
-import { getProfile } from "../services/userService";
+import { getProfile, updateProfile } from "../services/userService";
 import { getProductById, onProductsChanged } from "../data/catalog";
 import { addToCart as addToStoredCart } from "../utils/cartStore";
 import { getWishlist, toggleWishlist } from "../utils/bspStorage";
@@ -409,24 +409,19 @@ const BuyerDashboard = () => {
     }
   }, [profile]);
 
-  const saveProfile = () => {
-    localStorage.setItem(
-      "name",
-      profileForm.name || "Buyer"
-    );
-
-    setProfile((prev) => ({
-      ...prev,
-      ...profileForm,
-    }));
-
-    Swal.fire({
-      icon: "success",
-      title: "Profile Updated",
-      text: "Your changes have been saved.",
-      timer: 1600,
-      showConfirmButton: false,
-    });
+  const saveProfile = async () => {
+    const name = profileForm.name.trim();
+    if (name.length < 2) {
+      Swal.fire({ icon: "warning", title: "Enter a valid name" });
+      return;
+    }
+    try {
+      const saved = await updateProfile({ name });
+      setProfile((prev) => ({ ...prev, name: saved.name }));
+      Swal.fire({ icon: "success", title: "Profile updated", text: "Your name was saved to your account." });
+    } catch (error) {
+      Swal.fire({ icon: "error", title: "Profile update failed", text: error.message || "Please try again." });
+    }
   };
 
   // ---------------- Orders search/filter ----------------
@@ -1260,6 +1255,8 @@ const BuyerDashboard = () => {
 
                   <button
                     className="btn btn-outline-primary btn-sm"
+                    disabled
+                    title="Online payments are not enabled yet"
                     onClick={openAddPayment}
                   >
                     <FaPlus className="me-1" />
@@ -1269,6 +1266,7 @@ const BuyerDashboard = () => {
                 </div>
 
                 <p className="small text-muted">Only Cash on Delivery is enabled at checkout. Saved UPI/card payment profiles here are not connected to a payment gateway.</p>
+                <p className="mb-3"><strong>Cash on Delivery</strong> is available for eligible purchases.</p>
                 {payments.length === 0 ? (
                   <div className="bd-empty">
 
@@ -1606,17 +1604,9 @@ const BuyerDashboard = () => {
                     <input id="bd-profile-email" name="profile-email"
                       type="email"
                       className="form-control"
-                      value={
-                        profileForm.email
-                      }
-                      onChange={(e) =>
-                        setProfileForm(
-                          (f) => ({
-                            ...f,
-                            email: e.target.value,
-                          })
-                        )
-                      }
+                      value={profileForm.email}
+                      readOnly
+                      title="Email changes require verified account settings"
                     />
 
                   </div>
@@ -1630,17 +1620,9 @@ const BuyerDashboard = () => {
                     <input id="bd-profile-phone" name="profile-phone"
                       type="tel"
                       className="form-control"
-                      value={
-                        profileForm.phone
-                      }
-                      onChange={(e) =>
-                        setProfileForm(
-                          (f) => ({
-                            ...f,
-                            phone: e.target.value,
-                          })
-                        )
-                      }
+                      value={profileForm.phone}
+                      readOnly
+                      title="Phone changes are not connected to account updates"
                     />
 
                   </div>
