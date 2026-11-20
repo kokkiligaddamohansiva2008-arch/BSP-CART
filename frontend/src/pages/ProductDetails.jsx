@@ -22,22 +22,7 @@ import DealCountdown from "../components/DealCountdown";
 import RecommendedProducts from "../components/RecommendedProducts";
 import { productThumbnail } from "../data/additionalProducts";
 import "./ProductDetails.css";
-
-function buildMockReviews(product) {
-  if (!product) return [];
-  const templates = [
-    { name: "uday R.", days: 3, comment: "Exactly as described, delivery was quick too." },
-    { name: "tharun V.", days: 9, comment: "Good quality for the price. Would buy again." },
-    { name: "narendra S.", days: 21, comment: "Packaging could be better but the product itself is great." },
-  ];
-  return templates.map((t, i) => ({
-    id: `${product.id}-r${i}`,
-    name: t.name,
-    rating: Math.max(3, Math.round(product.rating) - (i % 2)),
-    comment: t.comment,
-    daysAgo: t.days,
-  }));
-}
+import { getProductReviews, submitVerifiedReview } from "../services/buyerFeatures";
 
 function Stars({ value }) {
   const rounded = Math.round(value * 2) / 2;
@@ -60,6 +45,11 @@ export default function ProductDetails() {
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [wishlisted, setWishlisted] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewSaving, setReviewSaving] = useState(false);
+  const [reviewsError, setReviewsError] = useState("");
 
   useEffect(() => {
     if (product) {
@@ -70,6 +60,27 @@ export default function ProductDetails() {
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [product]);
+
+  useEffect(() => {
+    let mounted = true;
+    if (Number(id) <= 0) return;
+    getProductReviews(id).then((items) => { if (mounted) setReviews(items); })
+      .catch((error) => { if (mounted) setReviewsError(error.message); });
+    return () => { mounted = false; };
+  }, [id]);
+
+  const saveReview = async (event) => {
+    event.preventDefault();
+    setReviewSaving(true);
+    try {
+      await submitVerifiedReview(id, reviewRating, reviewText);
+      setReviews(await getProductReviews(id));
+      setReviewText("");
+      Swal.fire({ icon: "success", title: "Verified review saved" });
+    } catch (error) {
+      Swal.fire({ icon: "warning", title: "Cannot submit review", text: error.message });
+    } finally { setReviewSaving(false); }
+  };
 
   if (!product) {
     return (
@@ -89,7 +100,6 @@ export default function ProductDetails() {
   const effectivePrice = product.deal ? product.deal.price : product.price;
   const pct = discountPercent(effectivePrice, product.mrp);
   const related = getRelatedProducts(product);
-  const reviews = buildMockReviews(product);
   const priceHistoryData = (product.priceHistory || []).map((price, idx) => ({
     label: `W${idx + 1}`,
     price,
@@ -246,25 +256,44 @@ export default function ProductDetails() {
         </div>
       </div>
 
-      {/* Reviews */}
+      {/* Verified-purchase reviews persisted to Supabase. */}
       <section className="pd-reviews">
-        <h2>Ratings & Reviews</h2>
+        <h2>Verified buyer ratings & reviews</h2>
         <div className="pd-reviews-summary">
-          <span className="pd-reviews-score">{product.rating.toFixed(1)}</span>
-          <div>
-            <Stars value={product.rating} />
-            <p className="pd-rating-count">{product.ratingCount.toLocaleString("en-IN")} global ratings</p>
-          </div>
+          <span className="pd-reviews-score">
+            {reviews.length ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1) : "—"}
+          </span>
+          <span>{reviews.length} verified purchase reviews</span>
         </div>
+        {Number(product.id) > 0 && (
+          <form onSubmit={saveReview} className="mb-4 d-grid gap-2" style={{ maxWidth: 560 }}>
+            <label htmlFor="verified-rating">Your rating (delivered orders only)</label>
+            <select id="verified-rating" className="form-select" value={reviewRating}
+              onChange={(event) => setReviewRating(Number(event.target.value))}>
+              {[5,4,3,2,1].map((rating) => <option key={rating} value={rating}>{rating} star{rating === 1 ? "" : "s"}</option>)}
+            </select>
+            <label htmlFor="verified-comment">Review</label>
+            <textarea id="verified-comment" className="form-control" rows={3}
+              minLength={10} maxLength={2000} required value={reviewText}
+              placeholder="Describe your experience after delivery..."
+              onChange={(event) => setReviewText(event.target.value)} />
+            <button type="submit" className="pd-btn pd-btn-primary" disabled={reviewSaving}>
+              {reviewSaving ? "Saving…" : "Submit verified review"}
+            </button>
+            <small>Only buyers with a delivered order for this product can submit a review.</small>
+          </form>
+        )}
+        {reviewsError && <p role="alert">{reviewsError}</p>}
+        {reviews.length === 0 && <p>No verified reviews yet.</p>}
         <div className="pd-reviews-list">
-          {reviews.map((r) => (
-            <div className="pd-review" key={r.id}>
+          {reviews.map((review) => (
+            <div className="pd-review" key={review.id}>
               <div className="pd-review-head">
-                <Stars value={r.rating} />
-                <span className="pd-review-name">{r.name}</span>
-                <span className="pd-review-date">{r.daysAgo} days ago</span>
+                <Stars value={review.rating} />
+                <strong>Verified purchase</strong>
+                <span className="pd-review-date">{new Date(review.created_at).toLocaleDateString("en-IN")}</span>
               </div>
-              <p>{r.comment}</p>
+              <p>{review.comment}</p>
             </div>
           ))}
         </div>
