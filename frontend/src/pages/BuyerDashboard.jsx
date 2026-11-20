@@ -72,7 +72,7 @@ const BuyerDashboard = () => {
   const loadWishlist = () => {
     const items = getWishlist()
       .map((productId) => getProductById(productId))
-      .filter((product) => product && isProductVisible(product)); // exclude missing/broken product photos
+      .filter((product) => product && !product.isDemo && !product.isSampleCatalogProduct && Number(product.id) > 0 && isProductVisible(product));
 
     setWishlist(items);
   };
@@ -1136,9 +1136,7 @@ const BuyerDashboard = () => {
                               }
                               disabled={item.isDemo || item.isSampleCatalogProduct || Number(item.id) <= 0 || Number(item.stock ?? 0) <= 0}
                             >
-                              {item.isDemo || item.isSampleCatalogProduct || Number(item.id) <= 0
-                                ? "Preview only"
-                                : Number(item.stock ?? 0) <= 0 ? "Out of stock" : "Add to Cart"}
+                              Add to Cart
                             </button>
 
                           </div>
