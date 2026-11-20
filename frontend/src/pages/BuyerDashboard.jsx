@@ -29,6 +29,7 @@ import { addToCart as addToStoredCart } from "../utils/cartStore";
 import { getWishlist, toggleWishlist } from "../utils/bspStorage";
 import Modal from "../components/common/Modal";
 import "./BuyerDashboard.css";
+import { getBuyerNotifications, markBuyerNotificationRead, getCurrentBuyerId, watchBuyerOrders } from "../services/buyerFeatures";
 
 const STATUS_CLASS = {
   pending: "bd-status-pending",
@@ -363,37 +364,47 @@ const BuyerDashboard = () => {
     setShowReviewModal(false);
   };
 
-  // ---------------- Notifications ----------------
-  // No invented shipping updates. Notifications can be added once
-  // Supabase order events are connected to the dashboard.
+  // Real notifications created from order status changes.
   const [notifications, setNotifications] = useState([]);
-
-  const unreadCount = notifications.filter(
-    (n) => !n.read
-  ).length;
-
-  const markNotificationRead = (id) => {
-    setNotifications((prev) =>
-      prev.map((n) =>
-        n.id === id
-          ? { ...n, read: true }
-          : n
-      )
-    );
+  const loadNotifications = async () => {
+    try { setNotifications(await getBuyerNotifications()); }
+    catch (error) { console.error("Notifications failed:", error); }
   };
+  useEffect(() => {
+    let stop = () => {};
+    let active = true;
+    loadNotifications();
+    getCurrentBuyerId().then((userId) => {
+      if (!active || !userId) return;
+      stop = watchBuyerOrders(userId, () => {
+        getMyOrders().then(setOrders).catch(console.error);
+        loadNotifications();
+      });
+    }).catch(console.error);
+    return () => { active = false; stop(); };
+  }, []);
 
-  const markAllRead = () => {
-    setNotifications((prev) =>
-      prev.map((n) => ({
-        ...n,
-        read: true,
-      }))
-    );
+  const unreadCount = notifications.filter((note) => !note.read_at).length;
+  const markNotificationRead = async (id) => {
+    try {
+      await markBuyerNotificationRead(id);
+      setNotifications((prev) => prev.map((note) =>
+        note.id === id ? { ...note, read_at: new Date().toISOString() } : note));
+    } catch (error) {
+      Swal.fire({ icon: "error", title: "Could not mark notification read", text: error.message });
+    }
   };
-
-  const clearAllNotifications = () => {
-    setNotifications([]);
+  const markAllRead = async () => {
+    try {
+      await Promise.all(notifications.filter((note) => !note.read_at).map((note) =>
+        markBuyerNotificationRead(note.id)));
+      await loadNotifications();
+    } catch (error) {
+      Swal.fire({ icon: "error", title: "Update failed", text: error.message });
+    }
   };
+  const clearAllNotifications = () =>
+    Swal.fire({ icon: "info", title: "Notification history is retained", text: "Mark notifications read to clear unread indicators." });
 
   // ---------------- Profile ----------------
   const [profileForm, setProfileForm] = useState({
@@ -1477,7 +1488,7 @@ const BuyerDashboard = () => {
                       (note) => (
                         <div
                           className={`bd-notification ${
-                            note.read
+                            note.read_at
                               ? ""
                               : "unread"
                           }`}
@@ -1492,18 +1503,18 @@ const BuyerDashboard = () => {
 
                           <div className="d-flex gap-2">
 
-                            {!note.read && (
+                            {!note.read_at && (
                               <span className="bd-notification-dot" />
                             )}
 
                             <span>
-                              {note.message}
+                              <strong>{note.title}: </strong>{note.message}
                             </span>
 
                           </div>
 
                           <small className="text-muted flex-shrink-0">
-                            {note.time}
+                            {new Date(note.created_at).toLocaleString("en-IN")}
                           </small>
 
                         </div>
