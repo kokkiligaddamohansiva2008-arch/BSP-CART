@@ -82,7 +82,7 @@ export default function ProductDetails() {
     } finally { setReviewSaving(false); }
   };
 
-  if (!product) {
+  if (!product || product.isDemo || product.isSampleCatalogProduct || Number(product.id) <= 0) {
     return (
       <div className="pd-not-found">
         <h2>Product not found</h2>
@@ -95,11 +95,10 @@ export default function ProductDetails() {
   }
 
   const fallbackImage = productThumbnail(product.name, product.category, product.id);
-  const previewOnly = product.isSampleCatalogProduct || Number(product.id) <= 0;
-  const purchasable = !previewOnly && Number(product.stock ?? 0) > 0;
+  const purchasable = Number(product.stock ?? 0) > 0;
   const effectivePrice = product.deal ? product.deal.price : product.price;
   const pct = discountPercent(effectivePrice, product.mrp);
-  const related = getRelatedProducts(product);
+  const related = getRelatedProducts(product).filter((p) => !p.isDemo && !p.isSampleCatalogProduct && Number(p.id) > 0);
   const priceHistoryData = (product.priceHistory || []).map((price, idx) => ({
     label: `W${idx + 1}`,
     price,
@@ -221,7 +220,7 @@ export default function ProductDetails() {
 
           <div className="pd-actions">
             <button className="pd-btn pd-btn-primary" disabled={!purchasable} onClick={handleAddToCart}>
-              {previewOnly ? "Preview only" : purchasable ? "Add to Cart" : "Out of stock"}
+              Add to Cart
             </button>
             <button className="pd-btn pd-btn-buy" disabled={!purchasable} onClick={handleBuyNow}>
               Buy Now
