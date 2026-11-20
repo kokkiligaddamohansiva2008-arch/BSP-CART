@@ -37,6 +37,15 @@ const STATUS_CLASS = {
   cancelled: "bd-status-cancelled",
 };
 
+const readLocalList = (key) => {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch {
+    return [];
+  }
+};
+
 const getInitials = (name = "") =>
   name
     .trim()
@@ -104,14 +113,10 @@ const BuyerDashboard = () => {
   };
 
   // ---------------- Addresses ----------------
-  const [addresses, setAddresses] = useState([
-    {
-      id: 1,
-      label: "Home",
-      line: "12-34, Main Road, Karimnagar, Telangana - 505001",
-      isDefault: true,
-    },
-  ]);
+  const [addresses, setAddresses] = useState(() => readLocalList("bsp_buyer_addresses"));
+  useEffect(() => {
+    localStorage.setItem("bsp_buyer_addresses", JSON.stringify(addresses));
+  }, [addresses]);
 
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState(null);
@@ -190,9 +195,13 @@ const BuyerDashboard = () => {
     });
 
     if (result.isConfirmed) {
-      setAddresses((prev) =>
-        prev.filter((a) => a.id !== id)
-      );
+      setAddresses((prev) => {
+        const remaining = prev.filter((a) => a.id !== id);
+        if (remaining.length && !remaining.some((a) => a.isDefault)) {
+          remaining[0] = { ...remaining[0], isDefault: true };
+        }
+        return remaining;
+      });
     }
   };
 
@@ -206,14 +215,9 @@ const BuyerDashboard = () => {
   };
 
   // ---------------- Payments ----------------
-  const [payments, setPayments] = useState([
-    {
-      id: 1,
-      method: "UPI",
-      detail: "user@okhdfcbank",
-      isDefault: true,
-    },
-  ]);
+  // Never display invented payment credentials. Online payments are not
+  // connected to a verified payment gateway; checkout supports COD only.
+  const [payments, setPayments] = useState([]);
 
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [editingPaymentId, setEditingPaymentId] = useState(null);
@@ -308,14 +312,10 @@ const BuyerDashboard = () => {
   };
 
   // ---------------- Reviews ----------------
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      product: "Gaming Headset",
-      rating: 4,
-      comment: "Good sound quality.",
-    },
-  ]);
+  const [reviews, setReviews] = useState(() => readLocalList("bsp_buyer_review_drafts"));
+  useEffect(() => {
+    localStorage.setItem("bsp_buyer_review_drafts", JSON.stringify(reviews));
+  }, [reviews]);
 
   const [showReviewModal, setShowReviewModal] = useState(false);
 
@@ -361,20 +361,9 @@ const BuyerDashboard = () => {
   };
 
   // ---------------- Notifications ----------------
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      message: "Your order #1002 has been shipped.",
-      time: "2h ago",
-      read: false,
-    },
-    {
-      id: 2,
-      message: "New offer: 20% off on electronics.",
-      time: "1d ago",
-      read: false,
-    },
-  ]);
+  // No invented shipping updates. Notifications can be added once
+  // Supabase order events are connected to the dashboard.
+  const [notifications, setNotifications] = useState([]);
 
   const unreadCount = notifications.filter(
     (n) => !n.read
@@ -480,11 +469,11 @@ const BuyerDashboard = () => {
           getProfile(),
         ]);
 
-      setOrders(
-        orderData.status === "fulfilled"
-          ? orderData.value
-          : []
-      );
+      if (orderData.status === "rejected") {
+        console.error("Buyer orders could not be loaded:", orderData.reason);
+        Swal.fire({ icon: "warning", title: "Orders unavailable", text: "Your orders could not be loaded. Please retry." });
+      }
+      setOrders(orderData.status === "fulfilled" ? orderData.value : []);
 
       setProfile(
         profileData.status === "fulfilled"
@@ -557,9 +546,7 @@ const BuyerDashboard = () => {
   const totalOrders = orders.length;
 
   const pendingOrders = orders.filter(
-    (o) =>
-      (o.status || "").toLowerCase() ===
-      "pending"
+    (o) => ["pending", "processing"].includes((o.status || "").toLowerCase())
   ).length;
 
   const totalSpent = orders.reduce(
@@ -959,6 +946,7 @@ const BuyerDashboard = () => {
                       Pending
                     </option>
 
+                    <option value="processing">Processing</option>
                     <option value="shipped">
                       Shipped
                     </option>
@@ -1035,12 +1023,7 @@ const BuyerDashboard = () => {
 
                                 <td>
 
-                                  {![
-                                    "cancelled",
-                                    "delivered",
-                                  ].includes(
-                                    normalizedStatus
-                                  ) && (
+                                  {["pending", "processing"].includes(normalizedStatus) && (
                                     <button
                                       className="btn btn-outline-danger btn-sm"
                                       onClick={() =>
@@ -1285,6 +1268,7 @@ const BuyerDashboard = () => {
 
                 </div>
 
+                <p className="small text-muted">Only Cash on Delivery is enabled at checkout. Saved UPI/card payment profiles here are not connected to a payment gateway.</p>
                 {payments.length === 0 ? (
                   <div className="bd-empty">
 
@@ -1388,6 +1372,7 @@ const BuyerDashboard = () => {
 
                 </div>
 
+                <p className="small text-muted">Reviews in this section are saved as drafts in this browser, not published product reviews.</p>
                 {reviews.length === 0 ? (
                   <div className="bd-empty">
 
@@ -1473,6 +1458,7 @@ const BuyerDashboard = () => {
 
                 </div>
 
+                <p className="small text-muted">Only verified order updates should appear here. Check My Orders for the latest order status.</p>
                 {notifications.length === 0 ? (
                   <div className="bd-empty">
 
